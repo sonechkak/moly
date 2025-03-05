@@ -1,0 +1,50 @@
+{% load static %}
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include '_components/_popup.html' %}
+    <!-- Page Title Area Starts -->
+    <div class="page-title-area pt-130 pb-120 " style="background-image: url({% static 'img/bg/contact-bg.png' %});">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="page-titel-detalis">
+                        <div class="page-title position-relative">
+                            <h2>404 Page</h2>
+                        </div>
+                        <div class="page-bc">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{% url 'index' %}"> <i
+                                            class="fas fa-home "></i>Home</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page"><a
+                                            href="_404_page.html">404 Page</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Title Area Ends -->
+
+    <!-- 404 Area Starts -->
+    <div class="page-404-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="img-404 text-center">
+                        <img src="{% static 'img/bg/404.png' %}" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 404 Area Ends -->
+{% endblock %}
+
+
+
+
+

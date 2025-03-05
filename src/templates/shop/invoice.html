@@ -1,0 +1,215 @@
+{% load static %}
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Page Title Area Starts -->
+    <div class="page-title-area pt-130 pb-120 " style="background-image: url({% static 'img/bg/chechout-page-bg.jpg' %});">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="page-titel-detalis">
+                        <div class="page-title position-relative">
+                            <h2>Checkout Page</h2>
+                        </div>
+                        <div class="page-bc">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{% url 'index' %}"> <i
+                                            class="fas fa-home "></i>Home</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        <a href="invoice.html">Checkout Page</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Title Area ends -->
+
+    <!-- Checkout  Area Starts -->
+    <div class="cart-page-area checkout-page pt-50">
+        <div class="container">
+            <div class="row justify-content-center justify-content-md-start">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-10">
+                    <div class="buyer-info check-border pb-30 mb-50 mb-md-0">
+                        <div class="section-title">
+                            <h6>Buyer Info</h6>
+                            <h6 class="float-right">Login Here</h6>
+                        </div>
+                        <form action="#" class="pl-45 pt-50 pr-100">
+                            <table class="buyer-info-table ">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <label for="first-name">First Name :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="first-name">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="last-name">Last Name :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="last-name">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="addres-1">Addres 1 :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="addres-1">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="addres-2">Addres 2 :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="addres-2">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="city">City :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="city">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="postal">Posta Code :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="postal">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="country">Country :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="country">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="state">State :</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="state">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-10">
+                    <div class="billing-detalis check-border ">
+                        <div class="section-title">
+                            <h6>Billing Detalis</h6>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-10 offset-xl-1 offset-lg-1 offset-md-1 offset-sm-1 offset-1">
+                                <div class="checkout-product-detalis pt-40 pb-45">
+                                    <div class="product-title pb-5">
+                                        <span>Product</span>
+                                        <span class="float-right">Total</span>
+                                    </div>
+                                    <hr>
+
+                                    <ul class="product-total pt-20 pb-15">
+                                        <li><span>There are many veriation</span>
+                                            <span class="float-right">$99</span>
+                                        </li>
+                                        <li>
+                                            <span class="pr-50">Size</span>
+                                            <span>Xl</span>
+                                        </li>
+                                        <li>
+                                            <span class="pr-50">Color</span>
+                                            <span>RED</span>
+                                        </li>
+                                        <li>
+                                            <span>Delivary Cost</span>
+                                            <span class="float-right">$9.0</span>
+                                        </li>
+                                    </ul>
+                                    <hr>
+                                    <div class="oreder-total pt-10">
+                                        <span>Order total</span>
+                                        <span class="float-right">$1008.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="payment-method check-border mt-50 pb-20">
+                        <div class="section-title mb-40">
+                            <h6>
+                                Payment Methods
+                            </h6>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-10 offset-xl-1 offset-lg-1 offset-md-1 offset-sm-1 offset-1">
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry lorem.</p>
+                                <div class="paymen-icon pb-40">
+                                    <ul class=" d-flex">
+                                        <li><a href="#"><i class="fab fa-cc-paypal" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-cc-stripe" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-cc-visa" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-cc-mastercard" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-cc-amex" aria-hidden="true"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <form action="#">
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-4 col-5">
+                                    <div class="payment-label text-right">
+                                        <label for="card-number">Card Number :</label>
+                                        <label for="cvv">CVV :</label>
+                                        <label for="month">Month:</label>
+                                        <label class="d-lg-none" for="year">Year:</label>
+                                    </div>
+
+                                </div>
+                                <div class="col-xl-6 col-lg-7 col-md-7 col-sm-8 col-7">
+                                    <div class="payment-input mr-10 mr-lg-0">
+                                        <input type="text" id="card-number">
+                                        <input type="text" id="cvv">
+                                        <input class="d-block d-lg-inline" type="text" id="month">
+                                        <input class="float-lg-right" type="text" id="year">
+                                        <label class="d-none d-lg-inline-block float-lg-right pr-15 pt-5" for="year">Year:</label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div class="table-button text-center pt-30">
+                        <a href="#" class="b-btn  pl-45 pr-45 pb-15 pt-15">Place Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout  Area Ends -->
+{% endblock %}

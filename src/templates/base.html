@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="shop, ecommerce, store, multipurpose, shopify, woocommerce, html5, css3, sass">
+    <!-- fav -->
+    <link rel="shortcut icon" href="{% static 'img/icon/favicon.ico' %}" type="image/x-icon">
+    <!-- title -->
+    <title>Moly - Multipurpose ecommerce html5 template</title>
+    <!-- stylesheets -->
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mean-menu.css' %}">
+    <link rel="stylesheet" href="{% static 'css/default.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <!-- Preloader Starts-->
+    <div class="loader">
+        <div class="loding-cricle"></div>
+    </div>
+
+    <!-- Autopopup Area -->
+    {% include '_components/_popup.html' %}
+
+    <!-- Header Area -->
+    {% include '_components/_header.html' %}
+
+    <!-- Main content -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Subscribe Area -->
+    {% include '_components/_subscribe_area.html' %}
+
+    <!-- Brand Area -->
+    {% include '_components/_brand_area.html' %}
+
+    <!-- Footer Area -->
+    {% include '_components/_footer.html' %}
+
+    <!-- scripts -->
+    <script src="{% static 'js/vendor/jquery.min.js' %}"></script>
+    <script src="{% static 'js/vendor/modernizr-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/vendor/popper.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-mean-menu.min.js' %}"></script>
+    <script src="{% static 'js/vendor/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/vendor/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'js/countdown.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery.nice-number.js' %}"></script>
+    <script src="{% static 'js/vendor/slick.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'js/vendor/wow-1.3.0.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
