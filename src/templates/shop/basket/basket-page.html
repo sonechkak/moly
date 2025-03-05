@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    {% include '_components/_popup.html' %}
+    <!-- Page Title Area Starts -->
+    <div class="page-title-area pt-130 pb-120 " style="background-image: url(assets/img/bg/contact-bg.png);">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="page-titel-detalis  ">
+                        <div class="page-title position-relative">
+                            <h2>Cart Page</h2>
+                        </div>
+                        <div class="page-bc">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html"> <i
+                                            class="fas fa-home "></i>Home</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page"><a
+                                            href="shop-list-page.html">Shope Page</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Title Area Ends -->
+
+    <!-- Page Title Area Starts -->
+    <div class="product-area product-detalis-page cart-page-area  pt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="cart-table table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Model</th>
+                                <th scope="col">Edit</th>
+                                <th scope="col">Quantite</th>
+                                <th scope="col">Unit Price</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="cart-img">
+                                        <img src="{% static 'img/product/product-66.png' %}" alt="product">
+                                    </div>
+                                </td>
+                                <td class="td-width">
+                                    <div class="cart-description text-left pl-20">
+                                        <span>There area many varia-</span>
+                                        <p>Lorem Ipsum is simply dummy text of the type setting.</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-model">
+                                        <span>Product-23</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-edit">
+                                        <a href="#"> <i class="fas fa-pencil-alt"></i> </a>
+                                        <a href="#"><i class="fas fa-trash-alt"></i></a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="product-number ">
+                                        <div class="quty">
+                                            <input class="qty" type="number" value="1">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-price">
+                                        <span>$999.00</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-price">
+                                        <span>$999.00</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="cart-img">
+                                        <img src="{% static 'img/product/product-67.png' %}" alt="product">
+                                    </div>
+                                </td>
+                                <td class="ts-width">
+                                    <div class="cart-description text-left pl-20">
+                                        <span>There area many varia-</span>
+                                        <p>Lorem Ipsum is simply dummy text of the type setting.</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-model">
+                                        <span>Product-24</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-edit">
+                                        <a href="#"> <i class="fas fa-pencil-alt"></i> </a>
+                                        <a href="#"><i class="fas fa-trash-alt"></i></a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="product-number ">
+                                        <div class="quty">
+                                            <input class="qty" type="number" value="1">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-price">
+                                        <span>$999.00</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cart-price">
+                                        <span>$999.00</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="7">
+                                    <div class="table-button text-left">
+                                        <a class="b-btn pr-15 pl-15 pt-15 pb-15" href="#">CONTINUE SHOPPING </a>
+                                        <a class="b-btn pr-15 pl-15 pt-15 pb-15 float-right" href="#">UPDATE SHOPPING
+                                            CART</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="product-cart pt-35">
+                <div class="row justify-content-center justify-content-lg-start">
+                    <div class="col-xl-4 col-lg-4 col-md-8 col-sm-9 col-12">
+                        <div class="cart-wrapper pl-20 pt-30 pr-20 pb-30">
+                            <div class="section-title">
+                                <h6>
+                                    Estimate Shopping And Tax
+                                </h6>
+                            </div>
+                            <div class="country pt-15">
+                                <span>Country</span>
+                                <input type="text" placeholder="United States">
+                            </div>
+                            <div class="state pt-15">
+                                <span>State/Province</span>
+                                <input type="text" placeholder="Please select region, state or province">
+                            </div>
+                            <div class="zip-code pt-15 pb-20">
+                                <span>Zip/Postal Code</span>
+                                <input type="text">
+                            </div>
+                            <div class="table-button d-flex justify-content-end">
+                                <a href="#" class="b-btn  pl-20 pr-20 pb-15 pt-15">GET QUOTE</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-8 col-sm-9 col-12">
+                        <div class="cart-wrapper pl-20 pt-30 pr-20 pb-30 mt-50 mb-50 mt-lg-0 mb-lg-0">
+                            <div class="section-title">
+                                <h6>
+                                    Discount Code
+                                </h6>
+                            </div>
+                            <div class="country pt-15 pb-20">
+                                <span class="pb-10">Enter your coupon code if you have one.</span>
+                                <input type="text">
+                            </div>
+                            <div class="table-button d-flex justify-content-end ">
+                                <a href="#" class="b-btn  pt-15 pb-15 pr-30 pl-30 ">APPLY</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-8 col-sm-9 col-12">
+                        <div class="cart-wrapper pl-20 pt-30 pr-20 pb-50">
+                            <div class="cart-price-area text-right">
+                                <p>Subtotal <span class="d-inline-block"> $999.00</span></p>
+                                <p>Grand Total <span class="d-inline-block"> $999.00</span></p>
+                            </div>
+
+                            <div class="table-button d-flex justify-content-end pt-20">
+                                <a href="#" class="b-btn  pt-20 pb-20 pr-50 pl-50 ">PROCED TO CHECKOUT</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Title Area Ends -->
+{% endblock %}

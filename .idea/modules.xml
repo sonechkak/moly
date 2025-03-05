@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/moly-ecommerce.iml" filepath="$PROJECT_DIR$/.idea/moly-ecommerce.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/moly-eccomerce.iml" filepath="$PROJECT_DIR$/.idea/moly-eccomerce.iml" />
     </modules>
   </component>
 </project>
