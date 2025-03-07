@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-# Create your views here.
+from apps.shop.models import Product
+
+
+class Index(ListView):
+    model = Product
+    extra_context = {'title': 'Главная страница'}
+    template_name = "shop/index.html"

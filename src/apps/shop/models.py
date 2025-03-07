@@ -71,12 +71,23 @@ class Product(models.Model):
         ordering = ['available', '-created_at']
 
 
-class Galeria(models.Model):
+class Gallery(models.Model):
     """Класс для изображений товаров."""
     image = models.ImageField(upload_to="products/", verbose_name="Изображение")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     is_main = models.BooleanField(default=False, verbose_name="Основное изображение")
 
+    def save(self, *args, **kwargs):
+        if self.is_main:
+            self.product.images.update(is_main=False)
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
+
+    def __str__(self):
+        return self.product.title
+
+    def __repr__(self):
+        return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
