@@ -67,7 +67,7 @@ class Product(models.Model):
         return mark_safe(f'<img src="/media/products/default.jpg" width="50" height="50">')
 
     def get_absolute_url(self):
-        pass
+        return reverse("shop:product_detail", kwargs={"slug": self.slug})
 
     def old_price(self):
         """Возвращает цену на 20% больше текущей."""

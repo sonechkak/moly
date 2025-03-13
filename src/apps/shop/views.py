@@ -51,12 +51,20 @@ class SubCategories(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = get_object_or_404(Category, slug=self.kwargs["slug"])
-
-        all_products_category = Category.objects.filter(title="Все товары").first()
-        other_categories = Category.objects.exclude(title="Все товары").order_by("title")
-        categories = [all_products_category] + list(other_categories)
-
+        categories = Category.objects.filter(parent=None)
         context["title"] = f"Товары по категории: {category.title}"
         context["category"] = Category.objects.get(slug=category.slug)
         context["categories"] = categories
+        return context
+
+
+class ProductDetail(DetailView):
+    """Вывод информации о товаре."""
+    model = Product
+    context_object_name = "product"
+    template_name = "shop/detalis/detalis-left-sidebar-page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = f"Информация о товаре: {self.object.title}"
         return context
