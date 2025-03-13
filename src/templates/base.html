@@ -8,6 +8,8 @@
     <title>{{ title }}</title>
     <!-- Fav and Stylesheets -->
     {% include '_components/_style.html' %}
+    {% block style %}
+    {% endblock style %}
 </head>
 <body>
     <!-- Preloader Starts-->
@@ -16,14 +18,14 @@
     </div>
 
     <!-- Autopopup Area -->
-    {% include '_components/_popup.html' %}
+{#    {% include '_components/_popup.html' %}#}
 
     <!-- Header Area -->
     {% include '_components/_header.html' %}
 
     <!-- Main content -->
     {% block content %}
-    {% endblock %}
+    {% endblock content %}
 
     <!-- Subscribe Area -->
     {% include '_components/_subscribe_area.html' %}

@@ -1,0 +1,31 @@
+<div class="categorie">
+    <h4><i class="fas fa-list"></i>Все категории</h4>
+    <hr>
+    <ul class="categories-list pt-10 pl-20">
+        {% for category in categories %}
+            {% if not category.parent %}
+                <!-- Основная категория -->
+                <li>
+                    <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+                    {% if category.subcategories.exists %}
+                        <!-- Если есть подкатегории, отображаем их -->
+                        <ul>
+                            {% for subcategory in category.subcategories.all %}
+                                <li>
+                                    <a href="{{ subcategory.get_absolute_url }}">
+                                        {{ subcategory }}
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <hr>
+    <div class="more-categories pl-20 pt-10 pb-15">
+        <a href="#">Больше категорий</a>
+    </div>
+</div>
