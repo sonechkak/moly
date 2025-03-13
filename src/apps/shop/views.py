@@ -27,8 +27,12 @@ class SubCategories(ListView):
     template_name = "shop/grid/shop-grid-left-sidebar-page.html"
     paginate_by = 12
 
+
     def get_queryset(self):
         """Вывод товаров определенной категории."""
+        if type_field := self.request.GET.get("type"):
+            return Product.objects.filter(category__slug=type_field)
+
         parent_category = get_object_or_404(Category, slug=self.kwargs["slug"])
         subcategories = parent_category.subcategories.all()
 
@@ -39,7 +43,10 @@ class SubCategories(ListView):
             # Если подкатегорий нет, выбираем продукты из самой категории
             products = Product.objects.filter(category=parent_category)
 
-        return products.order_by("-id")  # Сортировка по ID (новые первыми)
+        if sort_filed := self.request.GET.get("sort"):
+            products = products.order_by(sort_filed)
+
+        return products
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -1,0 +1,39 @@
+/* Стили для контейнера подкатегорий */
+.subcategories-container {
+    display: none; /* По умолчанию скрыт */
+    position: absolute; /* Абсолютное позиционирование */
+    left: 100%; /* Сдвигаем вправо от основной категории */
+    top: 0; /* Выравниваем по верхнему краю */
+    width: 200px; /* Ширина контейнера подкатегорий */
+    background-color: #fff; /* Белый фон */
+    border: 1px solid #ddd; /* Граница */
+    border-radius: 5px; /* Скругление углов */
+    padding: 10px; /* Отступы внутри */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень */
+    z-index: 10; /* Чтобы контейнер был поверх других элементов */
+}
+
+/* Отображение подкатегорий при наведении на основную категорию */
+.category-item:hover .subcategories-container {
+    display: block; /* Показываем контейнер */
+}
+
+/* Стили для списка категорий */
+.categories-list {
+    list-style: none; /* Убираем маркеры списка */
+    padding: 0;
+}
+
+.categories-list li {
+    margin-bottom: 10px; /* Отступ между элементами списка */
+    position: relative; /* Для позиционирования подкатегорий */
+}
+
+.categories-list a {
+    text-decoration: none; /* Убираем подчеркивание ссылок */
+    color: #333; /* Цвет текста */
+}
+
+.categories-list a:hover {
+    color: #007bff; /* Цвет текста при наведении */
+}
