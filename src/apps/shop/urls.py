@@ -1,7 +1,12 @@
 from django.urls import include, path, re_path
-from django.views.generic import TemplateView
+
+from .views import Index, SubCategories
+
+
+app_name = "shop"
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="shop/index.html"), name="index"),
+    path("", Index.as_view(), name="index"),
+    path("category_detail/<slug:slug>", SubCategories.as_view(), name="category_detail"),
 ]

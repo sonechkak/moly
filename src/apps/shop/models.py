@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
 
 
 class Category(models.Model):
@@ -17,9 +18,15 @@ class Category(models.Model):
         related_name="subcategories"
     )
 
+    def get_parent_category_image(self):
+        """Для получения картинки родительской категории."""
+        if self.image:
+            return self.image.url
+        return "Нет изображения"
+
     def get_absolute_url(self):
-        """Возвращает относительный url."""
-        pass
+        """Ссылка на страницу категории."""
+        return reverse("shop:category_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title
@@ -42,11 +49,9 @@ class Product(models.Model):
     quantity = models.IntegerField(default=0, verbose_name="Количество товара на складе")
     description = models.TextField(default="Скоро здесь будет описание товара...", verbose_name="Описание товара")
     info = models.TextField(default="Дополнительная информация о товаре", verbose_name="Информация о товаре")
-    category = models.ForeignKey(
+    category = models.ManyToManyField(
         Category,
-        on_delete=models.CASCADE,
         related_name="products",
-        null=True,
         blank=True,
         verbose_name="Категория товара"
     )
@@ -56,8 +61,17 @@ class Product(models.Model):
     brand = models.CharField(max_length=150, default="Apple", verbose_name="Бренд товара")
     available = models.BooleanField(default=True, verbose_name="Доступны к заказу")
 
+    def get_main_photo(self):
+        if self.images.filter(is_main=True).exists():
+            return self.images.get(is_main=True).image.url
+        return mark_safe(f'<img src="/media/products/default.jpg" width="50" height="50">')
+
     def get_absolute_url(self):
         pass
+
+    def old_price(self):
+        """Возвращает цену на 20% больше текущей."""
+        return self.price * 1.2
 
     def __str__(self):
         return self.title
@@ -71,12 +85,23 @@ class Product(models.Model):
         ordering = ['available', '-created_at']
 
 
-class Galeria(models.Model):
+class Gallery(models.Model):
     """Класс для изображений товаров."""
     image = models.ImageField(upload_to="products/", verbose_name="Изображение")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     is_main = models.BooleanField(default=False, verbose_name="Основное изображение")
 
+    def save(self, *args, **kwargs):
+        if self.is_main:
+            self.product.images.update(is_main=False)
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
+
+    def __str__(self):
+        return self.product.title
+
+    def __repr__(self):
+        return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
