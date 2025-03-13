@@ -26,7 +26,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         """Ссылка на страницу категории."""
-        return reverse("shop:category_detail", kwargs={"slug": self.slug})
+        return reverse("shop:category_list", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title
