@@ -25,7 +25,7 @@ class SubCategories(ListView):
     model = Product
     context_object_name = "products"
     template_name = "shop/grid/shop.html"
-    paginate_by = 12
+    paginate_by = 3
 
     def get_queryset(self):
         """Вывод товаров определенной категории."""
