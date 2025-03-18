@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    {% include 'shop/grid/_components/style.html' %}
+{% endblock %}
+
+{% block content %}
+    <!--  Modal -->
+    {% include 'shop/grid/_components/modal.html' %}
+
+    <div class="container">
+        <!-- HERO SECTION-->
+        {% include 'shop/grid/_components/hero.html' %}
+    </div>
+    <!-- Js scripts-->
+    {% block scripts %}
+        {% include 'shop/grid/_components/js.html' %}
+    {% endblock %}
+{% endblock %}
