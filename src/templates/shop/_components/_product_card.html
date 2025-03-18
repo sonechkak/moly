@@ -1,54 +1,33 @@
 {% load static %}
 
-<div class="product-wrapper">
-    <div class="product-img" src="{{ product.get_absolute_url }}">
-        <img src="{{ product.get_main_photo }}"
-             style="width: 200px; height: 200px;"
-             alt="{{ product }}" class="img-fluid"/>
-        <ul class="social-icon">
-            <li><a href="#"><i class="fa fa-retweet" aria-hidden="true"></i></a></li>
-            <li><a href="#"><i class="far fa-heart" aria-hidden="true"></i></a></li>
-            <li><a href="#"><i class="fa fa-eye" aria-hidden="true"></i></a></li>
-        </ul>
-    </div>
-    <div class="flip-box">
-        <div class="product-detalis pt-15 pl-20 pr-20 pb-25">
-            <span>{{ product.title }}</span>
-            <h6>
-                <a href="{{ product.get_absolute_url }}">
-                    {{ product.description|truncatechars:30 }}
-                </a>
-            </h6>
-            <div class="price-color">
-                <div class="price d-inline-block">
-                    <span>{{ product.price|floatformat:2 }} РУБ.</span>
-                    <del>{{ product.old_price|floatformat:2 }}</del>
+<!-- PRODUCT-->
+<div class="row">
+    {% for product in products %}
+        <div class="col-lg-4 col-sm-6">
+            <div class="product text-center">
+                <div class="mb-3 position-relative">
+                    <div class="badge text-white badge-"></div>
+                    <a class="d-block" href="{% url 'shop:product_detail' product.slug %}">
+                        <img class="img-fluid w-100" src="{{ product.get_main_photo }}" alt="{{ product }}"></a>
+                    <div class="product-overlay">
+                        <ul class="mb-0 list-inline">
+                            <li class="list-inline-item m-0 p-0"><a
+                                    class="btn btn-sm btn-outline-dark" href="#"><i
+                                    class="far fa-heart"></i></a></li>
+                            <li class="list-inline-item m-0 p-0">
+                                <a class="btn btn-sm btn-dark" href="cart.html">
+                                    Добавить в корзину
+                                </a>
+                            </li>
+                            <li class="list-inline-item mr-0"><a
+                                    class="btn btn-sm btn-outline-dark" href="#productView"
+                                    data-toggle="modal"><i class="fas fa-expand"></i></a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="color float-right d-flex">
-                    <span>Цвет: {{ product.color }}</span>
-                </div>
+                <h6><a class="reset-anchor" href="detail.html">{{ product }}</a></h6>
+                <p class="small text-muted">{{ product.price }}</p>
             </div>
         </div>
-        <div class="product-detalis product-detalis-2 pt-15 pl-20 pr-20 pb-25">
-            <span>{{ product.title }}</span>
-            <h6><a href="{{ product.get_absolute_url }}">{{ product.description|truncatechars:30 }}</a></h6>
-            <div class="buy-info">
-                <div class="cart float-left">
-                    <a href="{{ product.get_absolute_url }}">
-                        <img style="width: 200px; height: 200px;"
-                             src="{{ product.get_main_photo }}"
-                             alt="Изображение товара" />
-                        В корзину
-                    </a>
-                </div>
-                <ul class="rating d-flex">
-                    <li><i class="far fa-star" aria-hidden="true"></i></li>
-                    <li><i class="far fa-star" aria-hidden="true"></i></li>
-                    <li><i class="far fa-star" aria-hidden="true"></i></li>
-                    <li><i class="far fa-star" aria-hidden="true"></i></li>
-                    <li><i class="far fa-star" aria-hidden="true"></i></li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>

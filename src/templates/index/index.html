@@ -1,35 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <!--  Modal -->
+    {% include 'index/_components/_modal.html' %}
+    <!-- HERO SECTION-->
+    {% include 'index/_components/_hero.html' %}
 
-    <!-- =================Slider Area Starts================= -->
-    {% include 'index/_components/slider.html' %}
-
-    <!-- =================Categories Area Starts================= -->
-    {% include 'index/_components/categories.html' %}
-
-    <!-- =================Product-sample Area Starts================= -->
-    {% include 'index/_components/product_sample_area.html' %}
-
-    <!-- =================Product-discount Area Starts================= -->
-    {% include 'index/_components/product-discount.html' %}
-
-    <!-- =================Product Area Starts================= -->
-    {% include 'index/_components/product_area.html' %}
-
-    <!-- =================artical Area Starts================= -->
-    {% include 'index/_components/artical_area.html' %}
-    <!-- =================artical Area Ends================= -->
-
-    <!-- =================Hot-sale-product Area Starts================= -->
-    {% include 'index/_components/hot-sale.html' %}
-    <!-- =================Hot-sale-product Area Ends================= -->
-
-    <!-- =================Blog Area Starts================= -->
-    {% include 'index/_components/blog_area.html' %}
-    <!-- =================Blog Area Ends================= -->
-
-    <!-- Instagram Area Starts -->
-    {% include 'index/_components/instagram_area.html' %}
-    <!-- Instagram Area Ends -->
 {% endblock %}

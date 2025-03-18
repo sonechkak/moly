@@ -91,10 +91,11 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "/assets/" # для прода
-STATIC_ROOT = os.path.join(BASE_DIR, "assets")  # для прода
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # для дева
-MEDIA_URL = "/media/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Путь к вашим статическим файлам
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
