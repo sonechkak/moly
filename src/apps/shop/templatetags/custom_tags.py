@@ -3,10 +3,12 @@ from ..models import Category
 
 register = template.Library()
 
+
 @register.simple_tag()
 def get_subcategories(category):
     """Получение подкатегорий."""
     return Category.objects.filter(parent=category)
+
 
 @register.simple_tag()
 def get_sorted():
@@ -41,4 +43,3 @@ def get_sorted():
         },
     ]
     return sorters
-
