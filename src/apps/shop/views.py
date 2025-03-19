@@ -16,7 +16,7 @@ class Index(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Главная страница"
-        context["top_products"] = Product.objects.order_by("-watched")[:3]
+        context["products"] = Product.objects.order_by("-watched")
         return context
 
 
@@ -68,10 +68,10 @@ class SubCategories(ListView):
 class ProductDetail(DetailView):
     """Вывод информации о товаре."""
     model = Product
-    context_object_name = "product"
     template_name = "shop/detalis/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["product"] = get_object_or_404(Product, slug=self.kwargs["slug"])
         context["title"] = f"Информация о товаре: {self.object.title}"
         return context

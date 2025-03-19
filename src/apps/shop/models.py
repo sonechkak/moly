@@ -32,7 +32,7 @@ class Category(models.Model):
         return self.title
 
     def __repr__(self):
-        return f"Категория: pk={self.pk}, title={self.title}"
+        return f"{self.title}"
 
     class Meta:
         verbose_name = "Категория"
