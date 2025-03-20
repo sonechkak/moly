@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href="{% static 'css/register.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!-- ================= Page Title Area Starts ================= -->
+    <div class="page-title-area pt-130 pb-120 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12 text-center">
+                    <div class="page-title position-relative">
+                        <h2 class="display-4 font-weight-bold">Регистрация</h2>
+                    </div>
+                    <div class="page-bc">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center bg-transparent">
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'shop:index' %}" class="text-decoration-none text-secondary">
+                                        <i class="fas fa-home me-2"></i>На главную
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <a href="{% url 'auth:register' %}" class="text-decoration-none text-primary">Регистрация</a>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= Page Title Area Ends ================= -->
+
+    <!-- ================= Registration Area Starts ================= -->
+    <div class="registration-page-area pt-50 pb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-4 col-lg-5 col-md-6 col-sm-9">
+                    <div class="registration-detalis bg-white p-4 rounded-3 shadow-sm">
+                        <div class="registration-input">
+                            <form action="" class="registration-form" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <input type="text" name="username" class="form-control rounded-pill"
+                                           placeholder="Имя пользователя" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <input type="email" name="email" class="form-control rounded-pill"
+                                           placeholder="Электронная почта" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <input type="password" name="password1" class="form-control rounded-pill"
+                                           placeholder="Пароль" required>
+                                </div>
+                                <div class="form-group mb-4">
+                                    <input type="password" name="password2" class="form-control rounded-pill"
+                                           placeholder="Подтвердите пароль" required>
+                                </div>
+                                <button class="btn btn-danger w-100 py-2 rounded-pill" type="submit">
+                                    Зарегистрироваться
+                                </button>
+                            </form>
+                        </div>
+                        <div class="or text-center my-4 position-relative">
+                            <span class="bg-white px-3">OR</span>
+                            <hr class="position-absolute w-100" style="top: 50%; z-index: -1;">
+                        </div>
+                        <div class="registration-account text-center">
+                            <a href="#" class="btn btn-outline-primary me-2 rounded-pill">
+                                <i class="fab fa-facebook-f me-2"></i>Facebook
+                            </a>
+                            <a href="#" class="btn btn-outline-danger rounded-pill">
+                                <i class="fab fa-google me-2"></i>Google
+                            </a>
+                        </div>
+                        <div class="registration-button text-center mt-4">
+                            <p class="text-secondary">Уже есть аккаунт? <a href="{% url 'auth:login' %}"
+                                                                           class="text-decoration-none text-primary">Войти</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= Registration Area Ends ================= -->
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!-- ================= Page Title Area Starts ================= -->
+    <div class="page-title-area pt-130 pb-120 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12 text-center">
+                    <div class="page-title position-relative">
+                        <h2 class="display-4 font-weight-bold">{{ title }}</h2>
+                    </div>
+                    <div class="page-bc">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center bg-transparent">
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'shop:index' %}" class="text-decoration-none text-secondary">
+                                        <i class="fas fa-home me-2"></i>На главную
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <a href="{% url 'auth:login' %}"
+                                       class="text-decoration-none text-primary">{{ title }}</a>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= Page Title Area Ends ================= -->
+
+    <!-- ================= Login Area Starts ================= -->
+    <div class="login-page-area pt-50 pb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-4 col-lg-5 col-md-6 col-sm-9">
+                    <div class="login-detalis bg-white p-4 rounded-3 shadow-sm">
+                        <div class="login-input">
+                            <form action="{% url 'auth:login' %}" class="login-form" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <input type="text" name="username" class="form-control rounded-pill" placeholder="Имя пользователя" required>
+                                </div>
+                                <div class="form-group mb-4">
+                                    <input type="password" name="password" class="form-control rounded-pill" placeholder="Пароль" required>
+                                </div>
+                                <button class="btn btn-danger w-100 py-2 rounded-pill" type="submit">Войти</button>
+                            </form>
+                        </div>
+                        <div class="or text-center my-4 position-relative">
+                            <a class="bg-white px-3">Войти с помощью:</a>
+                            <hr class="position-absolute w-100" style="top: 50%; z-index: -1;">
+                        </div>
+                        <div class="login-account text-center">
+                            <a href="#" class="btn btn-outline-primary me-2 rounded-pill">
+                                <i class="fab fa-facebook-f me-2"></i>Facebook
+                            </a>
+                            <a href="#" class="btn btn-outline-danger rounded-pill">
+                                <i class="fab fa-google me-2"></i>Google
+                            </a>
+                        </div>
+                        <div class="login-button text-center mt-4">
+                            <a href="{% url 'auth:register' %}" class="text-decoration-none text-primary">Зарегистрироваться</a>
+                        </div>
+                        <div class="login-information mt-3">
+                            <div class="remember-me d-flex justify-content-between align-items-center">
+                                <div>
+                                    <input type="checkbox" id="checkbox-1" class="me-2">
+                                    <label for="checkbox-1" class="text-secondary">Запомнить меня</label>
+                                </div>
+                                <a href="#" class="text-decoration-none text-secondary">Забыли пароль?</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= Login Area Ends ================= -->
+{% endblock %}
