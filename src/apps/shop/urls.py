@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import Index, SubCategories, ProductDetail, add_review, add_favorite
+from .views import Index, SubCategories, ProductDetail, add_review, add_favorite, FavoriteProductsView
 
 
 app_name = "shop"
@@ -13,4 +13,5 @@ urlpatterns = [
     path("product_detail/<slug:slug>/", ProductDetail.as_view(), name="product_detail"),
     path("review/<int:product_pk>", add_review, name="add_review"),
     path("add_favorite/<slug:product_slug>", add_favorite, name="add_favorite"),
+    path("user_favorites/", FavoriteProductsView.as_view(), name="favorites"),
 ]

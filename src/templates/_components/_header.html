@@ -33,8 +33,8 @@
                     <li class="nav-item"><a class="nav-link" href="cart.html"> <i
                             class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина<small class="text-gray">(2)</small></a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#"> <i class="far fa-heart mr-1"></i><small
-                            class="text-gray"> (0)</small></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:favorites' %}"> <i class="far fa-heart mr-1"></i><small
+                            class="text-gray">( 0 )</small></a></li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url "auth:logout" %}"><i class="fas fa-user-alt mr-1 text-gray"></i>Выйти</a>

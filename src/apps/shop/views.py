@@ -1,9 +1,8 @@
-from django.contrib.auth.views import LoginView
-from django.shortcuts import get_object_or_404, render, redirect
-from django.template.context_processors import request
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import ListView, DetailView
 
-from .models import Product, Category, Review, FavoriteProducts
+from .models import Product, Category, FavoriteProducts
 from .utils import get_random_products
 from .forms import ReviewForm
 
@@ -113,3 +112,23 @@ def add_favorite(request, product_slug):
 
         next_page = request.GET.get("HTTP_REFERER", "shop:all_products")
         return redirect(next_page)
+
+
+class FavoriteProductsView(LoginRequiredMixin, ListView):
+    """Страница с избранными товарами."""
+    model = FavoriteProducts
+    context_object_name = "products"
+    template_name = "shop/favorite_products/favorite_products.html"
+    login_url = "auth:login_registration"
+    paginate_by = 12
+
+    def get_queryset(self):
+        """Получаем избранные товары для пользователя."""
+        favs = FavoriteProducts.objects.filter(user=self.request.user)
+        products =  [i.product for i in favs]
+        return products
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Избранные товары"
+        return context
