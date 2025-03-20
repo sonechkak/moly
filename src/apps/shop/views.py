@@ -1,7 +1,11 @@
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.views import LoginView
+from django.shortcuts import get_object_or_404, render, redirect
+from django.template.context_processors import request
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from .models import Product, Category
+from .models import Product, Category, Review
+from .utils import get_random_products
+from .forms import ReviewForm
 
 
 class Index(ListView):
@@ -25,7 +29,7 @@ class SubCategories(ListView):
     model = Product
     context_object_name = "products"
     template_name = "shop/grid/shop.html"
-    paginate_by = 3
+    paginate_by = 12
 
     def get_queryset(self):
         """Вывод товаров определенной категории."""
@@ -68,10 +72,28 @@ class SubCategories(ListView):
 class ProductDetail(DetailView):
     """Вывод информации о товаре."""
     model = Product
+    context_object_name = "product"
     template_name = "shop/detalis/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["product"] = get_object_or_404(Product, slug=self.kwargs["slug"])
-        context["title"] = f"Информация о товаре: {self.object.title}"
+        product = Product.objects.get(slug=self.kwargs["slug"])
+        products = Product.objects.filter(category__in=product.category.all())
+        context["title"] = product.title
+        similar_products = get_random_products(product, products)
+        context["similar_products"] = similar_products
+        if self.request.user.is_authenticated:
+            context["form"] = ReviewForm
         return context
+
+
+def add_review(request, product_pk):
+    """Сохранение отзыва."""
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.author = request.user
+        product = Product.objects.get(pk=product_pk)
+        review.product = product
+        review.save()
+        return redirect('shop:product_detail', slug=product.slug)

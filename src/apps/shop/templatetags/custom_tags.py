@@ -1,5 +1,7 @@
 from django import template
-from ..models import Category
+from django.template.defaultfilters import register as range_register
+
+from ..models import Category, Review
 
 register = template.Library()
 
@@ -43,3 +45,49 @@ def get_sorted():
         },
     ]
     return sorters
+
+
+@range_register.filter()
+def get_positive_range(value):
+    """Фильтр для позитивных чисел."""
+    return range(int(value))
+
+
+@range_register.filter()
+def get_negative_range(value):
+    """Фильтр для негативных чисел."""
+    max_rate = 5
+    return range(max_rate - int(value))
+
+
+@range_register.filter()
+def get_val(value):
+    """Фильтр для негативных чисел."""
+    return range(value)
+
+
+@range_register.filter()
+def get_average_rating(values):
+    """Фильтр для среднего значения."""
+    if not values:
+        return 0
+
+    total = 0
+    count = 0
+
+    for value in values:
+        if isinstance(value, str):
+            total += int(value)
+            count += 1
+
+    print(count, total)
+
+    if count == 0:
+        return 0
+
+    return round(total / count)
+
+@register.filter
+def map(queryset, attr):
+    """Фильтр для извлечения значений атрибута из QuerySet."""
+    return [getattr(obj, attr) for obj in queryset]
