@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_tags %}
 
 <!-- PRODUCT-->
 <div class="row">
@@ -13,11 +14,22 @@
                         </a>
                         <div class="product-overlay">
                             <ul class="mb-0 list-inline">
-                                <li class="list-inline-item m-0 p-0">
-                                    <a class="btn btn-sm btn-outline-dark" href="#">
-                                        <i class="far fa-heart"></i>
-                                    </a>
-                                </li>
+                                {% if request.user.is_authenticated %}
+                                    {% get_favorite_products request.user as fav_products %}
+                                    {% if product in fav_products %}
+                                        <li class="list-inline-item m-0 p-0">
+                                            <a class="btn btn-sm btn-outline-dark" href="{% url 'shop:add_favorite' product.slug %}">
+                                                <i class="fas far fa-heart dark" style="color: black;"></i>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="list-inline-item m-0 p-0">
+                                            <a class="btn btn-sm btn-outline-dark" href="{% url 'shop:add_favorite' product.slug %}">
+                                                <i class="far fa-heart"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
                                 <li class="list-inline-item m-0 p-0">
                                     <a class="btn btn-sm btn-dark" href="cart.html">
                                         В корзину

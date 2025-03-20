@@ -1,7 +1,7 @@
 from django import template
 from django.template.defaultfilters import register as range_register
 
-from ..models import Category, Review
+from ..models import Category, Review, FavoriteProducts
 
 register = template.Library()
 
@@ -45,6 +45,14 @@ def get_sorted():
         },
     ]
     return sorters
+
+
+@register.simple_tag()
+def get_favorite_products(user):
+    """Вывод избранных товаров на страницы."""
+    fav = FavoriteProducts.objects.filter(user=user)
+    products = [i.product for i in fav]
+    return products
 
 
 @range_register.filter()
