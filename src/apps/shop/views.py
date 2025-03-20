@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.template.context_processors import request
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from .models import Product, Category, Review
+from .models import Product, Category, Review, FavoriteProducts
 from .utils import get_random_products
 from .forms import ReviewForm
 
@@ -97,3 +97,19 @@ def add_review(request, product_pk):
         review.product = product
         review.save()
         return redirect('shop:product_detail', slug=product.slug)
+
+
+def add_favorite(request, product_slug):
+    """Добавление или удаление товара с избранного."""
+    if request.user.is_authenticated:
+        user = request.user
+        product = Product.objects.get(slug=product_slug)
+        query_products = FavoriteProducts.objects.filter(user=user)
+        if product in [i.product for i in query_products]:
+            fav_product = FavoriteProducts.objects.get(user=user, product=product)
+            fav_product.delete()
+        else:
+            FavoriteProducts.objects.create(user=user, product=product)
+
+        next_page = request.GET.get("HTTP_REFERER", "shop:all_products")
+        return redirect(next_page)
