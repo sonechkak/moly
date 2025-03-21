@@ -9,6 +9,7 @@ from .views import (
     FavoriteProductsView,
     save_subscribers,
     send_mail_to_customers,
+    basket, to_basket, checkout,
 )
 
 
@@ -25,4 +26,7 @@ urlpatterns = [
     path("user_favorites/", FavoriteProductsView.as_view(), name="favorites"),
     path("subscribe/", save_subscribers, name="subscribe"),
     path("send_mail/", send_mail_to_customers, name="send_mail"),
+    path("basket/", basket, name="basket"),
+    path("to_basket/<int:product_id>/<str:action>/", to_basket, name="to_basket"),
+    path("checkout/", checkout, name="checkout"),
 ]
