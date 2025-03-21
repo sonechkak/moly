@@ -1,7 +1,17 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Category, Product, Gallery, Review, Mail
+from .models import (
+    Category,
+    Product,
+    Gallery,
+    Review,
+    Mail,
+    Customer,
+    Order,
+    OrderProduct,
+    ShippingAddress,
+)
 
 
 class GalleryInline(admin.TabularInline):
@@ -65,11 +75,45 @@ class GalleryAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
+    """Review Admin."""
     list_display = ('author', 'created_at', 'text')
     readonly_fields = ('author', 'created_at', 'text')
 
 
 @admin.register(Mail)
 class MailAdmin(admin.ModelAdmin):
+    """Mail spam Admin."""
     list_display = ('email', 'user')
     readonly_fields = ('email', 'user')
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    """Customer Admin."""
+    list_display = ('user', 'first_name', 'last_name', 'email')
+    readonly_fields = ('user', 'first_name', 'last_name', 'email', 'phone')
+    list_filter = ('user',)
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    """Order Admin."""
+    list_display = ('customer', 'created_at', 'is_completed', 'shipping', 'pickup')
+    readonly_fields = ('customer', 'created_at', 'shipping', 'pickup')
+    ordering = ('-created_at',)
+
+
+@admin.register(OrderProduct)
+class OrderProductAdmin(admin.ModelAdmin):
+    """Order products Admin."""
+    list_display = ('product', 'order', 'quantity', 'added_at')
+    readonly_fields = ('product', 'order', 'quantity', 'added_at')
+    ordering = ('-added_at',)
+
+
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(admin.ModelAdmin):
+    """Shipping addresses Admin."""
+    list_display = ('customer', 'order', 'city', 'created_at')
+    readonly_fields = ('customer', 'order', 'city', 'state', 'street', 'created_at')
+    ordering = ('-created_at',)

@@ -24,13 +24,13 @@
                     <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id="pagesDropdown" href="#"
                                                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">История</a>
                         <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item border-0 transition-link" href="#">Отложенные</a>
-                            <a class="dropdown-item border-0 transition-link" href="cart.html">Корзина</a>
-                            <a class="dropdown-item border-0 transition-link" href="checkout.html">Покупки</a></div>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'shop:favorites' %}">Отложенные</a>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'shop:basket' %}">Корзина</a>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'shop:checkout' %}">Покупки</a></div>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="cart.html"> <i
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:basket' %}"> <i
                             class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина<small class="text-gray">(2)</small></a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'shop:favorites' %}"> <i class="far fa-heart mr-1"></i><small
@@ -41,7 +41,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url "auth:login_registration" %}"
+                            <a class="nav-link" href="{% url "auth:login_registration" %}">
                             <i class="fas fa-user-alt mr-1 text-gray"></i>Войти/Зарегистрироваться</a>
                         </li>
                     {% endif %}

@@ -4,9 +4,9 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView
 
-from .models import Product, Category, FavoriteProducts, Mail
+from .models import Product, Category, FavoriteProducts, Mail, Order, OrderProduct
 from .utils import get_random_products
-from .forms import ReviewForm
+from .forms import ReviewForm, ShippingForm, CustomerForm
 
 
 class Index(ListView):
@@ -170,3 +170,23 @@ def send_mail_to_customers(request):
 
     context = {"title": "Спамер"}
     return render(request, "shop/send_mail.html", context)
+
+
+def to_basket(request, product_id, action):
+    """Для добавления товара в корзину."""
+    if request.user.is_authenticated:
+        user = request.user
+
+    next_page = request.META.get("HTTP_REFERER", None)
+    return redirect(next_page)
+
+
+def basket(request):
+    """Страница корзины."""
+    context = {"title": "Корзина"}
+    return render(request, 'shop/basket/basket.html', context)
+
+
+def checkout(request):
+    """Страница оформления заказа."""
+    return render(request, 'shop/basket/checkout.html')
