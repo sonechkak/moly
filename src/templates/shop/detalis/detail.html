@@ -20,7 +20,7 @@
                     <!-- PRODUCT DETAILS-->
                     <div class="col-lg-6">
                         <ul class="list-inline mb-2">
-                            {% if product.reviews %}
+                            {% if product.reviews > 1 %}
                                 <!-- Вычисляем средний рейтинг по всем отзывам -->
                                 {% with average_rating=product.reviews.all|map:"grade"|get_average_rating %}
                                     <!-- Отображаем заполненные звёзды -->
@@ -53,8 +53,16 @@
                                     class="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center justify-content-center px-0"
                                     href="cart.html">В корзину</a></div>
                         </div>
-                        <a class="btn btn-link text-dark p-0 mb-4" href="#">
-                            <i class="far fa-heart mr-2"></i>Добавить в виш-лист</a><br>
+                        {% if request.user.is_authenticated %}
+                            {% get_favorite_products request.user as fav_products %}
+                            {% if product in fav_products %}
+                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'shop:add_favorite' product.slug %}">
+                                    <i class="fas far fa-heart mr-2"></i>Убрать из виш-листа</a><br>
+                            {% else %}
+                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'shop:add_favorite' product.slug %}">
+                                    <i class="far fa-heart mr-2"></i>Добавить в виш-лист</a><br>
+                            {% endif %}
+                        {% endif %}
                         <ul class="list-unstyled small d-inline-block">
                             <li class="px-3 py-2 mb-1 bg-white"><strong class="text-uppercase">Цвет:</strong>
                                 <span class="ml-2 text-muted">{{ product.color }}</span></li>
