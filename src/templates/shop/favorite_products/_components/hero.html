@@ -28,25 +28,20 @@
                         </div>
                         <div class="col-lg-6">
                             <ul class="list-inline d-flex align-items-center justify-content-lg-end mb-0">
-                                <li class="list-inline-item text-muted mr-3">
-                                    <a class="reset-anchor p-0" href="#"><i class="fas fa-th-large"></i></a>
-                                </li>
-                                <li class="list-inline-item text-muted mr-3">
-                                    <a class="reset-anchor p-0" href="#"><i class="fas fa-th"></i></a>
-                                </li>
                                 <li class="list-inline-item">
                                     <select class="selectpicker ml-auto" name="sorting" data-width="200"
                                             data-style="bs-select-form-control" data-title="Default sorting">
                                         <option value="default">Default sorting</option>
-                                        <option value="popularity">Popularity</option>
-                                        <option value="low-high">Price: Low to High</option>
-                                        <option value="high-low">Price: High to Low</option>
                                     </select>
                                 </li>
                             </ul>
                         </div>
-                        <!-- PRODUCT-->
-                        {% include 'shop/_components/_product_card.html' %}
+                        <div class="row">
+                            <!-- PRODUCT-->
+                            {% for product in products %}
+                                {% include 'shop/_components/_product_card.html' %}
+                            {% endfor %}
+                        </div>
                         <!-- PAGINATION-->
                         {% include 'shop/_components/_pagination.html' %}
                     {% else %}
@@ -54,7 +49,7 @@
                             <h2>У вас нет избранных товаров</h2>
                             <div class="container align-content-center">
                                 <img src="https://borika.ru/templates/borika/img/success/success__image.jpg"
-                                     width="235"/>
+                                     width="235">
                             </div>
                         </div>
                     {% endif %}

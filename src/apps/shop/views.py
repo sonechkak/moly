@@ -1,8 +1,10 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
+from django.db import IntegrityError
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView
 
-from .models import Product, Category, FavoriteProducts
+from .models import Product, Category, FavoriteProducts, Mail
 from .utils import get_random_products
 from .forms import ReviewForm
 
@@ -110,7 +112,8 @@ def add_favorite(request, product_slug):
         else:
             FavoriteProducts.objects.create(user=user, product=product)
 
-        next_page = request.GET.get("HTTP_REFERER", "shop:all_products")
+        next_page = request.META.get("HTTP_REFERER", None)
+
         return redirect(next_page)
 
 
@@ -132,3 +135,38 @@ class FavoriteProductsView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Избранные товары"
         return context
+
+
+def save_subscribers(request):
+    """Собирает почтовые адреса."""
+    email = request.POST.get("email")
+    user = request.user if request.user.is_authenticated else None
+    if email:
+        try:
+            Mail.objects.create(email=email, user=user)
+        except IntegrityError:
+            messages.error(request, "Вы уже подписались на новости.")
+
+    return redirect("shop:index")
+
+
+def send_mail_to_customers(request):
+    """Отправка сообщений подписчикам."""
+    from conf import settings
+    from django.core.mail import send_mail
+
+    if request.method == "POST":
+        text = request.POST.get("text")
+        mail_list = Mail.objects.all()
+        for email in mail_list:
+            send_mail(
+                subject="У вас новая акция",
+                message=text,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[email.email],
+                fail_silently=False,
+            )
+            print(f"Сообщения отправлено на почту: {email.email} ----- {bool(send_mail)}")
+
+    context = {"title": "Спамер"}
+    return render(request, "shop/send_mail.html", context)
