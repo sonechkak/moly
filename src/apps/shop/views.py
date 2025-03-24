@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView
 
-from .models import Product, Category, FavoriteProducts, Mail, Order, OrderProduct
+from .models import Product, Category
 from .utils import get_random_products
 from .forms import ReviewForm, ShippingForm, CustomerForm
 
@@ -98,95 +98,3 @@ def add_review(request, product_pk):
         review.product = product
         review.save()
         return redirect('shop:product_detail', slug=product.slug)
-
-
-def add_favorite(request, product_slug):
-    """Добавление или удаление товара с избранного."""
-    if request.user.is_authenticated:
-        user = request.user
-        product = Product.objects.get(slug=product_slug)
-        query_products = FavoriteProducts.objects.filter(user=user)
-        if product in [i.product for i in query_products]:
-            fav_product = FavoriteProducts.objects.get(user=user, product=product)
-            fav_product.delete()
-        else:
-            FavoriteProducts.objects.create(user=user, product=product)
-
-        next_page = request.META.get("HTTP_REFERER", None)
-
-        return redirect(next_page)
-
-
-class FavoriteProductsView(LoginRequiredMixin, ListView):
-    """Страница с избранными товарами."""
-    model = FavoriteProducts
-    context_object_name = "products"
-    template_name = "shop/favorite_products/favorite_products.html"
-    login_url = "auth:login_registration"
-    paginate_by = 12
-
-    def get_queryset(self):
-        """Получаем избранные товары для пользователя."""
-        favs = FavoriteProducts.objects.filter(user=self.request.user)
-        products =  [i.product for i in favs]
-        return products
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Избранные товары"
-        return context
-
-
-def save_subscribers(request):
-    """Собирает почтовые адреса."""
-    email = request.POST.get("email")
-    user = request.user if request.user.is_authenticated else None
-    if email:
-        try:
-            Mail.objects.create(email=email, user=user)
-        except IntegrityError:
-            messages.error(request, "Вы уже подписались на новости.")
-
-    return redirect("shop:index")
-
-
-def send_mail_to_customers(request):
-    """Отправка сообщений подписчикам."""
-    from conf import settings
-    from django.core.mail import send_mail
-
-    if request.method == "POST":
-        text = request.POST.get("text")
-        mail_list = Mail.objects.all()
-        for email in mail_list:
-            send_mail(
-                subject="У вас новая акция",
-                message=text,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[email.email],
-                fail_silently=False,
-            )
-            print(f"Сообщения отправлено на почту: {email.email} ----- {bool(send_mail)}")
-
-    context = {"title": "Спамер"}
-    return render(request, "shop/send_mail.html", context)
-
-
-def to_basket(request, product_id, action):
-    """Для добавления товара в корзину."""
-    if request.user.is_authenticated:
-        user = request.user
-
-    next_page = request.META.get("HTTP_REFERER", None)
-    return redirect(next_page)
-
-
-def basket(request):
-    """Страница корзины."""
-    context = {"title": "Корзина"}
-    return render(request, 'shop/basket/basket.html', context)
-
-
-def checkout(request):
-    """Страница оформления заказа."""
-    return render(request, 'shop/basket/checkout.html')

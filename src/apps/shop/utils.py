@@ -1,9 +1,6 @@
 from random import randint
 from .models import (
     Product,
-    OrderProduct,
-    Order,
-    Customer
 )
 
 

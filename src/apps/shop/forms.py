@@ -1,5 +1,5 @@
 from django import forms
-from .models import Review, Customer, ShippingAddress
+from .models import Review
 
 
 class ReviewForm(forms.ModelForm):
@@ -18,7 +18,7 @@ class CustomerForm(forms.ModelForm):
     """Контактная информация."""
 
     class Meta:
-        model = Customer
+        # model = Customer
         fields = ('first_name', 'last_name', 'email', 'phone')
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Имя'}),
@@ -32,7 +32,7 @@ class ShippingForm(forms.ModelForm):
     """Адрес доставки."""
 
     class Meta:
-        model = ShippingAddress
+        # model = ShippingAddress
         fields = ('state', 'city', 'street')
         widgets = {
             'state': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Область/край'}),

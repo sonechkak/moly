@@ -1,10 +1,10 @@
 from django import template
 from django.template.defaultfilters import register as range_register
 
-from ..models import Category, Review, FavoriteProducts
+from ..models import Category, Review
+
 
 register = template.Library()
-
 
 @register.simple_tag()
 def get_subcategories(category):
