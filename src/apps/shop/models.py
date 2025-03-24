@@ -46,7 +46,7 @@ class Category(models.Model):
 class Product(models.Model):
     """Класс товаров."""
     title = models.CharField(max_length=255, verbose_name="Наименование товара")
-    price = models.FloatField(verbose_name="Цена товара")
+    price = models.IntegerField(verbose_name="Цена товара")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     watched = models.IntegerField(default=0, verbose_name="Количество просмотров")
     quantity = models.IntegerField(default=0, verbose_name="Количество товара на складе")
@@ -67,7 +67,7 @@ class Product(models.Model):
     def get_main_photo(self):
         if self.images.filter(is_main=True).exists():
             return self.images.get(is_main=True).image.url
-        return mark_safe(f'<img src="/media/products/default.jpg" width="50" height="50">')
+        return mark_safe(f'<img src="/media/products/default.png" width="50" height="50">')
 
     def get_absolute_url(self):
         return reverse("shop:product_detail", kwargs={"slug": self.slug})
@@ -99,15 +99,15 @@ class Gallery(models.Model):
             self.product.images.update(is_main=False)
         super().save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = "Изображение"
-        verbose_name_plural = "Изображения"
-
     def __str__(self):
         return self.product.title
 
     def __repr__(self):
         return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
+
+    class Meta:
+        verbose_name = "Изображение"
+        verbose_name_plural = "Изображения"
 
 
 class Review(models.Model):

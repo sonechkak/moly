@@ -21,20 +21,32 @@
                     <li class="nav-item">
                         <!-- Link--><a class="nav-link" href="detail.html">О магазине</a>
                     </li>
-                    <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id="pagesDropdown" href="#"
-                                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">История</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="pagesDropdown" href="#"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">История</a>
                         <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'favs:favorites' %}">Отложенные</a>
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'baskets:basket' %}">Корзина</a>
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'baskets:checkout' %}">Покупки</a></div>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'favs:favorites' %}">
+                                Отложенные
+                            </a>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'baskets:basket' %}">
+                                Корзина
+                            </a>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'baskets:checkout' %}">
+                                Покупки
+                            </a>
+                        </div>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' %}"> <i
-                            class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина<small class="text-gray">(2)</small></a>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' %}">
+                        <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
+                        <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
+                    </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'favs:favorites' %}"> <i class="far fa-heart mr-1"></i><small
-                            class="text-gray">( 0 )</small></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'favs:favorites' %}">
+                        <i class="far fa-heart mr-1"></i>
+                        <small class="text-gray">({{ request.user.favorite.count }})</small></a>
+                    </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url "auth:logout" %}"><i class="fas fa-user-alt mr-1 text-gray"></i>Выйти</a>

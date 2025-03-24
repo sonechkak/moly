@@ -1,22 +1,73 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from django.views.generic import ListView
+
+from apps.shop.models import Product
+from .models import Basket, BasketProduct
+from .utils import add_product
 
 
-def to_basket(request, product_id, action):
-    """Для добавления товара в корзину."""
-    if request.user.is_authenticated:
-        user = request.user
+class AddToBasket(LoginRequiredMixin, View):
+    """Вьюха для добавления товара в корзину."""
+    login_url = "users:login_registration"
 
-    next_page = request.META.get("HTTP_REFERER", None)
-    return redirect(next_page)
+    def get(self, request, *args, **kwargs):
+        """Добавление товара в корзину."""
+        user = self.request.user
+        product = get_object_or_404(Product, id=kwargs.get('pk'))
+        basket, created = Basket.objects.get_or_create(user=user)
+        basket.save()
+
+        basket_product, created = BasketProduct.objects.get_or_create(product=product, basket=basket)
+        basket_products = BasketProduct.objects.filter(basket=basket).all()
+
+        if basket_product in basket_products:
+            add_product(basket_product)
+
+        next_page = request.META.get("HTTP_REFERER", None)
+        return redirect(next_page)
 
 
-def basket(request):
-    """Страница корзины."""
-    context = {"title": "Корзина"}
-    return render(request, 'shop/basket/basket.html', context)
+class RemoveFromBasket(LoginRequiredMixin, View):
+    """Вьюха для удаления товара из корзины."""
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        product = get_object_or_404(Product, id=kwargs.get('pk'))
+        basket = get_object_or_404(Basket, user=user)
+        basket_product = get_object_or_404(BasketProduct, product=product, basket=basket)
+        basket_product.delete()
+
+        next_page = request.META.get("HTTP_REFERER", None)
+        return redirect(next_page)
 
 
-def checkout(request):
-    """Страница оформления заказа."""
-    return render(request, 'shop/basket/checkout.html')
+class BasketView(LoginRequiredMixin, ListView):
+    """Вьюха для корзины."""
+    model = BasketProduct
+    context_object_name = "products"
+    template_name = "shop/basket/basket.html"
+    login_url = "users:login_registration"
 
+    def get_queryset(self):
+        user = self.request.user
+        basket = get_object_or_404(Basket, user=user)
+        return BasketProduct.objects.filter(basket=basket).select_related('product')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        basket = get_object_or_404(Basket, user=user)
+        products = BasketProduct.objects.filter(basket=basket)
+
+        context["title"] = "Корзина"
+        context["basket"] = basket
+        context["total_sum"] = sum(item.get_total_price for item in products)
+        context["total_quantity"] = sum(item.quantity for item in products)
+        return context
+
+
+class Checkout(LoginRequiredMixin, View):
+    """Вьюха для оформления заказа."""
+    login_url = "users:login_registration"
+    template_name = "shop/basket/basket.html"

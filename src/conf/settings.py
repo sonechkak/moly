@@ -57,6 +57,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            'libraries':{
+                'fav_tags': 'apps.favs.templatetags.fav_tags',
+                'custom_tags': 'apps.shop.templatetags.custom_tags',
+            }
         },
     },
 ]

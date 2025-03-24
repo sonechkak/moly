@@ -6,7 +6,6 @@ class User(AbstractUser):
     """Модель пользователя."""
     first_name = None
     last_name = None
-    email = None
 
 
 class Profile(models.Model):

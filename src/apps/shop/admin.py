@@ -40,12 +40,12 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     """Product Admin."""
-    list_display = ('pk', 'title', 'price', 'quantity', 'price', 'size', 'color', 'available', 'get_image')
+    list_display = ('pk', 'title', 'price', 'quantity', 'size', 'color', 'available', 'get_image')
     list_editable = ('price', 'quantity', 'size', 'color', 'available')
     search_fields = ('title',)
     list_filter = ('title', 'price', 'quantity', 'available')
     list_display_links = ('pk', 'title')
-    ordering = ('created_at',)
+    ordering = ('-id',)
     prepopulated_fields = {'slug': ('title',)}
     inlines = (GalleryInline,)
     readonly_fields = ('watched',)

@@ -16,12 +16,12 @@ class Index(ListView):
 
     def get_queryset(self):
         """Вывод родительской категории."""
-        return Category.objects.filter(parent=None)[:3]
+        return Category.objects.filter(parent=1)[:3]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Главная страница"
-        context["products"] = Product.objects.order_by("-watched")
+        context["products"] = Product.objects.order_by("-watched")[:12]
         return context
 
 

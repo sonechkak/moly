@@ -5,7 +5,7 @@ from django.urls import path
 # )
 
 
-app_name = "orders"
+app_name = "users"
 
 
 urlpatterns = [
