@@ -1,5 +1,6 @@
 ### Linux ###
 .idea
+db.json
 *~
 
 postgres_data
