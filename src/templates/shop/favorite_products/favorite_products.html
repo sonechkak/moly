@@ -52,7 +52,9 @@
                                     {% endfor %}
                                 </div>
                                 <!-- PAGINATION-->
-                                {% include 'shop/_components/_pagination.html' %}
+                                {% if products.all.count > 12 %}
+                                    {% include 'shop/_components/_pagination.html' %}
+                                {% endif %}
                             {% else %}
                                 <div class="container align-content-center">
                                     <h2>У вас нет избранных товаров</h2>

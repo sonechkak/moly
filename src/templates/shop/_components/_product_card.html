@@ -1,5 +1,5 @@
 {% load static %}
-{% load custom_tags %}
+{% load fav_tags %}
 
 <!-- PRODUCT-->
 <div class="col-lg-4 col-sm-6">
@@ -7,7 +7,7 @@
         <div class="mb-3 position-relative">
             <div class="badge text-white badge"></div>
             <a class="d-block" href="{% url 'shop:product_detail' product.slug %}">
-                <img class="img-fluid w-50 h-50" src="{{ product.get_main_photo }}" alt="{{ product }}">
+                <img class="img-fluid w-50 h-25" src="{{ product.get_main_photo }}" alt="{{ product }}">
             </a>
             <div class="product-overlay">
                 <ul class="mb-0 list-inline">
@@ -16,21 +16,21 @@
                         {% if product in fav_products %}
                             <li class="list-inline-item m-0 p-0">
                                 <a class="btn btn-sm btn-outline-dark"
-                                   href="{% url 'shop:add_favorite' product.slug %}">
+                                   href="{% url 'favs:add_favorite' product.slug %}">
                                     <i class="fas far fa-heart dark" style="color: black;"></i>
                                 </a>
                             </li>
                         {% else %}
                             <li class="list-inline-item m-0 p-0">
                                 <a class="btn btn-sm btn-outline-dark"
-                                   href="{% url 'shop:add_favorite' product.slug %}">
+                                   href="{% url 'favs:add_favorite' product.slug %}">
                                     <i class="far fa-heart"></i>
                                 </a>
                             </li>
                         {% endif %}
                     {% endif %}
                     <li class="list-inline-item m-0 p-0">
-                        <a class="btn btn-sm btn-dark" href="cart.html">
+                        <a class="btn btn-sm btn-dark" href="{% url 'baskets:to_basket' product.pk %}">
                             В корзину
                         </a>
                     </li>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <h6><a class="reset-anchor" href="{{ product.get_absolute_url }}">{{ product.title }}</a></h6>
-        <p class="small text-muted">{{ product.price }}</p>
+        <p class="small text-muted">{{ product.price }} РУБ.</p>
     </div>
 </div>
 <!-- Модальное окно для продукта -->
@@ -72,7 +72,7 @@
                                     </a>
                                 </li>
                                 <li class="list-inline-item m-0 p-0">
-                                    <a class="btn btn-sm btn-dark" href="cart.html">
+                                    <a class="btn btn-sm btn-dark" href="#">
                                         В корзину
                                     </a>
                                 </li>
@@ -89,7 +89,7 @@
                     <h6><a class="reset-anchor"
                            href="{{ product.get_absolute_url }}">{{ product.title }}</a>
                     </h6>
-                    <p class="small text-muted">{{ product.price }}</p>
+                    <p class="small text-muted">{{ product.price }} РУБ.</p>
                 </div>
             </div>
             <!-- Модальное окно для продукта -->
