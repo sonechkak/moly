@@ -7,7 +7,7 @@
                 <p class="text-small text-muted mb-0">Получайте уведомления о новых акциях.</p>
             </div>
             <div class="col-lg-6">
-                <form action="{% url 'shop:subscribe' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'subscribers:subscribe' %}" method="post" enctype="multipart/form-data">
                     <div class="input-group flex-column flex-sm-row mb-3">
                         {% csrf_token %}
                         <input name="email" class="form-control form-control-lg py-3" type="email"

@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+
+from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 
 
@@ -23,7 +25,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3d apps
+    "apps.baskets",
+    "apps.favs",
     "apps.shop",
+    "apps.orders",
+    "apps.subscribers",
+    "apps.users",
 ]
 
 MIDDLEWARE = [
@@ -112,3 +119,5 @@ EMAIL_PORT = os.getenv("EMAIL_PORT")
 EMAIL_USE_TLS = bool(os.getenv("EMAIL_USE_TLS"))
 EMAIL_HOST_USER = os.getenv("USER_EMAIL")
 EMAIL_HOST_PASSWORD = os.getenv("USER_EMAIL_PASSWORD")
+
+AUTH_USER_MODEL = "users.User"

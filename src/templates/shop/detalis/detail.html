@@ -56,10 +56,10 @@
                         {% if request.user.is_authenticated %}
                             {% get_favorite_products request.user as fav_products %}
                             {% if product in fav_products %}
-                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'shop:add_favorite' product.slug %}">
+                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'favs:add_favorite' product.slug %}">
                                     <i class="fas far fa-heart mr-2"></i>Убрать из виш-листа</a><br>
                             {% else %}
-                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'shop:add_favorite' product.slug %}">
+                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'favs:add_favorite' product.slug %}">
                                     <i class="far fa-heart mr-2"></i>Добавить в виш-лист</a><br>
                             {% endif %}
                         {% endif %}
