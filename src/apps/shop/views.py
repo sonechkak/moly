@@ -1,7 +1,12 @@
-from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import ListView, DetailView
 
 from .models import Product, Category
+from .utils import get_random_products
+from .forms import ReviewForm, ShippingForm, CustomerForm
 
 
 class Index(ListView):
@@ -11,12 +16,12 @@ class Index(ListView):
 
     def get_queryset(self):
         """Вывод родительской категории."""
-        return Category.objects.filter(parent=None).exclude(title="Все товары")[:4]
+        return Category.objects.filter(parent=None)[:3]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Главная страница"
-        context["top_products"] = Product.objects.order_by("-watched")[:3]
+        context["products"] = Product.objects.order_by("-watched")
         return context
 
 
@@ -24,32 +29,72 @@ class SubCategories(ListView):
     """Вывод подкатегорий."""
     model = Product
     context_object_name = "products"
-    template_name = "shop/grid/shop-grid-left-sidebar-page.html"
+    template_name = "shop/grid/shop.html"
     paginate_by = 12
 
     def get_queryset(self):
         """Вывод товаров определенной категории."""
-        parent_category = get_object_or_404(Category, slug=self.kwargs["slug"])
-        subcategories = parent_category.subcategories.all()
+        if type_field := self.request.GET.get("type"):
+            return Product.objects.filter(category__slug=type_field)
 
-        # Если есть подкатегории, выбираем продукты из подкатегорий
-        if subcategories.exists():
-            products = Product.objects.filter(category__in=subcategories)
+        if "slug" in self.kwargs:
+            parent_category = get_object_or_404(Category, slug=self.kwargs["slug"])
+            subcategories = parent_category.subcategories.all()
+
+            # Если есть подкатегории, выбираем продукты из подкатегорий
+            if subcategories.exists():
+                products = Product.objects.filter(category__in=subcategories)
+            else:
+                # Если подкатегорий нет, выбираем продукты из самой категории
+                products = Product.objects.filter(category=parent_category)
+
         else:
-            # Если подкатегорий нет, выбираем продукты из самой категории
-            products = Product.objects.filter(category=parent_category)
+            products = Product.objects.filter(available=True)
 
-        return products.order_by("-id")  # Сортировка по ID (новые первыми)
+        if sort_filed := self.request.GET.get("sort"):
+            products = products.order_by(sort_filed)
+
+        return products
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        category = get_object_or_404(Category, slug=self.kwargs["slug"])
 
-        all_products_category = Category.objects.filter(title="Все товары").first()
-        other_categories = Category.objects.exclude(title="Все товары").order_by("title")
-        categories = [all_products_category] + list(other_categories)
+        if "slug" in self.kwargs:
+            category = get_object_or_404(Category, slug=self.kwargs["slug"])
+            context["title"] = f"Товары по категории: {category.title}"
+        else:
+            context["title"] = "Все товары"
 
-        context["title"] = f"Товары по категории: {category.title}"
-        context["category"] = Category.objects.get(slug=category.slug)
+        categories = Category.objects.filter(parent=None)
         context["categories"] = categories
         return context
+
+
+class ProductDetail(DetailView):
+    """Вывод информации о товаре."""
+    model = Product
+    context_object_name = "product"
+    template_name = "shop/detalis/detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = Product.objects.get(slug=self.kwargs["slug"])
+        products = Product.objects.filter(category__in=product.category.all())
+        context["title"] = product.title
+        similar_products = get_random_products(product, products)
+        context["similar_products"] = similar_products
+        if self.request.user.is_authenticated:
+            context["form"] = ReviewForm
+        return context
+
+
+def add_review(request, product_pk):
+    """Сохранение отзыва."""
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.author = request.user
+        product = Product.objects.get(pk=product_pk)
+        review.product = product
+        review.save()
+        return redirect('shop:product_detail', slug=product.slug)

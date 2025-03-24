@@ -1,0 +1,32 @@
+<!-- SHOP SIDEBAR-->
+<div class="col-lg-3 order-2 order-lg-1">
+    <h5 class="text-uppercase mb-4">Все категории</h5>
+    <div class="py-2 px-4 bg-dark text-white mb-3">
+        <strong class="small text-uppercase font-weight-bold">
+            <a class="reset-anchor" href="{% url 'shop:all_products' %}">
+                Все товары
+        </strong>
+    </div>
+    {% for category in categories %}
+        {% if not category.parent %}
+            <div class="py-2 px-4 bg-dark text-white mb-3">
+                <strong class="small text-uppercase font-weight-bold">
+                    <a class="reset-anchor" href="{% url 'shop:category_list' category.slug %}">
+                        {{ category.title }}
+                    </a>
+                </strong>
+            </div>
+            {% if category.subcategories.exists %}
+                {% for subcategory in category.subcategories.all %}
+                    <ul class="list-unstyled small text-muted pl-lg-4 font-weight-normal">
+                        <li class="mb-2"><a class="reset-anchor" href="{{subcategory.get_absolute_url }}">
+                            {{ subcategory.title }}
+                        </a></li>
+                    </ul>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    {% include 'shop/grid/_components/sort.html' %}
+</div>

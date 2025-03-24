@@ -1,0 +1,33 @@
+{% load custom_tags %}
+
+{% get_sorted as data %}
+
+<!-- Sorting -->
+{% for key in data %}
+    <h6 class="text-uppercase mb-3">{{ key.title }}</h6>
+    <form method="get" action="" id="sort-form-{{ forloop.counter }}">
+        {% for sorter in key.sorters %}
+            <div class="custom-control custom-radio mb-2">
+                <input class="custom-control-input" type="radio" name="sort" id="sort-{{ sorter.0 }}" value="{{ sorter.0 }}">
+                <label class="custom-control-label text-small" for="sort-{{ sorter.0 }}">{{ sorter.1 }}</label>
+            </div>
+        {% endfor %}
+    </form>
+{% endfor %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Находим все формы сортировки
+        const sortForms = document.querySelectorAll('form[id^="sort-form-"]');
+
+        // Для каждой формы добавляем обработчик события change
+        sortForms.forEach(form => {
+            const radioButtons = form.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    form.submit(); // Отправляем форму при выборе радиокнопки
+                });
+            });
+        });
+    });
+</script>

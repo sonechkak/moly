@@ -1,0 +1,25 @@
+<!-- NEWSLETTER-->
+<section class="py-5">
+    <div class="container p-0">
+        <div class="row">
+            <div class="col-lg-6 mb-3 mb-lg-0">
+                <h5 class="text-uppercase">Подпишитесь и получите -5% скидку!</h5>
+                <p class="text-small text-muted mb-0">Получайте уведомления о новых акциях.</p>
+            </div>
+            <div class="col-lg-6">
+                <form action="{% url 'subscribers:subscribe' %}" method="post" enctype="multipart/form-data">
+                    <div class="input-group flex-column flex-sm-row mb-3">
+                        {% csrf_token %}
+                        <input name="email" class="form-control form-control-lg py-3" type="email"
+                               placeholder="Введите ваш e-mail" aria-describedby="button-addon2">
+                        <div class="input-group-append">
+                            <button class="btn btn-dark btn-block" id="button-addon2" type="submit">
+                                Подписаться
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

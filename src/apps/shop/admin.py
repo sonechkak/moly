@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Category, Product, Gallery
+from .models import (
+    Category,
+    Product,
+    Gallery,
+    Review,
+)
 
 
 class GalleryInline(admin.TabularInline):
@@ -43,6 +48,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ('created_at',)
     prepopulated_fields = {'slug': ('title',)}
     inlines = (GalleryInline,)
+    readonly_fields = ('watched',)
 
     def get_image(self, obj):
         if obj.images.filter(is_main=True).exists():
@@ -60,3 +66,10 @@ class GalleryAdmin(admin.ModelAdmin):
     list_display = ('product', 'image')
     list_filter = ('product',)
     ordering = ('product',)
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """Review Admin."""
+    list_display = ('author', 'created_at', 'text')
+    readonly_fields = ('author', 'created_at', 'text')

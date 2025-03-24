@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+#  web:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8000:8000"
+#    volumes:
+#      - ${PWD}/src:/app
+#    environment:
+#      DB_NAME: moly
+#      DB_USER: sonya
+#      DB_PASSWORD: sonya
+#      DB_HOST: db
+#      DB_PORT: 5432
+#    command: python manage.py runserver 0.0.0.0:8000
+#    depends_on:
+#      - db
+#    networks:
+#      - app-network
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: moly
+      POSTGRES_USER: sonya
+      POSTGRES_PASSWORD: sonya
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    volumes:
+      - ${PWD}/postgres_data:/var/lib/postgresql/data
+
+networks:
+  app-network:
+    driver: bridge
+

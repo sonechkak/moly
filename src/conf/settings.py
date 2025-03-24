@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+
+from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 
 
@@ -8,7 +10,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG")
+DEBUG = bool(os.getenv("DEBUG"))
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 os.path.join(BASE_DIR, "apps/")
 
@@ -23,7 +25,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3d apps
+    "apps.baskets",
+    "apps.favs",
     "apps.shop",
+    "apps.orders",
+    "apps.subscribers",
+    "apps.users",
 ]
 
 MIDDLEWARE = [
@@ -60,8 +67,12 @@ WSGI_APPLICATION = "conf.wsgi.application"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -91,11 +102,22 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "/assets/" # для прода
-STATIC_ROOT = os.path.join(BASE_DIR, "assets")  # для прода
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # для дева
-MEDIA_URL = "/media/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Путь к вашим статическим файлам
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = bool(os.getenv("EMAIL_USE_TLS"))
+EMAIL_HOST_USER = os.getenv("USER_EMAIL")
+EMAIL_HOST_PASSWORD = os.getenv("USER_EMAIL_PASSWORD")
+
+AUTH_USER_MODEL = "users.User"

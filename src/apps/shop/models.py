@@ -1,7 +1,10 @@
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
+
+
+User = get_user_model()
 
 
 class Category(models.Model):
@@ -26,13 +29,13 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         """Ссылка на страницу категории."""
-        return reverse("shop:category_detail", kwargs={"slug": self.slug})
+        return reverse("shop:category_list", kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.title
 
     def __repr__(self):
-        return f"Категория: pk={self.pk}, title={self.title}"
+        return f"{self.title}"
 
     class Meta:
         verbose_name = "Категория"
@@ -67,7 +70,7 @@ class Product(models.Model):
         return mark_safe(f'<img src="/media/products/default.jpg" width="50" height="50">')
 
     def get_absolute_url(self):
-        pass
+        return reverse("shop:product_detail", kwargs={"slug": self.slug})
 
     def old_price(self):
         """Возвращает цену на 20% больше текущей."""
@@ -105,3 +108,29 @@ class Gallery(models.Model):
 
     def __repr__(self):
         return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
+
+
+class Review(models.Model):
+    """Модель для отзывов."""
+
+    CHOICES = (
+        ('5', 'Отлично'),
+        ('4', 'Хорошо'),
+        ('3', 'Средне'),
+        ('2', 'Плохо'),
+        ('1', 'Очень плохо'),
+    )
+
+    grade = models.CharField(max_length=20, choices=CHOICES, blank=True, null=True, verbose_name="Оценка")
+    text = models.TextField(verbose_name="Текст")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews", verbose_name="Продукт")
+    created_at = models.DateTimeField(auto_now_add=True)
+    published = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.author.username
+
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
