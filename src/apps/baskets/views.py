@@ -33,13 +33,11 @@ class RemoveFromBasket(LoginRequiredMixin, View):
     """Вьюха для удаления товара из корзины."""
     def get(self, request, *args, **kwargs):
         user = self.request.user
-        product = get_object_or_404(Product, id=kwargs.get('pk'))
-        basket = get_object_or_404(Basket, user=user)
-        basket_product = get_object_or_404(BasketProduct, product=product, basket=basket)
-        basket_product.delete()
-
-        next_page = request.META.get("HTTP_REFERER", None)
-        return redirect(next_page)
+        product = get_object_or_404(
+            BasketProduct.objects.select_related('basket').filter(id=kwargs.get('pk'), basket__user=user)
+        )
+        product.delete()
+        return redirect("baskets:basket")
 
 
 class BasketView(LoginRequiredMixin, ListView):
@@ -65,9 +63,3 @@ class BasketView(LoginRequiredMixin, ListView):
         context["total_sum"] = sum(item.get_total_price for item in products)
         context["total_quantity"] = sum(item.quantity for item in products)
         return context
-
-
-class Checkout(LoginRequiredMixin, View):
-    """Вьюха для оформления заказа."""
-    login_url = "users:login_registration"
-    template_name = "shop/basket/basket.html"
