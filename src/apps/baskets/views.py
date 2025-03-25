@@ -42,15 +42,13 @@ class RemoveFromBasket(LoginRequiredMixin, View):
 
 class BasketView(LoginRequiredMixin, ListView):
     """Вьюха для корзины."""
-    model = BasketProduct
-    context_object_name = "products"
     template_name = "shop/basket/basket.html"
-    login_url = "users:login_registration"
+    login_url = "users:login"
 
     def get_queryset(self):
         user = self.request.user
-        basket = get_object_or_404(Basket, user=user)
-        return BasketProduct.objects.filter(basket=basket).select_related('product')
+        basket, created = Basket.objects.get_or_create(user=user)
+        return BasketProduct.objects.filter(basket=basket)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -58,6 +56,11 @@ class BasketView(LoginRequiredMixin, ListView):
         basket = get_object_or_404(Basket, user=user)
         products = BasketProduct.objects.filter(basket=basket)
 
-        context["title"] = "Корзина"
+        if products.count() == 0:
+            context["title"] = "Ваша корзина пуста!"
+        else:
+            context["title"] = "Корзина"
+
         context["basket"] = basket
+        context["products"] = products
         return context

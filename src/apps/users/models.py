@@ -4,6 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     """Модель пользователя."""
+    username = models.CharField("Username", unique=True, max_length=255, null=True, blank=True)
     first_name = None
     last_name = None
 

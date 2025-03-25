@@ -1,10 +1,9 @@
-from django.contrib.auth.views import LogoutView
-from django.views import View
-from django.views.generic import FormView
-
 from django.contrib import messages
 from django.contrib.auth import logout, login
+from django.contrib.auth.views import LogoutView
 from django.shortcuts import redirect
+from django.views.generic import FormView
+
 from .forms import LoginForm, RegistrationForm
 
 
@@ -34,14 +33,13 @@ class RegistrationView(FormView):
         if form.is_valid():
             user = form.save()
             messages.success(self.request, "Аккаунт пользователя успешно создан")
-            login(self.request, user)
+            login(self.request, user=user)
             return redirect("users:profile", pk=user.pk)
         else:
             for error in form.errors:
                 messages.error(self.request, form.errors[error].as_text())
 
         return redirect("auth:registration")
-
 
 
 class LogoutView(LogoutView):
