@@ -22,7 +22,7 @@ class Profile(models.Model):
 
 class ShippingAddress(models.Model):
     """Адреса доставки."""
-    customer = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    customer = models.ForeignKey(Profile, on_delete=models.SET_NULL, related_name="address", null=True)
     city = models.CharField(max_length=80)
     state = models.CharField(max_length=80)
     street = models.CharField(max_length=80)

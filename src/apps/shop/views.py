@@ -6,7 +6,7 @@ from django.views.generic import ListView, DetailView
 
 from .models import Product, Category
 from .utils import get_random_products
-from .forms import ReviewForm, ShippingForm, CustomerForm
+from .forms import ReviewForm, CustomerForm
 
 
 class Index(ListView):

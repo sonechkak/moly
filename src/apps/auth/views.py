@@ -1,52 +1,51 @@
+from django.contrib.auth.views import LogoutView
+from django.views import View
+from django.views.generic import FormView
+
 from django.contrib import messages
 from django.contrib.auth import logout, login
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from .forms import LoginForm, RegistrationForm
 
 
-def login_registration(request):
-    context = {
-        "title": "Войти или зарегистрироваться",
-        "login_form": LoginForm,
-        "registration_form": RegistrationForm,
-    }
-    return render(request, "auth/login_registration.html", context)
+class LoginView(FormView):
+    """Аутентификация User."""
+    form_class = LoginForm
+    template_name = "auth/login.html"
+    extra_context = {"title": "Вход в аккаунт"}
 
-
-def login_user(request):
-    """Аутентификация пользователя."""
-    if request.method == "POST":
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
+    def form_valid(self, form):
+        try:
             user = form.get_user()
-            login(request, user)
-            return redirect('shop:index')
-        else:
-            messages.error(request, "Логин и пароль не совпадают")
-            return redirect('auth:login_registration')
-    else:
-        return redirect('auth:login')
+            login(self.request, user)
+            return redirect("users:profile", pk=user.pk)
+        except Exception:
+            messages.error(self.request, "Логин и пароль не совпадают")
+            return redirect('auth:login')
 
 
-def logout_user(request):
-    """Выход пользователя."""
-    if request.user.is_authenticated:
-        logout(request)
-    return redirect("shop:index")
+class RegistrationView(FormView):
+    """Вьюха для регистрации User."""
+    form_class = RegistrationForm
+    template_name = "auth/register.html"
+    extra_context = {"title": "Регистрация пользователя"}
 
-
-def registration(request):
-    """Регистрация пользователя."""
-    if request.method == "POST":
-        form = RegistrationForm(data=request.POST)
+    def form_valid(self, form):
         if form.is_valid():
             user = form.save()
-            messages.success(request, "Аккаунт пользователя успешно создан")
-            login(request, user)
-            return redirect("shop:index")
+            messages.success(self.request, "Аккаунт пользователя успешно создан")
+            login(self.request, user)
+            return redirect("users:profile", pk=user.pk)
         else:
             for error in form.errors:
-                messages.error(request, form.errors[error].as_text())
+                messages.error(self.request, form.errors[error].as_text())
 
-        return redirect("auth:login_registration")
+        return redirect("auth:registration")
+
+
+
+class LogoutView(LogoutView):
+    """Вьюха для выхода User."""
+    def dispatch(self, request, *args, **kwargs):
+        logout(request)
+        return redirect("auth:login")

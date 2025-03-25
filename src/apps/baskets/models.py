@@ -16,6 +16,22 @@ class Basket(TimeStamp, models.Model):
         related_name="basket",
         verbose_name="Пользователь"
     )
+    recipient = models.CharField("Получатель", max_length=255, blank=True, null=True)
+    contact = models.CharField("Контакты", max_length=255, blank=True, null=True)
+
+    @property
+    def get_total_cost(self):
+        """Для получения общей стоимости товаров в корзине."""
+        prices = [product.get_total_price for product in self.ordered_n.all()]
+        quantities = [product.quantity for product in self.ordered_n.all()]
+        total_cost = sum([price * quantity for price, quantity in zip(prices, quantities)])
+        return total_cost
+
+    @property
+    def get_total_quantity(self):
+        """Для получения количества товаров в корзине."""
+        products = sum([product.quantity for product in self.ordered_n.all()])
+        return products
 
     def __str__(self):
         return str(self.pk)
@@ -33,7 +49,7 @@ class BasketProduct(TimeStamp, models.Model):
 
     @property
     def get_total_price(self):
-        """Для получения стоимости."""
+        """Для получения стоимости товаров в корзине."""
         return self.product.price * self.quantity
 
     def __str__(self):

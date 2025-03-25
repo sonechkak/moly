@@ -60,6 +60,4 @@ class BasketView(LoginRequiredMixin, ListView):
 
         context["title"] = "Корзина"
         context["basket"] = basket
-        context["total_sum"] = sum(item.get_total_price for item in products)
-        context["total_quantity"] = sum(item.quantity for item in products)
         return context

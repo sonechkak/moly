@@ -70,11 +70,11 @@
                             <ul class="list-unstyled mb-0">
                                 <li class="d-flex align-items-center justify-content-between"><strong
                                         class="text-uppercase small font-weight-bold">Всего товаров:</strong><span
-                                        class="text-muted small">{{ total_quantity }}</span></li>
+                                        class="text-muted small">{{ basket.get_total_quantity }}</span></li>
                                 <li class="border-bottom my-2"></li>
                                 <li class="d-flex align-items-center justify-content-between mb-4"><strong
                                         class="text-uppercase small font-weight-bold">Стоимость</strong><span>
-                                    {{ total_sum }} руб.</span></li>
+                                    {{ basket.get_total_cost }} руб.</span></li>
                                 <li>
                                     <form action="#">
                                         <div class="form-group mb-0">
