@@ -10,6 +10,7 @@
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <img src="
+
                                     {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
                                  class="rounded-circle img-thumbnail"
                                  width="150"
@@ -144,6 +145,39 @@
                                 У вас нет сохранённых адресов доставки
                             </div>
                         {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            {% for address in user.profile.address.all %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                {% if address.is_primary %}
+                                                    <span class="badge bg-primary me-2">Основной</span>
+                                                {% endif %}
+                                                Адрес #{{ forloop.counter }}
+                                            </h6>
+                                            <p class="mb-1">
+                                                {{ address.city }}, {{ address.street }}, д. {{ address.house }}
+                                                {% if address.apartment %}, кв. {{ address.apartment }}{% endif %}
+                                            </p>
+                                            <small class="text-muted">{{ address.zipcode }}</small>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a href="#"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="#"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
