@@ -13,11 +13,4 @@ User = get_user_model()
 def create_profile(sender, instance, created, **kwargs):
     """Создает профиль автоматически при создании нового пользователя."""
     if created:
-        Profile.objects.get_or_create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Сохраняет профиль при сохранении пользователя."""
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
+        Profile.objects.create(user=instance)

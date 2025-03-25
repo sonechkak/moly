@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # other
     "stripe",
+    "django_celery_beat",
     # 3d apps
     "apps.baskets",
     "apps.favs",

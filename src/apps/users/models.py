@@ -17,7 +17,10 @@ class Profile(models.Model):
     phone = models.CharField("phone", max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        else:
+            return self.user.username or self.user.email
 
 
 class ShippingAddress(models.Model):
