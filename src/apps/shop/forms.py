@@ -26,16 +26,3 @@ class CustomerForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Телефон'}),
         }
-
-
-class ShippingForm(forms.ModelForm):
-    """Адрес доставки."""
-
-    class Meta:
-        # model = ShippingAddress
-        fields = ('state', 'city', 'street')
-        widgets = {
-            'state': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Область/край'}),
-            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Город'}),
-            'street': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Улица, дом, квартира'}),
-        }
