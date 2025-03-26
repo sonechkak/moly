@@ -34,6 +34,14 @@ services:
     volumes:
       - ${PWD}/postgres_data:/var/lib/postgresql/data
 
+  mailpit:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

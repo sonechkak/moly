@@ -38,43 +38,43 @@
                     </li>
                 </ul>
                 {% if user.is_authenticated %}
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' user.pk %}">
-                        <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
-                            {% if request.user.basket.ordered_n > 0 %}
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' user.pk %}">
+                            <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
+                            {% if products %}
                                 <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
                             {% else %}
                                 <small class="text-gray">(0)</small>
                             {% endif %}
+                        </a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'favs:favorites' %}">
+                            <i class="far fa-heart mr-1"></i>
+                            <small class="text-gray">({{ request.user.favorite.count }})</small></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "users:profile" user.pk %}">
+                                <i class="fas fa-user-alt mr-1 text-gray"></i>Мой профиль
                             </a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'favs:favorites' %}">
-                                <i class="far fa-heart mr-1"></i>
-                                <small class="text-gray">({{ request.user.favorite.count }})</small></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url "users:profile" user.pk %}">
-                                    <i class="fas fa-user-alt mr-1 text-gray"></i>Мой профиль
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url "auth:logout" %}">
-                                    <i class="fas fa-user-alt mr-1 text-gray"></i>Выйти
-                                </a>
-                            </li>
-                            </ul>
-                        {% else %}
-                            <ul class="navbar-nav ml-auto">
-                                <li class="nav-item row">
-                                    <a class="nav-link" href="{% url "auth:login" %}">
-                                        <i class="fas fa-user-alt mr-1 text-gray"></i>Войти
-                                    </a>
-                                    <a class="nav-link" href="{% url "auth:register" %}">
-                                        <i class="fas fa-user-alt mr-1 text-gray"></i>Зарегистрироваться
-                                    </a>
-                                </li>
-                            </ul>
-                        {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "auth:logout" %}">
+                                <i class="fas fa-user-alt mr-1 text-gray"></i>Выйти
+                            </a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item row">
+                            <a class="nav-link" href="{% url "auth:login" %}">
+                                <i class="fas fa-user-alt mr-1 text-gray"></i>Войти
+                            </a>
+                            <a class="nav-link" href="{% url "auth:register" %}">
+                                <i class="fas fa-user-alt mr-1 text-gray"></i>Зарегистрироваться
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
             </div>
         </nav>
     </div>

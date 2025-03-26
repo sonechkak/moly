@@ -1,6 +1,7 @@
 ### Linux ###
 .idea
 db.json
+fixtures
 *~
 
 postgres_data
