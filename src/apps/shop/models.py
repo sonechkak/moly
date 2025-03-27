@@ -1,13 +1,15 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
+
+from utils.db import TimeStamp
 
 
 User = get_user_model()
 
 
-class Category(models.Model):
+class Category(TimeStamp, models.Model):
     """Класс категорий."""
     title = models.CharField(max_length=255, verbose_name="Наименование категории")
     image = models.ImageField(upload_to="categories/%Y/%m/%d/", null=True, blank=True, verbose_name="Изображение категории")
@@ -21,21 +23,28 @@ class Category(models.Model):
         related_name="subcategories"
     )
 
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return f"{self.title}"
+
+    def get_absolute_url(self):
+        """Ссылка на страницу категории."""
+        return reverse("shop:category_list", kwargs={"slug": self.slug})
+
     def get_parent_category_image(self):
         """Для получения картинки родительской категории."""
         if self.image:
             return self.image.url
         return "Нет изображения"
 
-    def get_absolute_url(self):
-        """Ссылка на страницу категории."""
-        return reverse("shop:category_list", kwargs={"slug": self.slug})
-
-    def __str__(self):
-        return self.title
-
-    def __repr__(self):
-        return f"{self.title}"
+    def get_new_products(self, hours=1):
+        """Возвращает товары, которые добавились в категории."""
+        from django.utils import timezone
+        from datetime import timedelta
+        # Queryset товаров, которые добавлены за последний час
+        return self.products.filter(created_at__gte=timezone.now() - timedelta(hours=hours))
 
     class Meta:
         verbose_name = "Категория"
@@ -43,11 +52,10 @@ class Category(models.Model):
         ordering = ['title']
 
 
-class Product(models.Model):
+class Product(TimeStamp, models.Model):
     """Класс товаров."""
     title = models.CharField(max_length=255, verbose_name="Наименование товара")
     price = models.IntegerField(verbose_name="Цена товара")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     watched = models.IntegerField(default=0, verbose_name="Количество просмотров")
     quantity = models.IntegerField(default=0, verbose_name="Количество товара на складе")
     description = models.TextField(default="Скоро здесь будет описание товара...", verbose_name="Описание товара")
@@ -64,23 +72,31 @@ class Product(models.Model):
     brand = models.CharField(max_length=150, default="Apple", verbose_name="Бренд товара")
     available = models.BooleanField(default=True, verbose_name="Доступны к заказу")
 
-    def get_main_photo(self):
-        if self.images.filter(is_main=True).exists():
-            return self.images.get(is_main=True).image.url
-        return mark_safe(f'<img src="/media/products/default.png" width="50" height="50">')
-
-    def get_absolute_url(self):
-        return reverse("shop:product_detail", kwargs={"slug": self.slug})
-
-    def old_price(self):
-        """Возвращает цену на 20% больше текущей."""
-        return self.price * 1.2
-
     def __str__(self):
         return self.title
 
     def __repr__(self):
         return f"Товар: pk={self.pk}, title={self.title}, price={self.price}, quantity={self.quantity}"
+
+    def get_absolute_url(self):
+        """Возвращает детальную страницу товара."""
+        return reverse("shop:product_detail", kwargs={"slug": self.slug})
+
+    def get_main_photo(self):
+        """Возвращает основное фото."""
+        if self.images.filter(is_main=True).exists():
+            return self.images.get(is_main=True).image.url
+        return mark_safe(f'<img src="/media/products/default.png" width="50" height="50">')
+
+    def has_changed(self):
+        """Возвращает bool, если товар был изменен."""
+        from datetime import timedelta
+        from django.utils import timezone
+        return self.updated_at >= timezone.now() - timedelta(hours=1)
+
+    def old_price(self):
+        """Возвращает цену на 20% больше текущей."""
+        return self.price * 1.2
 
     class Meta:
         verbose_name = "Товар"
@@ -94,23 +110,23 @@ class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     is_main = models.BooleanField(default=False, verbose_name="Основное изображение")
 
-    def save(self, *args, **kwargs):
-        if self.is_main:
-            self.product.images.update(is_main=False)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.product.title
 
     def __repr__(self):
         return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
 
+    def save(self, *args, **kwargs):
+        if self.is_main:
+            self.product.images.update(is_main=False)
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
 
 
-class Review(models.Model):
+class Review(TimeStamp, models.Model):
     """Модель для отзывов."""
 
     CHOICES = (

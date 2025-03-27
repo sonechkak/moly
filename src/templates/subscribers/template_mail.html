@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -78,11 +79,11 @@
     <div class="container">
         <!-- Шапка -->
         <div class="header">
-            <img src="#" alt="Moly">
+            <img src="{% static 'icons/Apple-Logo.png' %}" alt="Moly">
         </div>
 
         <!-- Баннер акции -->
-        <img src="#" alt="Новые поступления Apple" class="banner">
+        <img src="{% static 'img/applq12.jpg' %}" alt="Новые поступления Apple" class="banner">
 
         <!-- Заголовок письма -->
         <div style="padding: 20px; text-align: center;">
@@ -92,8 +93,8 @@
 
         <!-- Товар 1 -->
         <div class="product">
-            <h2>iPhone 15 Pro</h2>
-            <img src="#" alt="iPhone 15 Pro" class="product-image">
+            <h2>iPhone 16 Pro Max</h2>
+            <img src="{% static 'img/3_iphone.jpg' %}" alt="iPhone 15 Pro" class="product-image">
             <p>Титан. Чип A17 Pro. Камера 48 МП.</p>
             <p>
                 <span class="old-price">129 990 ₽</span>
@@ -105,7 +106,7 @@
         <!-- Товар 2 -->
         <div class="product">
             <h2>MacBook Air 13" (M2)</h2>
-            <img src="#" alt="MacBook Air" class="product-image">
+            <img src="{% static 'img/air.jpg' %}" alt="MacBook Air" class="product-image">
             <p>Чип Apple M2. 13.6-дюймовый дисплей Liquid Retina.</p>
             <p>
                 <span class="old-price">104 990 ₽</span>

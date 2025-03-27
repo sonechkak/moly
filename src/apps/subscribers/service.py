@@ -22,7 +22,6 @@ class SubscribeService:
             'subscribers/template_mail.html',
             {"title": subject}
         )
-
         self._send_mail(
             subject=subject,
             message=message,
@@ -44,21 +43,13 @@ class SubscribeService:
     def _send_mail(subject, message, recipient_list, html_message=None):
         """Отправка письма."""
         try:
-            if html_message:
-                send_mail(
-                    subject=subject,
-                    message=message,
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=recipient_list,
-                    html_message=html_message,
-                )
-                logger.info("Письмо доставлено.")
-            else:
-                send_mail(
-                    subject=subject,
-                    message=message,
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=recipient_list,
-                )
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=recipient_list,
+                html_message=html_message,
+            )
+            logger.info("Письмо доставлено.")
         except Exception as e:
             logger.error("Письмо не доставлено. Ошибка: %s", e)
