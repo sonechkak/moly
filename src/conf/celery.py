@@ -1,13 +1,13 @@
 import os
 from celery import Celery
 from celery.schedules import crontab
+from django.conf import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 
 celery_app = Celery(
     "conf",
-    broker='redis://localhost:6379/0',
-    backend='redis://localhost:6379/1'
+    broker=settings.CELERY_BROKER_URL,
 )
 
 celery_app.config_from_object("django.conf:settings", namespace="CELERY")
