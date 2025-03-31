@@ -21,25 +21,28 @@
                     <li class="nav-item">
                         <!-- Link--><a class="nav-link" href="detail.html">О магазине</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="pagesDropdown" href="#"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">История</a>
-                        <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdown">
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'favs:favorites' %}">
-                                Отложенные
-                            </a>
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'baskets:basket' user.pk %}">
-                                Корзина
-                            </a>
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'orders:checkout' %}">
-                                Покупки
-                            </a>
-                        </div>
-                    </li>
+                    {% if user.is_authenticated and user.basket %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="pagesDropdown" href="#"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">История</a>
+                            <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdown">
+                                <a class="dropdown-item border-0 transition-link" href="{% url 'favs:favorites' %}">
+                                    Отложенные
+                                </a>
+                                <a class="dropdown-item border-0 transition-link"
+                                   href="{% url 'baskets:basket' user.basket.pk %}">
+                                    Корзина
+                                </a>
+                                <a class="dropdown-item border-0 transition-link" href="{% url 'orders:checkout' %}">
+                                    Покупки
+                                </a>
+                            </div>
+                        </li>
+                    {% endif %}
                 </ul>
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' user.pk %}">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' user.basket.pk %}">
                             <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
                             {% if products %}
                                 <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
@@ -72,14 +73,17 @@ WSGI_APPLICATION = "conf.wsgi.application"
 
 
 # Database
+
+db_url = urlparse(os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@db:5432/postgres'))
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        'NAME': db_url.path[1:],
+        'USER': db_url.username,
+        'PASSWORD': db_url.password,
+        'HOST': db_url.hostname,
+        'PORT': db_url.port or '5432',
     }
 }
 
@@ -130,5 +134,5 @@ EMAIL_HOST_PASSWORD = os.getenv("USER_EMAIL_PASSWORD")
 AUTH_USER_MODEL = "users.User"
 
 # Celery
-CELERY_BROKER_URL = "redis://localhost:6379/1"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/1"

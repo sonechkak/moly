@@ -8,6 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
 celery_app = Celery(
     "conf",
     broker=settings.CELERY_BROKER_URL,
+    backend=settings.CELERY_RESULT_BACKEND,
 )
 
 celery_app.config_from_object("django.conf:settings", namespace="CELERY")
@@ -20,7 +21,7 @@ celery_app.conf.beat_schedule = {
 }
 
 celery_app.conf.update(
-    beat_schedule_filename=os.path.join(os.path.dirname(__file__), 'beat', 'celerybeat-schedule')
+    beat_schedule_filename='/app/src/conf/beat/celerybeat-schedule'
 )
 
 celery_app.autodiscover_tasks()

@@ -3,21 +3,43 @@ FROM python:3.13-alpine
 LABEL maintainer="Sonya Karmeeva"
 
 ENV PYTHONUNBUFFERED 1
+ENV POETRY_HOME=/opt/poetry
+ENV PATH="$POETRY_HOME/bin:$PATH"
+ENV PYTHONPATH=/app
 
 WORKDIR /app
 
+RUN apk update && apk add --no-cache \
+    curl \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    postgresql-dev
+
+# Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    chmod a+x /opt/poetry/bin/poetry
+
+# Файлы зависимостей
 COPY pyproject.toml poetry.lock ./
 
-RUN apk add --update --no-cache postgresql-client jpeg-dev gcc libc-dev linux-headers postgresql-dev musl-dev zlib zlib-dev && \
-    pip install poetry && \
-    poetry config virtualenvs.create false && \
+# Установка зависимостей
+RUN poetry config virtualenvs.create false && \
     poetry install --no-root --no-interaction --no-ansi
 
-COPY src /app
+# Копируем код проекта
+COPY src/ /app
+COPY entrypoint.sh /app/entrypoint.sh
 
-RUN mkdir -p /vol/web/media /vol/web/static && \
-    adduser -D sonya && \
-    chown -R sonya:sonya /vol/ && \
-    chmod -R 755 /vol/web
+# Создаем и настраиваем пользователя
+RUN mkdir -p /vol/web/media /vol/web/static /app/conf/beat && \
+    adduser -D user && \
+    chown -R user:user /vol/ /app && \
+    chmod -R 755 /vol/web && \
+    chmod -R 777 /app/conf/beat
 
-USER sonya
+USER user
+
+CMD ["/app/entrypoint.sh"]
