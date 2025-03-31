@@ -1,4 +1,5 @@
 from conf.celery import celery_app
+
 from .models import Subscribe
 from .service import SubscribeService
 
@@ -19,7 +20,7 @@ def send_subscriber_email():
     # Для товаров
     product_subs = subscribers.filter(product__isnull=False)
     for subscriber in product_subs:
-        if subscriber.product.has_changed():
+        if subscriber.product.has_changed:
             mail = SubscribeService(subscribe=subscriber)
             mail.send_template_mail()
 

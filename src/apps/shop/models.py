@@ -1,8 +1,11 @@
+from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
+from .utils import get_category_upload_path, get_image_upload_path
 from utils.db import TimeStamp
 
 
@@ -12,7 +15,7 @@ User = get_user_model()
 class Category(TimeStamp, models.Model):
     """Класс категорий."""
     title = models.CharField(max_length=255, verbose_name="Наименование категории")
-    image = models.ImageField(upload_to="categories/%Y/%m/%d/", null=True, blank=True, verbose_name="Изображение категории")
+    image = models.ImageField("Изображение категории", upload_to=get_category_upload_path)
     slug = models.SlugField(unique=True, null=True)
     parent = models.ForeignKey(
         "self",
@@ -41,8 +44,6 @@ class Category(TimeStamp, models.Model):
 
     def get_new_products(self, hours=1):
         """Возвращает товары, которые добавились в категории."""
-        from django.utils import timezone
-        from datetime import timedelta
         # Queryset товаров, которые добавлены за последний час
         return self.products.filter(created_at__gte=timezone.now() - timedelta(hours=hours))
 
@@ -58,8 +59,8 @@ class Product(TimeStamp, models.Model):
     price = models.IntegerField(verbose_name="Цена товара")
     watched = models.IntegerField(default=0, verbose_name="Количество просмотров")
     quantity = models.IntegerField(default=0, verbose_name="Количество товара на складе")
-    description = models.TextField(default="Скоро здесь будет описание товара...", verbose_name="Описание товара")
-    info = models.TextField(default="Дополнительная информация о товаре", verbose_name="Информация о товаре")
+    description = models.TextField(default=None, verbose_name="Описание товара")
+    info = models.TextField(default=None, verbose_name="Информация о товаре")
     category = models.ManyToManyField(
         Category,
         related_name="products",
@@ -84,14 +85,13 @@ class Product(TimeStamp, models.Model):
 
     def get_main_photo(self):
         """Возвращает основное фото."""
-        if self.images.filter(is_main=True).exists():
+        if self.images.filter(is_main=True):
             return self.images.get(is_main=True).image.url
         return mark_safe(f'<img src="/media/products/default.png" width="50" height="50">')
 
+    @property
     def has_changed(self):
         """Возвращает bool, если товар был изменен."""
-        from datetime import timedelta
-        from django.utils import timezone
         return self.updated_at >= timezone.now() - timedelta(hours=1)
 
     def old_price(self):
@@ -106,7 +106,7 @@ class Product(TimeStamp, models.Model):
 
 class Gallery(models.Model):
     """Класс для изображений товаров."""
-    image = models.ImageField(upload_to="products/", verbose_name="Изображение")
+    image = models.ImageField(upload_to=get_image_upload_path, verbose_name="Изображение")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     is_main = models.BooleanField(default=False, verbose_name="Основное изображение")
 

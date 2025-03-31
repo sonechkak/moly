@@ -4,6 +4,7 @@ from django.db import models
 from apps.shop.models import Product
 from utils.db import TimeStamp
 
+
 user_model = get_user_model()
 
 
