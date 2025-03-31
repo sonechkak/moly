@@ -128,3 +128,7 @@ EMAIL_HOST_USER = os.getenv("USER_EMAIL")
 EMAIL_HOST_PASSWORD = os.getenv("USER_EMAIL_PASSWORD")
 
 AUTH_USER_MODEL = "users.User"
+
+# Celery
+CELERY_BROKER_URL = "redis://localhost:6379/1"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"

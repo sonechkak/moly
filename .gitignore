@@ -1,3 +1,5 @@
+src/media/*
+
 ### Linux ###
 .idea
 db.json
