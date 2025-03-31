@@ -18,7 +18,7 @@ User = get_user_model()
 
 class Category(TimeStamp, models.Model):
     """Класс категорий."""
-    title = models.CharField(max_length=255, verbose_name="Наименование категории")
+    title = models.CharField("Наименование категории", max_length=255)
     image = models.ImageField("Изображение категории", upload_to=get_category_upload_path)
     slug = models.SlugField(unique=True, null=True)
     parent = models.ForeignKey(
@@ -90,11 +90,11 @@ class Product(TimeStamp, models.Model):
         blank=True,
         verbose_name="Категория товара"
     )
-    slug = models.SlugField(unique=True, null=True, verbose_name="Slug товара")
-    size = models.IntegerField(default=30, verbose_name="Размер в мм")
-    color = models.TextField(max_length=30, default="Стандартный", verbose_name="Цвет/Материал")
+    slug = models.SlugField(unique=True, null=True)
+    size = models.IntegerField("Размер в мм", default=30)
+    color = models.TextField("Цвет/Материал")
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Бренд")
-    available = models.BooleanField(default=True, verbose_name="Доступны к заказу")
+    available = models.BooleanField("Доступны к заказу", default=True)
 
     class Meta:
         verbose_name = "Товар"
@@ -180,12 +180,10 @@ class Review(TimeStamp, models.Model):
         ('1', 'Очень плохо'),
     )
 
-    grade = models.CharField(max_length=20, choices=CHOICES, blank=True, null=True, verbose_name="Оценка")
-    text = models.TextField(verbose_name="Текст")
+    grade = models.CharField("Оценка", max_length=20, choices=CHOICES, blank=True, null=True)
+    text = models.TextField("Текст")
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews", verbose_name="Продукт")
-    created_at = models.DateTimeField(auto_now_add=True)
-    published = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Отзыв"
