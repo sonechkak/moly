@@ -30,6 +30,11 @@ class Category(TimeStamp, models.Model):
         related_name="subcategories"
     )
 
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ['title']
+
     def __str__(self):
         return self.title
 
@@ -51,11 +56,6 @@ class Category(TimeStamp, models.Model):
         # Queryset товаров, которые добавлены за последний час
         return self.products.filter(created_at__gte=timezone.now() - timedelta(hours=hours))
 
-    class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
-        ordering = ['title']
-
 
 class Brand(models.Model):
     """Класс для брендов."""
@@ -63,26 +63,27 @@ class Brand(models.Model):
     image = models.ImageField("Изображение бренда", upload_to=get_brand_upload_path)
     slug = models.SlugField(unique=True, null=True)
 
+    class Meta:
+        verbose_name = "Бренд"
+        verbose_name_plural = "Бренды"
+        ordering = ['title']
+
     def __str__(self):
         return self.title
 
     def __repr__(self):
         return {self.title}
 
-    class Meta:
-        verbose_name = "Бренд"
-        verbose_name_plural = "Бренды"
-        ordering = ['title']
-
 
 class Product(TimeStamp, models.Model):
     """Класс товаров."""
-    title = models.CharField(max_length=255, verbose_name="Наименование товара")
-    price = models.IntegerField(verbose_name="Цена товара")
-    watched = models.IntegerField(default=0, verbose_name="Количество просмотров")
-    quantity = models.IntegerField(default=0, verbose_name="Количество товара на складе")
-    description = models.TextField(default=None, verbose_name="Описание товара")
-    info = models.TextField(default=None, verbose_name="Информация о товаре")
+    title = models.CharField("Наименование товара", max_length=255)
+    price = models.IntegerField("Цена товара")
+    previous_price = models.IntegerField("Предыдущая цена", null=True, blank=True, editable=False)
+    watched = models.IntegerField("Количество просмотров")
+    quantity = models.IntegerField("Количество товара на складе")
+    description = models.TextField("Описание товара")
+    info = models.TextField("Информация о товаре")
     category = models.ManyToManyField(
         Category,
         related_name="products",
@@ -95,11 +96,29 @@ class Product(TimeStamp, models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Бренд")
     available = models.BooleanField(default=True, verbose_name="Доступны к заказу")
 
+    class Meta:
+        verbose_name = "Товар"
+        verbose_name_plural = "Товары"
+        ordering = ['available', '-created_at']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_price = self.price
+
     def __str__(self):
         return self.title
 
     def __repr__(self):
         return f"Товар: pk={self.pk}, title={self.title}, price={self.price}, quantity={self.quantity}"
+
+    def save(self, *args, **kwargs):
+        # Сохраняем предыдущую цену, если она изменилась
+        if self.pk and self.price != self._original_price:
+            self.previous_price = self._original_price
+
+        super().save(*args, **kwargs)
+        # Обновляем оригинальную цену
+        self._original_price = self.price
 
     def get_absolute_url(self):
         """Возвращает детальную страницу товара."""
@@ -111,19 +130,14 @@ class Product(TimeStamp, models.Model):
             return self.images.get(is_main=True).image.url
         return mark_safe(f'<img src="/media/products/default.png" width="50" height="50">')
 
-    @property
-    def has_changed(self):
-        """Возвращает bool, если товар был изменен."""
-        return self.updated_at >= timezone.now() - timedelta(hours=1)
-
     def old_price(self):
         """Возвращает цену на 20% больше текущей."""
         return self.price * 1.2
 
-    class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товары"
-        ordering = ['available', '-created_at']
+    @property
+    def has_price_changed(self):
+        """Возвращает True, если цена изменилась с момента последнего сохранения."""
+        return self.price != self._original_price
 
 
 class Gallery(models.Model):
@@ -173,9 +187,9 @@ class Review(TimeStamp, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     published = models.BooleanField(default=True)
 
-    def __str__(self):
-        return self.author.username
-
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
+
+    def __str__(self):
+        return self.author.username
