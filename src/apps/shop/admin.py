@@ -5,7 +5,7 @@ from .models import (
     Category,
     Product,
     Gallery,
-    Review,
+    Review, Brand,
 )
 
 
@@ -35,6 +35,23 @@ class CategoryAdmin(admin.ModelAdmin):
 
     get_product_count.short_description = 'Количество товаров'
     image_tag.short_description = 'Изображение категории'
+
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    """Админка для брендов."""
+    list_display = ('id', 'title', 'image', 'slug')
+    list_filter = ('title',)
+    search_fields = ('title',)
+    ordering = ('title',)
+    prepopulated_fields = {'slug': ('title',)}
+    readonly_fields = ('id',)
+
+    def get_image_tag(self, obj):
+        if obj.image:
+            return mark_safe('<img src="{}" width="100" height="100" />'.format(obj.image.url))
+        else:
+            return ''
 
 
 @admin.register(Product)

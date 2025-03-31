@@ -1,11 +1,17 @@
 from datetime import timedelta
+from tabnanny import verbose
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
-from .utils import get_category_upload_path, get_image_upload_path
+from .utils import (
+    get_category_upload_path,
+    get_image_upload_path,
+    get_brand_upload_path
+)
 from utils.db import TimeStamp
 
 
@@ -53,6 +59,24 @@ class Category(TimeStamp, models.Model):
         ordering = ['title']
 
 
+class Brand(models.Model):
+    """Класс для брендов."""
+    title = models.CharField("Наименование бренда", max_length=255)
+    image = models.ImageField("Изображение бренда", upload_to=get_brand_upload_path)
+    slug = models.SlugField(unique=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return {self.title}
+
+    class Meta:
+        verbose_name = "Бренд"
+        verbose_name_plural = "Бренды"
+        ordering = ['title']
+
+
 class Product(TimeStamp, models.Model):
     """Класс товаров."""
     title = models.CharField(max_length=255, verbose_name="Наименование товара")
@@ -70,7 +94,7 @@ class Product(TimeStamp, models.Model):
     slug = models.SlugField(unique=True, null=True, verbose_name="Slug товара")
     size = models.IntegerField(default=30, verbose_name="Размер в мм")
     color = models.TextField(max_length=30, default="Стандартный", verbose_name="Цвет/Материал")
-    brand = models.CharField(max_length=150, default="Apple", verbose_name="Бренд товара")
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Бренд")
     available = models.BooleanField(default=True, verbose_name="Доступны к заказу")
 
     def __str__(self):
