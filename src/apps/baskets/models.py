@@ -20,6 +20,13 @@ class Basket(TimeStamp, models.Model):
     recipient = models.CharField("Получатель", max_length=255, blank=True, null=True)
     contact = models.CharField("Контакты", max_length=255, blank=True, null=True)
 
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
+
+    def __str__(self):
+        return str(self.pk)
+
     @property
     def get_total_cost(self):
         """Для получения общей стоимости товаров в корзине."""
@@ -34,13 +41,6 @@ class Basket(TimeStamp, models.Model):
         products = sum([product.quantity for product in self.ordered_n.all()])
         return products
 
-    def __str__(self):
-        return str(self.pk)
-
-    class Meta:
-        verbose_name = "Заказ"
-        verbose_name_plural = "Заказы"
-
 
 class BasketProduct(TimeStamp, models.Model):
     """Привязка продукта к корзине, артикул товара."""
@@ -48,14 +48,14 @@ class BasketProduct(TimeStamp, models.Model):
     basket = models.ForeignKey(Basket, on_delete=models.CASCADE, related_name="ordered_n")
     quantity = models.IntegerField(default=0, null=True, blank=True)
 
-    @property
-    def get_total_price(self):
-        """Для получения стоимости товаров в корзине."""
-        return self.product.price * self.quantity
+    class Meta:
+        verbose_name = "Товар в заказе"
+        verbose_name_plural = "Товары в заказах"
 
     def __str__(self):
         return self.product.title
 
-    class Meta:
-        verbose_name = "Товар в заказе"
-        verbose_name_plural = "Товары в заказах"
+    @property
+    def get_total_price(self):
+        """Для получения стоимости товаров в корзине."""
+        return self.product.price * self.quantity
