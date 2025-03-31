@@ -1,6 +1,4 @@
 from datetime import timedelta
-from tabnanny import verbose
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
@@ -130,9 +128,9 @@ class Product(TimeStamp, models.Model):
 
 class Gallery(models.Model):
     """Класс для изображений товаров."""
-    image = models.ImageField(upload_to=get_image_upload_path, verbose_name="Изображение")
+    image = models.ImageField("Изображение", upload_to=get_image_upload_path)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
-    is_main = models.BooleanField(default=False, verbose_name="Основное изображение")
+    is_main = models.BooleanField("Основное изображение", default=False)
 
     def __str__(self):
         return self.product.title
@@ -141,7 +139,14 @@ class Gallery(models.Model):
         return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
 
     def save(self, *args, **kwargs):
-        if self.is_main:
+        if self.image:
+            temp = self.image
+            self.image = None
+            super().save(*args, **kwargs)
+            self.image = temp
+            kwargs.pop("force_insert", None)
+
+        if self.is_main and self.product:
             self.product.images.update(is_main=False)
         super().save(*args, **kwargs)
 
