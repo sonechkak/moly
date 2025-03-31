@@ -18,12 +18,12 @@ class Subscribe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     is_general = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.email
-
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
+
+    def __str__(self):
+        return self.email
 
 
 class Promotion(models.Model):
@@ -39,6 +39,10 @@ class Promotion(models.Model):
 
     products = models.ManyToManyField(Product, related_name="promotions", blank=True, verbose_name="Товары по акции")
 
+    class Meta:
+        verbose_name = "Акция"
+        verbose_name_plural = "Акции"
+
     def __str__(self):
         return f"{self.title}. Успейте купить товары со скидкой {self.discount_percent}%!"
 
@@ -47,7 +51,3 @@ class Promotion(models.Model):
         """Получение активных акций."""
         now = timezone.now()
         return cls.objects.filter(is_active=True, start_date__lte=now, end_date__gte=now).order_by("-start_date")
-
-    class Meta:
-        verbose_name = "Акция"
-        verbose_name_plural = "Акции"

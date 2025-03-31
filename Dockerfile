@@ -6,12 +6,25 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
+RUN apk update && apk add --no-cache \
+    curl \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    postgresql-dev
+
+# Установка Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:$PATH"
+
+# Копируем только файлы зависимостей
 COPY pyproject.toml poetry.lock ./
 
-RUN apk add --update --no-cache postgresql-client jpeg-dev gcc libc-dev linux-headers postgresql-dev musl-dev zlib zlib-dev && \
-    pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-root --no-interaction --no-ansi
+# Устанавливаем зависимости
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
 COPY src /app
 
@@ -21,3 +34,5 @@ RUN mkdir -p /vol/web/media /vol/web/static && \
     chmod -R 755 /vol/web
 
 USER sonya
+
+CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
