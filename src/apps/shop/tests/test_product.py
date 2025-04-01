@@ -8,21 +8,17 @@ class ProductTestCase(TestCase):
     def setUp(self):
         # Создаем категории
         self.category1 = Category.objects.create(
-            name="Тестовая категория 1",
-            description="Описание категории 1"
+            title="Тестовая категория 1",
+            slug="test-category-1"
         )
         self.category2 = Category.objects.create(
-            name="Тестовая категория 2",
-            description="Описание категории 2"
+            title="Тестовая категория 2",
+            slug="test-category-2"
         )
-
-        # Создаем бренд
         self.brand = Brand.objects.create(
-            name="Тестовый бренд",
-            description="Описание бренда"
+            title="Тестовый бренд",
+            slug="test-brand"
         )
-
-        # Создаем продукты
         self.product1 = Product.objects.create(
             title="Тестовый продукт 1",
             price=100,
@@ -33,9 +29,9 @@ class ProductTestCase(TestCase):
             size=30,
             color="Красный",
             brand=self.brand,
-            available=True
+            available=True,
+            slug="test-product-1"
         )
-        # Добавляем категории к продукту
         self.product1.category.add(self.category1, self.category2)
 
         self.product2 = Product.objects.create(
@@ -48,7 +44,8 @@ class ProductTestCase(TestCase):
             size=40,
             color="Синий",
             brand=self.brand,
-            available=True
+            available=True,
+            slug="test-product-2"
         )
         self.product2.category.add(self.category1)
 
