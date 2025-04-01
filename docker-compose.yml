@@ -32,7 +32,7 @@ services:
       POSTGRES_USER: sonya
       POSTGRES_PASSWORD: sonya
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U sonya moly"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -45,6 +45,18 @@ services:
       timeout: 5s
       retries: 5
 
+  testdb:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: moly_test
+      POSTGRES_USER: sonya
+      POSTGRES_PASSWORD: sonya
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sonya moly" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   celery:
     build: .
     command: celery -A conf worker -l info
@@ -52,7 +64,7 @@ services:
       - ./src:/app/src
     environment:
       - DEBUG=1
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - DATABASE_URL=postgresql://sonya:sonya@db:5432/moly
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - EMAIL_HOST=mailpit
@@ -71,7 +83,7 @@ services:
       - celery_beat_data:/app/src/conf/beat
     environment:
       - DEBUG=1
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - DATABASE_URL=postgresql://sonya:sonya@db:5432/moly
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - EMAIL_HOST=mailpit

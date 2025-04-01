@@ -30,7 +30,7 @@ RUN poetry config virtualenvs.create false && \
     poetry install --no-root --no-interaction --no-ansi
 
 # Копируем код проекта
-COPY src/ /app
+COPY src/ /app/src
 COPY entrypoint.sh /app/entrypoint.sh
 
 # Создаем и настраиваем пользователя
