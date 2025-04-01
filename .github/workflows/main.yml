@@ -68,11 +68,7 @@ jobs:
         DEBUG: 1
         SECRET_KEY: test-key
         ALLOWED_HOSTS: localhost,127.0.0.1
-        DB_NAME: moly
-        DB_USER: sonya
-        DB_PASSWORD: sonya
-        DB_HOST: postgres
-        DB_PORT: 5432
+        DATABASE_URL: postgres://sonya:sonya@postgres:5432/moly
         CELERY_BROKER_URL: redis://localhost:6379/0
         CELERY_RESULT_BACKEND: redis://localhost:6379/1
       run: |
