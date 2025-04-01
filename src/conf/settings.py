@@ -6,7 +6,10 @@ from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 
 
-load_dotenv()
+if os.environ.get('TESTING'):
+    load_dotenv('.env.test')
+else:
+    load_dotenv('.env')
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +17,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = bool(os.getenv("DEBUG"))
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 os.path.join(BASE_DIR, "apps/")
-
 
 # Application definition
 INSTALLED_APPS = [
