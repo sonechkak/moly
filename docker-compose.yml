@@ -1,5 +1,7 @@
 version: '3.8'
 
+
+
 services:
   web:
     build: .
@@ -7,19 +9,12 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/app/src
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=your_secret_key
-      - ALLOWED_HOSTS=localhost,127.0.0.1
-      - DATABASE_URL=postgresql://sonya:sonya@db:5432/moly
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/1
-      - EMAIL_HOST=mailpit
-      - EMAIL_PORT=1025
+    env_file: ".env"
     depends_on:
       - db
       - redis
       - mailpit
+
 
   db:
     image: postgres:13-alpine
@@ -27,12 +22,9 @@ services:
       - "5432:5432"
     volumes:
       - ${PWD}/postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: moly
-      POSTGRES_USER: sonya
-      POSTGRES_PASSWORD: sonya
+    env_file: ".env"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U sonya moly"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -45,18 +37,21 @@ services:
       timeout: 5s
       retries: 5
 
+  testdb:
+    image: postgres:13-alpine
+    env_file: ".env.test"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sonya moly" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   celery:
     build: .
     command: celery -A conf worker -l info
     volumes:
       - ./src:/app/src
-    environment:
-      - DEBUG=1
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/1
-      - EMAIL_HOST=mailpit
-      - EMAIL_PORT=1025
+    env_file: ".env"
     depends_on:
       db:
         condition: service_healthy
@@ -69,13 +64,7 @@ services:
     volumes:
       - ./src:/app/src
       - celery_beat_data:/app/src/conf/beat
-    environment:
-      - DEBUG=1
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/1
-      - EMAIL_HOST=mailpit
-      - EMAIL_PORT=1025
+    env_file: ".env"
     depends_on:
       db:
         condition: service_healthy
