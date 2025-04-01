@@ -52,16 +52,16 @@ jobs:
       run: poetry install
 
     - name: Create a directory for static and media files
-      run: mkdir -p ./vol/web/static && mkdir -p ./vol/web/media
+      run: sudo mkdir -p ./vol/web/static && sudo mkdir -p ./vol/web/media
 
     - name: Create user
-      run: adduser --disabled-password sonya
+      run: sudo useradd -m sonya
 
     - name: Change ownership of the directory
-      run: chown -R sonya:sonya ./vol/
+      run: sudo chown -R sonya:sonya ./vol/
 
     - name: Change permissions of the directory
-      run: chmod -R 755 ./vol/web/
+      run: sudo chmod -R 755 ./vol/web/
 
     - name: Run Tests
       env:
@@ -77,4 +77,4 @@ jobs:
         CELERY_RESULT_BACKEND: redis://localhost:6379/1
       run: |
         cd src
-        poetry run python manage.py runserver
+        poetry run python manage.py test  # Изменено с runserver на test
