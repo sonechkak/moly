@@ -6,10 +6,10 @@ from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 
 
-if os.environ.get('TESTING'):
-    load_dotenv('.env.test')
-else:
-    load_dotenv('.env')
+# if os.environ.get('TESTING'):
+#     load_dotenv('.env.test')
+# else:
+#     load_dotenv('.env')
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
