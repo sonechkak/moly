@@ -71,7 +71,7 @@ jobs:
         DB_NAME: moly
         DB_USER: sonya
         DB_PASSWORD: sonya
-        DB_HOST: localhost
+        DB_HOST: postgres
         DB_PORT: 5432
         CELERY_BROKER_URL: redis://localhost:6379/0
         CELERY_RESULT_BACKEND: redis://localhost:6379/1
