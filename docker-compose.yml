@@ -1,7 +1,5 @@
 version: '3.8'
 
-
-
 services:
   web:
     build: .
@@ -9,12 +7,11 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/app/src
-    env_file: ".env"
+    env_file: ".env.docker"
     depends_on:
       - db
       - redis
       - mailpit
-
 
   db:
     image: postgres:13-alpine
@@ -22,7 +19,7 @@ services:
       - "5432:5432"
     volumes:
       - ${PWD}/postgres_data:/var/lib/postgresql/data
-    env_file: ".env"
+    env_file: ".env.docker"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sonya moly"]
       interval: 5s
@@ -31,45 +28,46 @@ services:
 
   redis:
     image: redis:alpine
+    ports:
+      - 6379:6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  testdb:
-    image: postgres:13-alpine
-    env_file: ".env.test"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U sonya moly" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+#  testdb:
+#    image: postgres:13-alpine
+#    env_file: ".env.docker.test"
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U sonya moly" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
 
   celery:
     build: .
     command: celery -A conf worker -l info
     volumes:
       - ./src:/app/src
-    env_file: ".env"
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    env_file: ".env.docker"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
 
   celery-beat:
     build: .
     command: celery -A conf beat -l info
     volumes:
       - ./src:/app/src
-      - celery_beat_data:/app/src/conf/beat
-    env_file: ".env"
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    env_file: ".env.docker"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
 
   mailpit:
     image: axllent/mailpit:latest
