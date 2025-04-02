@@ -1,5 +1,6 @@
 from datetime import timedelta
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -78,7 +79,7 @@ class Brand(models.Model):
 class Product(TimeStamp, models.Model):
     """Класс товаров."""
     title = models.CharField("Наименование товара", max_length=255)
-    price = models.IntegerField("Цена товара")
+    price = models.PositiveIntegerField("Цена товара")
     previous_price = models.IntegerField("Предыдущая цена", null=True, blank=True, editable=False)
     watched = models.IntegerField("Количество просмотров")
     quantity = models.IntegerField("Количество товара на складе")
@@ -111,13 +112,18 @@ class Product(TimeStamp, models.Model):
     def __repr__(self):
         return f"Товар: pk={self.pk}, title={self.title}, price={self.price}, quantity={self.quantity}"
 
+    def clean(self):
+        """Метод валидации, вызов через full_clean()."""
+        if self.price < 0:
+            raise ValidationError("Цена не может быть отрицательной.")
+
     def save(self, *args, **kwargs):
         # Сохраняем предыдущую цену, если она изменилась
         if self.pk and self.price != self._original_price:
             self.previous_price = self._original_price
+        self.full_clean()
 
         super().save(*args, **kwargs)
-        # Обновляем оригинальную цену
         self._original_price = self.price
 
     def get_absolute_url(self):
