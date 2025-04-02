@@ -40,6 +40,14 @@ dev:
 	export DJANGO_SETTINGS_MODULE=settings.dev
 	python src/manage.py migrate
 	python src/manage.py runserver 0.0.0.0:8000
+	celery -A src.conf beat --loglevel=info --settings=settings.dev
+	celery -A src.conf worker --loglevel=info --settings=settings.dev
+
+dev-stop:
+	$(INFO) "Остановка всех процессов..."
+	pkill -f "celery worker" || true
+	pkill -f "celery beat" || true
+	pkill -f "runserver" || true
 
 test:
 	$(INFO) "Запуск тестов..."
@@ -53,6 +61,7 @@ test:
 #	docker compose up -d mailpit
 #	export DJANGO_SETTINGS_MODULE=settings.prod
 #	python src/manage.py runserver 0.0.0.0:8000
+
 migrations:
 	$(INFO) "Создаем миграции..."
 	python src/manage.py makemigrations
