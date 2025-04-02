@@ -3,7 +3,7 @@ from celery import Celery
 from celery.schedules import crontab
 from django.conf import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.dev")
 
 celery_app = Celery(
     "conf",
@@ -21,7 +21,7 @@ celery_app.conf.beat_schedule = {
 }
 
 celery_app.conf.update(
-    beat_schedule_filename='/app/src/conf/beat/celerybeat-schedule'
+    beat_schedule_filename='/tmp/celerybeat-schedule'
 )
 
 celery_app.autodiscover_tasks()
