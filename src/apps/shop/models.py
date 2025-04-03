@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 from utils.db import TimeStamp
 
 from .utils import get_brand_upload_path, get_category_upload_path, get_image_upload_path
@@ -30,18 +29,13 @@ class Category(TimeStamp, models.Model):
     def __str__(self):
         return self.title
 
-    def __repr__(self):
-        return f"{self.title}"
-
     def get_absolute_url(self):
         """Ссылка на страницу категории."""
         return reverse("shop:category_list", kwargs={"slug": self.slug})
 
     def get_parent_category_image(self):
         """Для получения картинки родительской категории."""
-        if self.image:
-            return self.image.url
-        return "Нет изображения"
+        return self.image.url if self.image else None
 
     def get_new_products(self, hours=1):
         """Возвращает товары, которые добавились в категории."""
@@ -90,15 +84,8 @@ class Product(TimeStamp, models.Model):
         verbose_name_plural = "Товары"
         ordering = ["available", "-created_at"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._original_price = self.price
-
     def __str__(self):
         return self.title
-
-    def __repr__(self):
-        return f"Товар: pk={self.pk}, title={self.title}, price={self.price}, quantity={self.quantity}"
 
     def save(self, *args, **kwargs):
         # Сохраняем предыдущую цену, если она изменилась
@@ -113,11 +100,16 @@ class Product(TimeStamp, models.Model):
         """Возвращает детальную страницу товара."""
         return reverse("shop:product_detail", kwargs={"slug": self.slug})
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_price = self.price
+
     def get_main_photo(self):
         """Возвращает основное фото."""
-        if self.images.filter(is_main=True):
+        if self.images.filter(is_main=True).exists():
             return self.images.get(is_main=True).image.url
-        return mark_safe('<img src="/media/products/default.png" width="50" height="50">')
+        else:
+            return self.images.first().image.url if self.images.exists() else None
 
     def old_price(self):
         """Возвращает цену на 20% больше текущей."""
@@ -125,7 +117,7 @@ class Product(TimeStamp, models.Model):
 
     @property
     def has_price_changed(self):
-        """Возвращает True, если цена изменилась с момента последнего сохранения."""
+        """Возвращает True, если цена изменилась после последнего сохранения."""
         return self.price != self._original_price
 
 
@@ -136,11 +128,12 @@ class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     is_main = models.BooleanField("Основное изображение", default=False)
 
+    class Meta:
+        verbose_name = "Изображение"
+        verbose_name_plural = "Изображения"
+
     def __str__(self):
         return self.product.title
-
-    def __repr__(self):
-        return f"Изображение: pk={self.pk}, product={self.product.title}, is_main={self.is_main}"
 
     def save(self, *args, **kwargs):
         if self.image:
@@ -153,10 +146,6 @@ class Gallery(models.Model):
         if self.is_main and self.product:
             self.product.images.update(is_main=False)
         super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = "Изображение"
-        verbose_name_plural = "Изображения"
 
 
 class Review(TimeStamp, models.Model):

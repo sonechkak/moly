@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
 
 from .models import (
     Brand,
@@ -29,12 +28,14 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
     def get_product_count(self, obj):
+        """Возвращает количество товаров в категории."""
         if obj.products:
             return str(len(obj.products.all()))
         return "0"
 
     def image_tag(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100" />') # noqa: S308
+        """Возвращает изображение категории."""
+        return obj.image.url if obj.image else None
 
     get_product_count.short_description = "Количество товаров"
     image_tag.short_description = "Изображение категории"
@@ -52,10 +53,8 @@ class BrandAdmin(admin.ModelAdmin):
     readonly_fields = ("id",)
 
     def get_image_tag(self, obj):
-        if obj.image:
-            return mark_safe(f'<img src="{obj.image.url}" width="100" height="100" />')
-        else:
-            return ""
+        """Возвращает изображение бренда."""
+        return obj.image.url if obj.image else None
 
 
 @admin.register(Product)
@@ -73,11 +72,8 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ("watched",)
 
     def get_image(self, obj):
-        if obj.images.filter(is_main=True).exists():
-            image = obj.images.filter(is_main=True).first().image.url
-            return mark_safe(f'<img src="{image}" width="75" />')
-        else:
-            return "Изображение отсутствует"
+        """Возвращает изображение товара."""
+        return obj.image.url if obj.get_main_photo else None
 
     get_image.short_description = "Изображение товара"
 

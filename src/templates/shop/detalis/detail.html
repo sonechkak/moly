@@ -23,7 +23,7 @@
             <ul class="list-inline mb-2">
               {% if product.reviews > 1 %}
                 <!-- Вычисляем средний рейтинг по всем отзывам -->
-                {% with average_rating=product.reviews.all|map:"grade"|get_average_rating %}
+                {% with average_rating=product.reviews.all|mapping:"grade"|get_average_rating %}
                   <!-- Отображаем заполненные звёзды -->
                   {% for _ in "x"|rjust:average_rating %}
                     <li class="list-inline-item m-0">

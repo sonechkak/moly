@@ -7,7 +7,7 @@ user_model = get_user_model()
 
 
 class Basket(TimeStamp, models.Model):
-    """Корзина с товарами."""
+    """Корзина товаров."""
 
     user = models.OneToOneField(
         user_model, on_delete=models.CASCADE, primary_key=True, related_name="basket", verbose_name="Пользователь"

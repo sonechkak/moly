@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "stripe",
     "django_celery_beat",
     # 3d apps
+    "apps.authentications",
     "apps.baskets",
     "apps.favs",
     "apps.shop",

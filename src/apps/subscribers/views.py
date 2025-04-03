@@ -1,4 +1,7 @@
+import logging
+
 from apps.subscribers.models import Subscribe
+from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
@@ -19,7 +22,6 @@ def save_subscribers(request):
 
 def send_mail_to_customers(request):
     """Отправка сообщений подписчикам."""
-    from conf import settings
     from django.core.mail import send_mail
 
     if request.method == "POST":
@@ -33,7 +35,8 @@ def send_mail_to_customers(request):
                 recipient_list=[email.email],
                 fail_silently=False,
             )
-            print(f"Сообщения отправлено на почту: {email.email} ----- {bool(send_mail)}")
+            send_mail = True
+            logging.INFO(f"Письмо отправлено на {email.email}")
 
     context = {"title": "Спамер"}
     return render(request, "shop/send_mail.html", context)

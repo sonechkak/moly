@@ -1,5 +1,5 @@
-import os
 import uuid
+from pathlib import Path
 from random import randint
 
 from django.utils.text import slugify
@@ -8,8 +8,10 @@ from django.utils.text import slugify
 def get_category_upload_path(instance, filename):
     """Для загрузки изображений в папку categories."""
     try:
-        name, ext = os.path.splitext(filename)  # Разделяем имя файла и расширение
-        safe_name = f"{slugify(name)}.{ext.lower()}"  # Приводим имя к безопасному виду
+        path = Path(filename)
+        # path.stem - имя файла без расширения
+        # path.suffix - расширение с точкой
+        safe_name = f"{slugify(path.stem)}{path.suffix.lower()}"
     except ValueError:
         safe_name = filename  # используем оригинальное имя
 
@@ -19,13 +21,13 @@ def get_category_upload_path(instance, filename):
 def get_image_upload_path(instance, filename):
     """Для загрузки изображений в папку products."""
     try:
-        name, ext = os.path.splitext(filename)
-        safe_name = f"{slugify(name)}{ext.lower()}"
+        path = Path(filename)
+        safe_name = f"{slugify(path.stem)}{path.suffix.lower()}"
     except ValueError:
         safe_name = filename
 
-    if instance is None:
-        return f"upload/products/temp/{uuid.uuid4()}{ext}"
+    if not instance:
+        return f"upload/products/temp/{uuid.uuid4()}/{safe_name}"
 
     return f"upload/products/{instance.product.id}/{instance.id}_{safe_name}"
 
@@ -33,8 +35,8 @@ def get_image_upload_path(instance, filename):
 def get_brand_upload_path(instance, filename):
     """Для загрузки изображений в папку brands."""
     try:
-        name, ext = os.path.splitext(filename)
-        safe_name = f"{slugify(name)}{ext.lower()}"
+        path = Path(filename)
+        safe_name = f"{slugify(path.stem)}{path.suffix.lower()}"
     except ValueError:
         safe_name = filename
 

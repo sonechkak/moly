@@ -80,18 +80,6 @@ lint:
 	flake8 src/
 	black src/ --check
 
-#clean:
-#	$(INFO) "Очистка кэша и временных файлов..."
-#	find . -type d -name "__pycache__" -exec rm -r {} +
-#	find . -type f -name "*.pyc" -delete
-#	find . -type f -name "*.pyo" -delete
-#	find . -type f -name "*.pyd" -delete
-#	find . -type f -name ".coverage" -delete
-#	find . -type d -name "*.egg-info" -exec rm -r {} +
-#	find . -type d -name "*.egg" -exec rm -r {} +
-#	find . -type d -name ".pytest_cache" -exec rm -r {} +
-#	find . -type d -name ".coverage" -exec rm -r {} +
-
 # Docker команды
 docker-dev:
 	$(INFO) "Запуск dev окружения в Docker..."
@@ -120,12 +108,22 @@ deps-lock:
 	$(INFO) "Блокировка версий зависимостей..."
 	poetry lock
 
-## Команды для работы со статическими файлами
-#collectstatic:
-#	$(INFO) "Сбор статических файлов..."
-#	DJANGO_SETTINGS_MODULE=$(SETTINGS_PROD) $(PYTHON) $(MANAGE) collectstatic --noinput
-
 # Команды для создания суперпользователя
 createsuperuser:
 	$(INFO) "Создание суперпользователя..."
 	DJANGO_SETTINGS_MODULE=$(SETTINGS_DEV) $(PYTHON) $(MANAGE) createsuperuser
+
+install-hooks:
+	poetry run pre-commit install
+
+lint:
+	poetry run pre-commit run --all-files
+
+format:
+	poetry run ruff format .
+	poetry run ruff check --fix .
+
+# Установка всего необходимого
+setup:
+	poetry install
+	make install-hooks

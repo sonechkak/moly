@@ -1,6 +1,5 @@
+from apps.favs.models import FavoriteProducts
 from django import template
-
-from ..models import FavoriteProducts
 
 register = template.Library()
 

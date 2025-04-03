@@ -6,7 +6,7 @@ from django.views.generic import ListView
 
 
 class FavoriteProductsView(LoginRequiredMixin, ListView):
-    """Страница с избранными товарами."""
+    """Страница избранных товаров."""
 
     model = FavoriteProducts
     context_object_name = "products"
@@ -27,7 +27,7 @@ class FavoriteProductsView(LoginRequiredMixin, ListView):
 
 
 def add_favorite(request, product_slug):
-    """Добавление или удаление товара с избранного."""
+    """Добавление или удаление товара из избранного."""
     if request.user.is_authenticated:
         user = request.user
         product = Product.objects.get(slug=product_slug)

@@ -37,9 +37,9 @@ class ShippingAddress(models.Model):
     apartment = models.CharField(max_length=6, null=True, blank=True)
     zipcode = models.CharField("zipcode", max_length=8, null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.city}, {self.street}, {self.house}, {self.apartment}"
-
     class Meta:
         verbose_name = "Адрес доставки"
         verbose_name_plural = "Адреса доставки"
+
+    def __str__(self):
+        return f"{self.city}, {self.street}, {self.house}, {self.apartment}"

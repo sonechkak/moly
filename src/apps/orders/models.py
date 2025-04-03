@@ -17,13 +17,13 @@ class Order(TimeStamp, models.Model):
     total_cost = models.IntegerField(default=0, null=True, blank=True)
     total_price = models.IntegerField(default=0, null=True, blank=True)
 
-    def __str__(self):
-        return f"Заказ №{self.id}"
-
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
         ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"Заказ №{self.id}"
 
 
 class OrderProduct(models.Model):
@@ -38,3 +38,6 @@ class OrderProduct(models.Model):
         verbose_name = "Товар заказа"
         verbose_name_plural = "Товары заказа"
         ordering = ("-id",)
+
+    def __str__(self):
+        return f"{self.product.title} ({self.quantity})"

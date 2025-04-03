@@ -6,6 +6,9 @@ from django.conf import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.dev")
 
+BASE_DIR = settings.BASE_DIR
+CELERY_DIR = BASE_DIR / "celery"
+
 celery_app = Celery(
     "conf",
     broker=settings.CELERY_BROKER_URL,
@@ -21,6 +24,6 @@ celery_app.conf.beat_schedule = {
     }
 }
 
-celery_app.conf.update(beat_schedule_filename="/tmp/celerybeat-schedule")
+celery_app.conf.update(beat_schedule_filename=str(CELERY_DIR / "celerybeat-schedule"))
 
 celery_app.autodiscover_tasks()
