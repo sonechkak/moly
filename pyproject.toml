@@ -233,6 +233,7 @@ ignore = [
 fixable = ["ALL"]
 unfixable = ["B009"]
 extend-unsafe-fixes = ["UP038"]
+allowed-confusables = ["о", "с", "е", "А", "В", "Е", "К", "у", "У"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.isort]
