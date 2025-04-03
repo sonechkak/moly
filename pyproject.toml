@@ -170,8 +170,6 @@ select = [
     "RUF"
 ]
 ignore = [
-    "RUF001",
-    "RUF002",
     "PLW0127",
     "TCH001",
     "S101",
@@ -241,6 +239,7 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 force-single-line = false
 
 [tool.ruff.format]
+allowed-confusables = ["о", "с", "е"]
 quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
