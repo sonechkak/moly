@@ -1,40 +1,31 @@
 from datetime import timedelta
+
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-
-from .utils import (
-    get_category_upload_path,
-    get_image_upload_path,
-    get_brand_upload_path
-)
 from utils.db import TimeStamp
 
+from .utils import get_brand_upload_path, get_category_upload_path, get_image_upload_path
 
 User = get_user_model()
 
 
 class Category(TimeStamp, models.Model):
     """Класс категорий."""
+
     title = models.CharField("Наименование категории", max_length=255)
     image = models.ImageField("Изображение категории", upload_to=get_category_upload_path)
     slug = models.SlugField(unique=True, null=True)
     parent = models.ForeignKey(
-        "self",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        verbose_name="Категория",
-        related_name="subcategories"
+        "self", on_delete=models.CASCADE, null=True, blank=True, verbose_name="Категория", related_name="subcategories"
     )
 
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
-        ordering = ['title']
+        ordering = ["title"]
 
     def __str__(self):
         return self.title
@@ -60,6 +51,7 @@ class Category(TimeStamp, models.Model):
 
 class Brand(models.Model):
     """Класс для брендов."""
+
     title = models.CharField("Наименование бренда", max_length=255)
     image = models.ImageField("Изображение бренда", upload_to=get_brand_upload_path)
     slug = models.SlugField(unique=True, null=True)
@@ -67,7 +59,7 @@ class Brand(models.Model):
     class Meta:
         verbose_name = "Бренд"
         verbose_name_plural = "Бренды"
-        ordering = ['title']
+        ordering = ["title"]
 
     def __str__(self):
         return self.title
@@ -78,19 +70,15 @@ class Brand(models.Model):
 
 class Product(TimeStamp, models.Model):
     """Класс товаров."""
+
     title = models.CharField("Наименование товара", max_length=255)
-    price = models.PositiveIntegerField("Цена товара")
+    price = models.IntegerField("Цена товара")
     previous_price = models.IntegerField("Предыдущая цена", null=True, blank=True, editable=False)
     watched = models.IntegerField("Количество просмотров")
     quantity = models.IntegerField("Количество товара на складе")
     description = models.TextField("Описание товара")
     info = models.TextField("Информация о товаре")
-    category = models.ManyToManyField(
-        Category,
-        related_name="products",
-        blank=True,
-        verbose_name="Категория товара"
-    )
+    category = models.ManyToManyField(Category, related_name="products", blank=True, verbose_name="Категория товара")
     slug = models.SlugField(unique=True, null=True)
     size = models.IntegerField("Размер в мм", default=30)
     color = models.TextField("Цвет/Материал")
@@ -100,7 +88,7 @@ class Product(TimeStamp, models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
-        ordering = ['available', '-created_at']
+        ordering = ["available", "-created_at"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,18 +100,13 @@ class Product(TimeStamp, models.Model):
     def __repr__(self):
         return f"Товар: pk={self.pk}, title={self.title}, price={self.price}, quantity={self.quantity}"
 
-    def clean(self):
-        """Метод валидации, вызов через full_clean()."""
-        if self.price < 0:
-            raise ValidationError("Цена не может быть отрицательной.")
-
     def save(self, *args, **kwargs):
         # Сохраняем предыдущую цену, если она изменилась
         if self.pk and self.price != self._original_price:
             self.previous_price = self._original_price
-        self.full_clean()
 
         super().save(*args, **kwargs)
+        # Обновляем оригинальную цену
         self._original_price = self.price
 
     def get_absolute_url(self):
@@ -134,7 +117,7 @@ class Product(TimeStamp, models.Model):
         """Возвращает основное фото."""
         if self.images.filter(is_main=True):
             return self.images.get(is_main=True).image.url
-        return mark_safe(f'<img src="/media/products/default.png" width="50" height="50">')
+        return mark_safe('<img src="/media/products/default.png" width="50" height="50">')
 
     def old_price(self):
         """Возвращает цену на 20% больше текущей."""
@@ -148,6 +131,7 @@ class Product(TimeStamp, models.Model):
 
 class Gallery(models.Model):
     """Класс для изображений товаров."""
+
     image = models.ImageField("Изображение", upload_to=get_image_upload_path)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     is_main = models.BooleanField("Основное изображение", default=False)
@@ -179,11 +163,11 @@ class Review(TimeStamp, models.Model):
     """Модель для отзывов."""
 
     CHOICES = (
-        ('5', 'Отлично'),
-        ('4', 'Хорошо'),
-        ('3', 'Средне'),
-        ('2', 'Плохо'),
-        ('1', 'Очень плохо'),
+        ("5", "Отлично"),
+        ("4", "Хорошо"),
+        ("3", "Средне"),
+        ("2", "Плохо"),
+        ("1", "Очень плохо"),
     )
 
     grade = models.CharField("Оценка", max_length=20, choices=CHOICES, blank=True, null=True)

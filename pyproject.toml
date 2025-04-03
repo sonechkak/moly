@@ -16,11 +16,218 @@ psycopg2-binary = "^2.9.10"
 stripe = "^11.6.0"
 django-celery-beat = "^2.7.0"
 redis = ">=4.0.0"
-flake8 = "^7.2.0"
-black = "^25.1.0"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest-django = "^4.11.0"
+pytest-mock = "^3.14.0"
+pre-commit = "^4.2.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+pythonpath = [
+    '.', 'src',
+]
+DJANGO_SETTINGS_MODULE = "settings.test"
+addopts = "--ds=settings.test --reuse-db"
+python_files = [ "tests.py", "test_*.py" ]
+
+
+[tool.coverage.run]
+include = [ "src/**" ]
+omit = [ "*/migrations/*", "*/tests/*" ]
+plugins = [ "django_coverage_plugin" ]
+
+[tool.mypy]
+python_version = "3.13"
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+
+  [[tool.mypy.overrides]]
+  module = "*.migrations.*"
+  ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "settings.test"
+
+[tool.djlint]
+blank_line_after_tag = "load,extends"
+close_void_tags = true
+format_css = true
+format_js = true
+ignore = "H006,H030,H031,T002"
+include = "H017,H035"
+indent = 2
+max_line_length = 119
+profile = "django"
+
+  [tool.djlint.css]
+  indent_size = 2
+
+  [tool.djlint.js]
+  indent_size = 2
+
+[tool.ruff]
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
+  "*/migrations/*.py",
+  "staticfiles/*",
+  "static/*",
+  "tests/*",
+
+]
+line-length = 120
+indent-width = 4
+target-version = "py312"
+
+  [tool.ruff.lint]
+  select = [
+  "F",
+  "E",
+  "W",
+  "C90",
+  "I",
+  "N",
+  "UP",
+  "YTT",
+  "ASYNC",
+  "S",
+  "BLE",
+  "FBT",
+  "B",
+  "A",
+  "COM",
+  "C4",
+  "DTZ",
+  "T10",
+  "DJ",
+  "EM",
+  "EXE",
+  "FA",
+  "ISC",
+  "ICN",
+  "G",
+  "INP",
+  "PIE",
+  "T20",
+  "PYI",
+  "PT",
+  "Q",
+  "RSE",
+  "RET",
+  "SLF",
+  "SLOT",
+  "SIM",
+  "TID",
+  "TCH",
+  "INT",
+  "PTH",
+  "ERA",
+  "PD",
+  "PGH",
+  "PL",
+  "TRY",
+  "FLY",
+  "PERF",
+  "RUF"
+]
+  ignore = [
+  "PLW0127",
+  "TCH001",
+  "S101",
+  "RUF012",
+  "SIM102",
+  "F401",
+  "F405",
+  "E203",
+  "E402",
+  "F811",
+  "F403",
+  "ERA001",
+  "S311",
+  "INP001",
+  "RUF003",
+  "FBT003",
+  "G004",
+  "DJ001",
+  "RET505",
+  "INT001",
+  "B904",
+  "TCH002",
+  "FBT001",
+  "PTH123",
+  "UP031",
+  "SLF001",
+  "RET504",
+  "RUF005",
+  "SIM108",
+  "DJ006",
+  "FBT002",
+  "B007",
+  "EM101",
+  "TRY003",
+  "BLE001",
+  "S113",
+  "EM102",
+  "PTH110",
+  "DTZ004",
+  "PGH003",
+  "C416",
+  "PTH118",
+  "C419",
+  "C403",
+  "PT018",
+  "PERF203",
+  "PERF401",
+  "PLR1714",
+  "RET503",
+  "SIM117",
+  "TRY301",
+  "TRY400",
+  "N813",
+  "PLR0913",
+  "PYI024",
+  "COM812",
+  "ISC001",
+  "B009",
+    "PT015"
+]
+  fixable = [ "ALL" ]
+  unfixable = [ "B009" ]
+  extend-unsafe-fixes = [ "UP038" ]
+  dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+    [tool.ruff.lint.isort]
+    force-single-line = false
+
+  [tool.ruff.format]
+  quote-style = "double"
+  indent-style = "space"
+  skip-magic-trailing-comma = false
+  line-ending = "auto"

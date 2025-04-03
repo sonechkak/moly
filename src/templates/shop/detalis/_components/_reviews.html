@@ -1,57 +1,62 @@
 {% load static %}
 
 <!-- Отзывы -->
-<div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-    <div class="p-4 p-lg-5 bg-white">
-        {% if request.user.is_authenticated %}
-            <div class="row">
-                <div class="container">
-                    <form action="{% url 'shop:add_review' product.pk %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button class="btn btn-success">Добавить отзыв</button>
-                    </form>
-                </div>
+<div class="tab-pane fade"
+     id="reviews"
+     role="tabpanel"
+     aria-labelledby="reviews-tab">
+  <div class="p-4 p-lg-5 bg-white">
+    {% if request.user.is_authenticated %}
+      <div class="row">
+        <div class="container">
+          <form action="{% url 'shop:add_review' product.pk %}"
+                method="post"
+                enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-success">Добавить отзыв</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div class="container">
+        <h6 class="text-center">
+          <a href="{% url 'auth:login' %}">Отзывы могут оставлять только зарегистрированные пользователи</a>
+        </h6>
+      </div>
+    {% endif %}
+    {% if product.reviews %}
+      {% for review in product.reviews.all %}
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="media mb-3">
+              <img class="rounded-circle"
+                   src="{% static 'img/customer-1.png' %}"
+                   alt=""
+                   width="50" />
+              <div class="media-body ml-3">
+                <h6 class="mb-0 text-uppercase">{{ review.author }}</h6>
+                <p class="small text-muted mb-0 text-uppercase">{{ review.created_at }}</p>
+                <ul class="list-inline mb-1 text-xs">
+                  {% if review.grade %}
+                    {% for _ in review.grade|get_positive_range %}
+                      <li class="list-inline-item m-0">
+                        <i class="fas fa-star text-warning"></i>
+                      </li>
+                    {% endfor %}
+                    {% for _ in review.grade|get_negative_range %}
+                      <li class="list-inline-item m-0">
+                        <i class="fas fa-star-half-alt text-muted"></i>
+                      </li>
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+                <p class="text-small mb-0 text-muted">{{ review.text }}</p>
+              </div>
             </div>
-        {% else %}
-            <div class="container">
-                <h6 class="text-center">
-                    <a href="{% url 'auth:login' %}">
-                        Отзывы могут оставлять только зарегистрированные пользователи
-                    </a>
-                </h6>
-            </div>
-        {% endif %}
-        {% if product.reviews %}
-            {% for review in product.reviews.all %}
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="media mb-3">
-                            <img class="rounded-circle" src="{% static 'img/customer-1.png' %}" alt="" width="50">
-                            <div class="media-body ml-3">
-                                <h6 class="mb-0 text-uppercase">{{ review.author }}</h6>
-                                <p class="small text-muted mb-0 text-uppercase">{{ review.created_at }}</p>
-                                <ul class="list-inline mb-1 text-xs">
-                                    {% if review.grade %}
-                                        {% for _ in review.grade|get_positive_range %}
-                                            <li class="list-inline-item m-0"><i class="fas fa-star text-warning"></i>
-                                            </li>
-                                        {% endfor %}
-
-                                        {% for _ in review.grade|get_negative_range %}
-                                            <li class="list-inline-item m-0"><i
-                                                    class="fas fa-star-half-alt text-muted"></i></li>
-                                        {% endfor %}
-                                    {% endif %}
-                                </ul>
-                                <p class="text-small mb-0 text-muted">
-                                    {{ review.text }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
 </div>

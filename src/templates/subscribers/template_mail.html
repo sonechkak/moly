@@ -1,141 +1,157 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moly — Новые поступления Apple</title>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
-            line-height: 1.5;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
-        }
-        .header {
-            padding: 20px;
-            text-align: center;
-            background: #000000;
-        }
-        .header img {
-            max-width: 150px;
-            height: auto;
-        }
-        .banner {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-        }
-        .product {
-            padding: 20px;
-            border-bottom: 1px solid #eaeaea;
-            text-align: center;
-        }
-        .product-image {
-            max-width: 200px;
-            height: auto;
-            margin: 0 auto;
-        }
-        .price {
-            color: #0066cc;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .old-price {
-            text-decoration: line-through;
-            color: #86868b;
-            margin-right: 10px;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 25px;
-            background: #0071e3;
-            color: white !important;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .footer {
-            padding: 20px;
-            text-align: center;
-            background: #f5f5f7;
-            font-size: 12px;
-            color: #86868b;
-        }
-        .social-icons a {
-            margin: 0 5px;
-        }
+      body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f7;
+        color: #1d1d1f;
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+      }
+
+      .header {
+        padding: 20px;
+        text-align: center;
+        background: #000000;
+      }
+
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+
+      .banner {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+      }
+
+      .product {
+        padding: 20px;
+        border-bottom: 1px solid #eaeaea;
+        text-align: center;
+      }
+
+      .product-image {
+        max-width: 200px;
+        height: auto;
+        margin: 0 auto;
+      }
+
+      .price {
+        color: #0066cc;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .old-price {
+        text-decoration: line-through;
+        color: #86868b;
+        margin-right: 10px;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 12px 25px;
+        background: #0071e3;
+        color: white !important;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+
+      .footer {
+        padding: 20px;
+        text-align: center;
+        background: #f5f5f7;
+        font-size: 12px;
+        color: #86868b;
+      }
+
+      .social-icons a {
+        margin: 0 5px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <!-- Шапка -->
-        <div class="header">
-            <img src="{% static 'icons/Apple-Logo.png' %}" alt="Moly">
+      <!-- Шапка -->
+      <div class="header">
+        <img src="{% static 'icons/Apple-Logo.png' %}" alt="Moly" />
+      </div>
+      <!-- Баннер акции -->
+      <img src="{% static 'img/applq12.jpg' %}"
+           alt="Новые поступления Apple"
+           class="banner" />
+      <!-- Заголовок письма -->
+      <div style="padding: 20px; text-align: center;">
+        <h1>{{ title }}</h1>
+        <p>Только этой недели скидки до 15% на технику Apple!</p>
+      </div>
+      <!-- Товар 1 -->
+      <div class="product">
+        <h2>iPhone 16 Pro Max</h2>
+        <img src="{% static 'img/3_iphone.jpg' %}"
+             alt="iPhone 15 Pro"
+             class="product-image" />
+        <p>Титан. Чип A17 Pro. Камера 48 МП.</p>
+        <p>
+          <span class="old-price">129 990 ₽</span>
+          <span class="price">110 490 ₽</span>
+        </p>
+        <a href="#" class="button">Купить сейчас</a>
+      </div>
+      <!-- Товар 2 -->
+      <div class="product">
+        <h2>MacBook Air 13" (M2)</h2>
+        <img src="{% static 'img/air.jpg' %}"
+             alt="MacBook Air"
+             class="product-image" />
+        <p>Чип Apple M2. 13.6-дюймовый дисплей Liquid Retina.</p>
+        <p>
+          <span class="old-price">104 990 ₽</span>
+          <span class="price">89 990 ₽</span>
+        </p>
+        <a href="#" class="button">Купить сейчас</a>
+      </div>
+      <!-- Блок акции -->
+      <div style="padding: 30px; text-align: center; background: #f5f5f7;">
+        <h2>Успейте купить до конца акции!</h2>
+        <p>Акция действует до 30 ноября 2023 года.</p>
+        <a href="#" class="button">Смотреть все товары Apple</a>
+      </div>
+      <!-- Футер -->
+      <div class="footer">
+        <p>© 2023 Moly — интернет-магазин техники Apple</p>
+        <p>
+          <a href="#" style="color: #0066cc;">Наш сайт</a> |
+          <a href="#" style="color: #0066cc;">Контакты</a> |
+          <a href="#" style="color: #0066cc;">Отписаться</a>
+        </p>
+        <div class="social-icons">
+          <a href="#">
+            <img src="#" alt="VK" width="24" />
+          </a>
+          <a href="#">
+            <img src="#" alt="Telegram" width="24" />
+          </a>
         </div>
-
-        <!-- Баннер акции -->
-        <img src="{% static 'img/applq12.jpg' %}" alt="Новые поступления Apple" class="banner">
-
-        <!-- Заголовок письма -->
-        <div style="padding: 20px; text-align: center;">
-            <h1>{{ title }}</h1>
-            <p>Только этой недели скидки до 15% на технику Apple!</p>
-        </div>
-
-        <!-- Товар 1 -->
-        <div class="product">
-            <h2>iPhone 16 Pro Max</h2>
-            <img src="{% static 'img/3_iphone.jpg' %}" alt="iPhone 15 Pro" class="product-image">
-            <p>Титан. Чип A17 Pro. Камера 48 МП.</p>
-            <p>
-                <span class="old-price">129 990 ₽</span>
-                <span class="price">110 490 ₽</span>
-            </p>
-            <a href="#" class="button">Купить сейчас</a>
-        </div>
-
-        <!-- Товар 2 -->
-        <div class="product">
-            <h2>MacBook Air 13" (M2)</h2>
-            <img src="{% static 'img/air.jpg' %}" alt="MacBook Air" class="product-image">
-            <p>Чип Apple M2. 13.6-дюймовый дисплей Liquid Retina.</p>
-            <p>
-                <span class="old-price">104 990 ₽</span>
-                <span class="price">89 990 ₽</span>
-            </p>
-            <a href="#" class="button">Купить сейчас</a>
-        </div>
-
-        <!-- Блок акции -->
-        <div style="padding: 30px; text-align: center; background: #f5f5f7;">
-            <h2>Успейте купить до конца акции!</h2>
-            <p>Акция действует до 30 ноября 2023 года.</p>
-            <a href="#" class="button">Смотреть все товары Apple</a>
-        </div>
-
-        <!-- Футер -->
-        <div class="footer">
-            <p>© 2023 Moly — интернет-магазин техники Apple</p>
-            <p>
-                <a href="#" style="color: #0066cc;">Наш сайт</a> |
-                <a href="#" style="color: #0066cc;">Контакты</a> |
-                <a href="#" style="color: #0066cc;">Отписаться</a>
-            </p>
-            <div class="social-icons">
-                <a href="#"><img src="#" alt="VK" width="24"></a>
-                <a href="#"><img src="#" alt="Telegram" width="24"></a>
-            </div>
-            <p>Адрес: Ростов-на-Дону, ул. Большая Садовая, 123</p>
-        </div>
+        <p>Адрес: Ростов-на-Дону, ул. Большая Садовая, 123</p>
+      </div>
     </div>
-</body>
+  </body>
 </html>

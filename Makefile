@@ -40,8 +40,8 @@ dev:
 	export DJANGO_SETTINGS_MODULE=settings.dev
 	python src/manage.py migrate
 	python src/manage.py runserver 0.0.0.0:8000
-#	celery -A src.conf beat --loglevel=info --settings=settings.dev
-#	celery -A src.conf worker --loglevel=info --settings=settings.dev
+	celery -A src.conf beat --loglevel=info --settings=settings.dev
+	celery -A src.conf worker --loglevel=info --settings=settings.dev
 
 dev-stop:
 	$(INFO) "Остановка всех процессов..."
@@ -103,7 +103,7 @@ docker-test:
 	$(INFO) "Запуск тестов в Docker..."
 	docker compose -f docker-compose.yml up -d --build web
 	docker compose -f docker-compose.yml up -d --build celery
-	compose -f docker-compose.yml up -d --build celery-beatdocker
+	 compose -f docker-compose.yml up -d --build celery-beatdocker
 
 docker-prod:
 	$(INFO) "Запуск prod окружения в Docker..."

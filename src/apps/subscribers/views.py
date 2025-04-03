@@ -1,8 +1,7 @@
+from apps.subscribers.models import Subscribe
 from django.contrib import messages
 from django.db import IntegrityError
-from django.shortcuts import render, redirect
-
-from apps.subscribers.models import Subscribe
+from django.shortcuts import redirect, render
 
 
 def save_subscribers(request):

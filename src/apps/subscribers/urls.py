@@ -5,7 +5,6 @@ from .views import (
     send_mail_to_customers,
 )
 
-
 app_name = "subscribers"
 
 

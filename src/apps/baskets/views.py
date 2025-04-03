@@ -1,21 +1,22 @@
+from apps.shop.models import Product
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import ListView
 
-from apps.shop.models import Product
 from .models import Basket, BasketProduct
 from .utils import add_product
 
 
 class AddToBasket(LoginRequiredMixin, View):
     """Вьюха для добавления товара в корзину."""
+
     login_url = "users:login_registration"
 
     def get(self, request, *args, **kwargs):
         """Добавление товара в корзину."""
         user = self.request.user
-        product = get_object_or_404(Product, id=kwargs.get('pk'))
+        product = get_object_or_404(Product, id=kwargs.get("pk"))
         basket, created = Basket.objects.get_or_create(user=user)
         basket.save()
 
@@ -31,10 +32,11 @@ class AddToBasket(LoginRequiredMixin, View):
 
 class RemoveFromBasket(LoginRequiredMixin, View):
     """Вьюха для удаления товара из корзины."""
+
     def get(self, request, *args, **kwargs):
         user = self.request.user
         product = get_object_or_404(
-            BasketProduct.objects.select_related('basket').filter(id=kwargs.get('pk'), basket__user=user)
+            BasketProduct.objects.select_related("basket").filter(id=kwargs.get("pk"), basket__user=user)
         )
         product.delete()
         return redirect("baskets:basket")
@@ -42,6 +44,7 @@ class RemoveFromBasket(LoginRequiredMixin, View):
 
 class BasketView(LoginRequiredMixin, ListView):
     """Вьюха для корзины."""
+
     template_name = "shop/basket/basket.html"
     login_url = "users:login"
 

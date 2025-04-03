@@ -1,85 +1,97 @@
 {% load static %}
+
 <!-- Header Area Starts -->
 <header class="header bg-white">
-    <div class="container px-0 px-lg-3">
-        <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
-            <a class="navbar-brand" href="{% url 'shop:index' %}">
-                <img src="{% static 'icons/Apple-Logo.png' %}" style="height: 40px; width: 80px;" alt="logo">
-                <span class="font-weight-bold text-uppercase text-dark">Купи Apple</span>
-            </a>
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <!-- Link--><a class="nav-link" href="{% url 'shop:index' %}">На главную</a>
-                    </li>
-                    <li class="nav-item">
-                        <!-- Link--><a class="nav-link" href="{% url 'shop:all_products' %}">В магазин</a>
-                    </li>
-                    <li class="nav-item">
-                        <!-- Link--><a class="nav-link" href="detail.html">О магазине</a>
-                    </li>
-                    {% if user.is_authenticated and user.basket %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="pagesDropdown" href="#"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">История</a>
-                            <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdown">
-                                <a class="dropdown-item border-0 transition-link" href="{% url 'favs:favorites' %}">
-                                    Отложенные
-                                </a>
-                                <a class="dropdown-item border-0 transition-link"
-                                   href="{% url 'baskets:basket' user.basket.pk %}">
-                                    Корзина
-                                </a>
-                                <a class="dropdown-item border-0 transition-link" href="{% url 'orders:checkout' %}">
-                                    Покупки
-                                </a>
-                            </div>
-                        </li>
-                    {% endif %}
-                </ul>
-                {% if user.is_authenticated %}
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'baskets:basket' user.basket.pk %}">
-                            <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
-                            {% if products %}
-                                <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
-                            {% else %}
-                                <small class="text-gray">(0)</small>
-                            {% endif %}
-                        </a>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'favs:favorites' %}">
-                            <i class="far fa-heart mr-1"></i>
-                            <small class="text-gray">({{ request.user.favorite.count }})</small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url "users:profile" user.pk %}">
-                                <i class="fas fa-user-alt mr-1 text-gray"></i>Мой профиль
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url "auth:logout" %}">
-                                <i class="fas fa-user-alt mr-1 text-gray"></i>Выйти
-                            </a>
-                        </li>
-                    </ul>
+  <div class="container px-0 px-lg-3">
+    <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+      <a class="navbar-brand" href="{% url 'shop:index' %}">
+        <img src="{% static 'icons/Apple-Logo.png' %}"
+             style="height: 40px;
+                    width: 80px"
+             alt="logo" />
+        <span class="font-weight-bold text-uppercase text-dark">Купи Apple</span>
+      </a>
+      <button class="navbar-toggler navbar-toggler-right"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <!-- Link--><a class="nav-link" href="{% url 'shop:index' %}">На главную</a>
+          </li>
+          <li class="nav-item">
+            <!-- Link--><a class="nav-link" href="{% url 'shop:all_products' %}">В магазин</a>
+          </li>
+          <li class="nav-item">
+            <!-- Link--><a class="nav-link" href="detail.html">О магазине</a>
+          </li>
+          {% if user.is_authenticated and user.basket %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle"
+                 id="pagesDropdown"
+                 href="#"
+                 data-toggle="dropdown"
+                 aria-haspopup="true"
+                 aria-expanded="false">История</a>
+              <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdown">
+                <a class="dropdown-item border-0 transition-link"
+                   href="{% url 'favs:favorites' %}">Отложенные</a>
+                <a class="dropdown-item border-0 transition-link"
+                   href="{% url 'baskets:basket' user.basket.pk %}">Корзина</a>
+                <a class="dropdown-item border-0 transition-link"
+                   href="{% url 'orders:checkout' %}">Покупки</a>
+              </div>
+            </li>
+          {% endif %}
+        </ul>
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'baskets:basket' user.basket.pk %}">
+                <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
+                {% if products %}
+                  <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
                 {% else %}
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item row">
-                            <a class="nav-link" href="{% url "auth:login" %}">
-                                <i class="fas fa-user-alt mr-1 text-gray"></i>Войти
-                            </a>
-                            <a class="nav-link" href="{% url "auth:register" %}">
-                                <i class="fas fa-user-alt mr-1 text-gray"></i>Зарегистрироваться
-                            </a>
-                        </li>
-                    </ul>
+                  <small class="text-gray">(0)</small>
                 {% endif %}
-            </div>
-        </nav>
-    </div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'favs:favorites' %}">
+                <i class="far fa-heart mr-1"></i>
+                <small class="text-gray">({{ request.user.favorite.count }})</small></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "users:profile" user.pk %}">
+                <i class="fas fa-user-alt mr-1 text-gray"></i>Мой профиль
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "auth:logout" %}">
+                <i class="fas fa-user-alt mr-1 text-gray"></i>Выйти
+              </a>
+            </li>
+          </ul>
+        {% else %}
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item row">
+              <a class="nav-link" href="{% url "auth:login" %}">
+                <i class="fas fa-user-alt mr-1 text-gray"></i>Войти
+              </a>
+              <a class="nav-link" href="{% url "auth:register" %}">
+                <i class="fas fa-user-alt mr-1 text-gray"></i>Зарегистрироваться
+              </a>
+            </li>
+          </ul>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
 </header>
 <!-- Header Area Ends -->

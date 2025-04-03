@@ -1,17 +1,16 @@
 from datetime import timedelta
 
+from apps.shop.models import Category, Product
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
-
-from apps.shop.models import Product, Category
-
 
 user_model = get_user_model()
 
 
 class Subscribe(models.Model):
     """Подписка."""
+
     email = models.EmailField()
     user = models.ForeignKey(user_model, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
@@ -28,6 +27,7 @@ class Subscribe(models.Model):
 
 class Promotion(models.Model):
     """Класс для управления акциями, скидками и специальными предложениями."""
+
     title = models.CharField("Название акции", max_length=100)
     message = models.TextField("Описание акции")
     discount_percent = models.PositiveIntegerField("Процент (%) скидки", default=0)

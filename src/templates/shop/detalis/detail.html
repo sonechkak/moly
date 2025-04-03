@@ -1,114 +1,142 @@
 {% extends 'base.html' %}
-{% load static %} {% load fav_tags %} {% load custom_tags %}
+
+{% load static %}
+{% load fav_tags %}
+{% load custom_tags %}
 
 {% block style %}
-    {% include 'shop/detalis/_components/style.html' %}
+  {% include 'shop/detalis/_components/style.html' %}
 {% endblock %}
-
 {% block content %}
-    <div class="page-holder bg-light">
-        <!--  Modal -->
-        {% include '_components/_modal.html' %}
-        <section class="py-5">
-            <div class="container">
-                <div class="row mb-5">
-                    <div class="col-lg-6">
-                        <!-- PRODUCT SLIDER-->
-                        {% include 'shop/detalis/_components/_slider.html' %}
-                    </div>
-                    <!-- PRODUCT DETAILS-->
-                    <div class="col-lg-6">
-                        <ul class="list-inline mb-2">
-                            {% if product.reviews > 1 %}
-                                <!-- Вычисляем средний рейтинг по всем отзывам -->
-                                {% with average_rating=product.reviews.all|map:"grade"|get_average_rating %}
-                                    <!-- Отображаем заполненные звёзды -->
-                                    {% for _ in "x"|rjust:average_rating %}
-                                        <li class="list-inline-item m-0"><i class="fas fa-star text-warning"></i></li>
-                                    {% endfor %}
-
-                                    <!-- Отображаем пустые звёзды -->
-                                    {% for _ in average_rating|get_negative_range %}
-                                        <li class="list-inline-item m-0"><i class="fas fa-star text-muted"></i></li>
-                                    {% endfor %}
-                                {% endwith %}
-                            {% endif %}
-                        </ul>
-                        <h1>{{ product.title }}</h1>
-                        <p class="text-muted lead">{{ product.price }} руб.</p>
-                        <p class="text-small mb-4">{{ product.info }}</p>
-                        <div class="row align-items-stretch mb-4">
-                            <div class="col-sm-5 pr-sm-0">
-                                <div class="border d-flex align-items-center justify-content-between py-1 px-3 bg-white border-white">
-                                    <span class="small text-uppercase text-gray mr-4 no-select">Количество</span>
-                                    <div class="quantity">
-                                        <button class="dec-btn p-0"><i class="fas fa-caret-left"></i></button>
-                                        <input class="form-control border-0 shadow-0 p-0" type="text" value="1">
-                                        <button class="inc-btn p-0"><i class="fas fa-caret-right"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-3 pl-sm-0"><a
-                                    class="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center justify-content-center px-0"
-                                    href="cart.html">В корзину</a></div>
-                        </div>
-                        {% if request.user.is_authenticated %}
-                            {% get_favorite_products request.user as fav_products %}
-                            {% if product in fav_products %}
-                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'favs:add_favorite' product.slug %}">
-                                    <i class="fas far fa-heart mr-2"></i>Убрать из виш-листа</a><br>
-                            {% else %}
-                                <a class="btn btn-link text-dark p-0 mb-4" href="{% url 'favs:add_favorite' product.slug %}">
-                                    <i class="far fa-heart mr-2"></i>Добавить в виш-лист</a><br>
-                            {% endif %}
-                        {% endif %}
-                        <ul class="list-unstyled small d-inline-block">
-                            <li class="px-3 py-2 mb-1 bg-white"><strong class="text-uppercase">Цвет:</strong>
-                                <span class="ml-2 text-muted">{{ product.color }}</span></li>
-                            <li class="px-3 py-2 mb-1 bg-white text-muted">
-                                <strong class="text-uppercase text-dark">Категории:</strong>
-                                {% if product.category.exists %}
-                                    {% for category in product.category.all %}
-                                        <a class="reset-anchor ml-2"
-                                           href="{{ category.get_absolute_url }}">{{ category }}</a>
-                                    {% endfor %}
-                                {% endif %}
-                            </li>
-                            <li class="px-3 py-2 mb-1 bg-white text-muted">
-                                <strong class="text-uppercase text-dark">Теги:</strong>
-                                <a class="reset-anchor ml-2" href="#">Новинки</a>
-                            </li>
-                        </ul>
-                    </div>
+  <div class="page-holder bg-light">
+    <!--  Modal -->
+    {% include '_components/_modal.html' %}
+    <section class="py-5">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-lg-6">
+            <!-- PRODUCT SLIDER-->
+            {% include 'shop/detalis/_components/_slider.html' %}
+          </div>
+          <!-- PRODUCT DETAILS-->
+          <div class="col-lg-6">
+            <ul class="list-inline mb-2">
+              {% if product.reviews > 1 %}
+                <!-- Вычисляем средний рейтинг по всем отзывам -->
+                {% with average_rating=product.reviews.all|map:"grade"|get_average_rating %}
+                  <!-- Отображаем заполненные звёзды -->
+                  {% for _ in "x"|rjust:average_rating %}
+                    <li class="list-inline-item m-0">
+                      <i class="fas fa-star text-warning"></i>
+                    </li>
+                  {% endfor %}
+                  <!-- Отображаем пустые звёзды -->
+                  {% for _ in average_rating|get_negative_range %}
+                    <li class="list-inline-item m-0">
+                      <i class="fas fa-star text-muted"></i>
+                    </li>
+                  {% endfor %}
+                {% endwith %}
+              {% endif %}
+            </ul>
+            <h1>{{ product.title }}</h1>
+            <p class="text-muted lead">{{ product.price }} руб.</p>
+            <p class="text-small mb-4">{{ product.info }}</p>
+            <div class="row align-items-stretch mb-4">
+              <div class="col-sm-5 pr-sm-0">
+                <div class="border d-flex align-items-center justify-content-between py-1 px-3 bg-white border-white">
+                  <span class="small text-uppercase text-gray mr-4 no-select">Количество</span>
+                  <div class="quantity">
+                    <button class="dec-btn p-0">
+                      <i class="fas fa-caret-left"></i>
+                    </button>
+                    <input class="form-control border-0 shadow-0 p-0" type="text" value="1" />
+                    <button class="inc-btn p-0">
+                      <i class="fas fa-caret-right"></i>
+                    </button>
+                  </div>
                 </div>
-                <!-- DETAILS TABS-->
-                <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description"
-                           role="tab" aria-controls="description" aria-selected="true">Описание</a></li>
-                    <li class="nav-item"><a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews"
-                                            role="tab" aria-controls="reviews" aria-selected="false">Отзывы</a></li>
-                </ul>
-                <div class="tab-content mb-5" id="myTabContent">
-                    <div class="tab-pane fade show active" id="description" role="tabpanel"
-                         aria-labelledby="description-tab">
-                        <div class="p-4 p-lg-5 bg-white">
-                            <h6 class="text-uppercase">Описание товара</h6>
-                            <p class="text-muted text-small mb-0">
-                                {{ product.description }}
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Отзывы -->
-                    {% include 'shop/detalis/_components/_reviews.html' %}
-                </div>
-                <!-- Похожие товары -->
-                {% include 'shop/_components/_product_card.html' %}
+              </div>
+              <div class="col-sm-3 pl-sm-0">
+                <a class="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center justify-content-center px-0"
+                   href="cart.html">В корзину</a>
+              </div>
             </div>
-        </section>
-        <!-- JavaScript files-->
-        {% block scripts %}
-            {% include 'shop/detalis/_components/js.html' %}
-        {% endblock %}
-    </div>
+            {% if request.user.is_authenticated %}
+              {% get_favorite_products request.user as fav_products %}
+              {% if product in fav_products %}
+                <a class="btn btn-link text-dark p-0 mb-4"
+                   href="{% url 'favs:add_favorite' product.slug %}">
+                  <i class="fas far fa-heart mr-2"></i>Убрать из виш-листа</a>
+                <br />
+              {% else %}
+                <a class="btn btn-link text-dark p-0 mb-4"
+                   href="{% url 'favs:add_favorite' product.slug %}">
+                  <i class="far fa-heart mr-2"></i>Добавить в виш-лист</a>
+                <br />
+              {% endif %}
+            {% endif %}
+            <ul class="list-unstyled small d-inline-block">
+              <li class="px-3 py-2 mb-1 bg-white">
+                <strong class="text-uppercase">Цвет:</strong>
+                <span class="ml-2 text-muted">{{ product.color }}</span>
+              </li>
+              <li class="px-3 py-2 mb-1 bg-white text-muted">
+                <strong class="text-uppercase text-dark">Категории:</strong>
+                {% if product.category.exists %}
+                  {% for category in product.category.all %}
+                    <a class="reset-anchor ml-2" href="{{ category.get_absolute_url }}">{{ category }}</a>
+                  {% endfor %}
+                {% endif %}
+              </li>
+              <li class="px-3 py-2 mb-1 bg-white text-muted">
+                <strong class="text-uppercase text-dark">Теги:</strong>
+                <a class="reset-anchor ml-2" href="#">Новинки</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- DETAILS TABS-->
+        <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active"
+               id="description-tab"
+               data-toggle="tab"
+               href="#description"
+               role="tab"
+               aria-controls="description"
+               aria-selected="true">Описание</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+               id="reviews-tab"
+               data-toggle="tab"
+               href="#reviews"
+               role="tab"
+               aria-controls="reviews"
+               aria-selected="false">Отзывы</a>
+          </li>
+        </ul>
+        <div class="tab-content mb-5" id="myTabContent">
+          <div class="tab-pane fade show active"
+               id="description"
+               role="tabpanel"
+               aria-labelledby="description-tab">
+            <div class="p-4 p-lg-5 bg-white">
+              <h6 class="text-uppercase">Описание товара</h6>
+              <p class="text-muted text-small mb-0">{{ product.description }}</p>
+            </div>
+          </div>
+          <!-- Отзывы -->
+          {% include 'shop/detalis/_components/_reviews.html' %}
+        </div>
+        <!-- Похожие товары -->
+        {% include 'shop/_components/_product_card.html' %}
+      </div>
+    </section>
+    <!-- JavaScript files-->
+    {% block scripts %}
+      {% include 'shop/detalis/_components/js.html' %}
+    {% endblock %}
+  </div>
 {% endblock %}

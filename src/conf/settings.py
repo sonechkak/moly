@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
-
 # if os.environ.get('TESTING'):
 #     load_dotenv('.env.test')
 # else:
@@ -61,10 +60,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            'libraries':{
-                'fav_tags': 'apps.favs.templatetags.fav_tags',
-                'custom_tags': 'apps.shop.templatetags.custom_tags',
-            }
+            "libraries": {
+                "fav_tags": "apps.favs.templatetags.fav_tags",
+                "custom_tags": "apps.shop.templatetags.custom_tags",
+            },
         },
     },
 ]
@@ -73,16 +72,16 @@ WSGI_APPLICATION = "conf.wsgi.application"
 
 
 # Database
-db_url = urlparse(os.getenv('DATABASE_URL', 'postgresql://sonya:sonya@127.0.0.1:5432/moly'))
+db_url = urlparse(os.getenv("DATABASE_URL", "postgresql://sonya:sonya@127.0.0.1:5432/moly"))
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        'NAME': db_url.path[1:],
-        'USER': db_url.username,
-        'PASSWORD': db_url.password,
-        'HOST': db_url.hostname,
-        'PORT': db_url.port or '5432',
+        "NAME": db_url.path[1:],
+        "USER": db_url.username,
+        "PASSWORD": db_url.password,
+        "HOST": db_url.hostname,
+        "PORT": db_url.port or "5432",
     }
 }
 
@@ -114,7 +113,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Путь к вашим статическим файлам
+    os.path.join(BASE_DIR, "static"),  # Путь к вашим статическим файлам
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

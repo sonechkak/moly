@@ -1,8 +1,8 @@
 import os
 import uuid
+from random import randint
 
 from django.utils.text import slugify
-from random import randint
 
 
 def get_category_upload_path(instance, filename):
