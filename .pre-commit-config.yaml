@@ -27,5 +27,5 @@ repos:
         language: system
         require_serial: true
         args: [
-            src
+            src,
         ]
