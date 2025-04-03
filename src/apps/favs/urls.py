@@ -1,8 +1,8 @@
 from django.urls import path
 
 from .views import (
-    add_favorite,
     FavoriteProductsView,
+    add_favorite,
 )
 
 app_name = "favs"

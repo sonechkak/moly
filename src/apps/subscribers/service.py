@@ -1,27 +1,27 @@
 import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from .models import Subscribe
 
-
 logger = logging.getLogger(__name__)
 
 
 class SubscribeService:
     """Класс для отправки писем подписчикам."""
+
     def __init__(self, subscribe: Subscribe):
         self.subscribe = subscribe
 
     def send_template_mail(self):
         """Отправка письма с шаблоном."""
         subject = "Moly: Новые поступления Apple со скидкой!"
-        message = "В нашем магазине появились новые товары Apple со скидками до 15%: iPhone 15 Pro, MacBook Air и другие."
-        html_message = render_to_string(
-            'subscribers/template_mail.html',
-            {"title": subject}
+        message = (
+            "В нашем магазине появились новые товары Apple со скидками до 15%: iPhone 15 Pro, MacBook Air и другие."
         )
+        html_message = render_to_string("subscribers/template_mail.html", {"title": subject})
         self._send_mail(
             subject=subject,
             message=message,

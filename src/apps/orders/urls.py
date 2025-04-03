@@ -1,9 +1,6 @@
 from django.urls import path
 
-from .views import (
-    Checkout
-)
-
+from .views import Checkout
 
 app_name = "orders"
 

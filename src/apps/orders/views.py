@@ -1,17 +1,18 @@
+from apps.baskets.models import Basket, BasketProduct
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import FormView, DetailView
-
-from apps.baskets.models import BasketProduct, Basket
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import DetailView, FormView
 from utils.order_creator import OrderCreator
+
 from .forms import ShippingForm
 from .models import Order
 
 
 class Checkout(LoginRequiredMixin, FormView):
     """Вьюха для оформления заказа."""
+
     form_class = ShippingForm
     model = Order
     template_name = "shop/basket/checkout.html"
@@ -25,9 +26,9 @@ class Checkout(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Оформление заказа"
-        context["basket_products"] = BasketProduct.objects.filter(
-            basket__user=self.request.user
-        ).select_related("product")
+        context["basket_products"] = BasketProduct.objects.filter(basket__user=self.request.user).select_related(
+            "product"
+        )
         context["basket"] = get_object_or_404(Basket, user=self.request.user)
         return context
 
@@ -46,6 +47,7 @@ class Checkout(LoginRequiredMixin, FormView):
 
 class OrderDetail(LoginRequiredMixin, DetailView):
     """Вьюха для детального заказа."""
+
     model = Order
     template_name = "shop/basket/order_detail.html"
     context_object_name = "order"
@@ -58,6 +60,3 @@ class OrderDetail(LoginRequiredMixin, DetailView):
             return super().dispatch(request, *args, **kwargs)
         except PermissionDenied:
             messages.error()
-
-
-

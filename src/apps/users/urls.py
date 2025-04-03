@@ -1,7 +1,7 @@
-from django.urls import path
 from django.shortcuts import render
+from django.urls import path
 
-from .views import ProfileView, ProfileUpdateView
+from .views import ProfileUpdateView, ProfileView
 
 app_name = "users"
 

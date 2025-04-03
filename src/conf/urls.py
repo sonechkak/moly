@@ -1,13 +1,12 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("apps.shop.urls"), name="shop"),
-    path("", include("apps.auth.urls"), name="auth"),
+    path("", include("apps.authentications.urls"), name="auth"),
     path("", include("apps.baskets.urls"), name="baskets"),
     path("", include("apps.favs.urls"), name="favs"),
     path("", include("apps.orders.urls"), name="orders"),

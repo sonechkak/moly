@@ -1,10 +1,9 @@
+from apps.shop.models import Category, Review
 from django import template
 from django.template.defaultfilters import register as range_register
 
-from ..models import Category, Review
-
-
 register = template.Library()
+
 
 @register.simple_tag()
 def get_subcategories(category):
@@ -14,34 +13,35 @@ def get_subcategories(category):
 
 @register.simple_tag()
 def get_sorted():
+    """Получение вариантов сортировки для фильтров."""
     sorters = [
         {
-            'title': 'Цена',
-            'sorters': [
-                ('price', 'по возрастанию'),
-                ('-price', 'по убыванию'),
-            ]
+            "title": "Цена",
+            "sorters": [
+                ("price", "по возрастанию"),
+                ("-price", "по убыванию"),
+            ],
         },
         {
-            'title': 'Популярность',
-            'sorters': [
-                ('watched', 'по возрастанию'),
-                ('-watched', 'по убыванию'),
-            ]
+            "title": "Популярность",
+            "sorters": [
+                ("watched", "по возрастанию"),
+                ("-watched", "по убыванию"),
+            ],
         },
         {
-            'title': 'Цвет',
-            'sorters': [
-                ('color', 'от А до Я'),
-                ('-color', 'от Я до А'),
-            ]
+            "title": "Цвет",
+            "sorters": [
+                ("color", "от А до Я"),
+                ("-color", "от Я до А"),
+            ],
         },
         {
-            'title': 'Размер',
-            'sorters': [
-                ('size', 'по возрастанию'),
-                ('-size', 'по убыванию'),
-            ]
+            "title": "Размер",
+            "sorters": [
+                ("size", "по возрастанию"),
+                ("-size", "по убыванию"),
+            ],
         },
     ]
     return sorters
@@ -80,14 +80,13 @@ def get_average_rating(values):
             total += int(value)
             count += 1
 
-    print(count, total)
-
     if count == 0:
         return 0
 
     return round(total / count)
 
+
 @register.filter
-def map(queryset, attr):
+def mapping(queryset, attr):
     """Фильтр для извлечения значений атрибута из QuerySet."""
     return [getattr(obj, attr) for obj in queryset]

@@ -1,135 +1,151 @@
 {% extends 'base.html' %}
 
 {% block style %}
-    {% include 'shop/basket/_components/_style.html' %}
+  {% include 'shop/basket/_components/_style.html' %}
 {% endblock %}
-
 {% block content %}
-    <div class="container">
-        <!-- HERO SECTION-->
-        <section class="py-5 bg-light">
-            <div class="container">
-                <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
-                    <div class="col-lg-6">
-                        <h1 class="h2 text-uppercase mb-0">{{ title }}</h1>
-                    </div>
-                    <div class="col-lg-6 text-lg-right">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
-                                <li class="breadcrumb-item"><a href="{% url 'shop:index' %}">На главную</a></li>
-                                <li class="breadcrumb-item"><a href="{% url 'baskets:basket' %}">Корзина</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-5">
-            <h2 class="h5 text-uppercase mb-4">Адрес доставки</h2>
+  <div class="container">
+    <!-- HERO SECTION-->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+          <div class="col-lg-6">
+            <h1 class="h2 text-uppercase mb-0">{{ title }}</h1>
+          </div>
+          <div class="col-lg-6 text-lg-right">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
+                <li class="breadcrumb-item">
+                  <a href="{% url 'shop:index' %}">На главную</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a href="{% url 'baskets:basket' %}">Корзина</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="py-5">
+      <h2 class="h5 text-uppercase mb-4">Адрес доставки</h2>
+      <div class="row">
+        <div class="col-lg-8">
+          <form method="post" action="{% url 'orders:checkout' %}">
+            {% csrf_token %}
             <div class="row">
-                <div class="col-lg-8">
-                    <form method="post" action="{% url 'orders:checkout' %}">
-                        {% csrf_token %}
-                        <div class="row">
-                            <!-- Город -->
-                            <div class="col-lg-6 form-group">
-                                <label class="text-small text-uppercase" for="city">Город</label>
-                                <input class="form-control form-control-lg" id="city" name="city"
-                                       type="text" required>
-                            </div>
-
-                            <!-- Область/регион -->
-                            <div class="col-lg-6 form-group">
-                                <label class="text-small text-uppercase" for="state">Область/регион</label>
-                                <input class="form-control form-control-lg" id="state" name="state"
-                                       type="text" required>
-                            </div>
-
-                            <!-- Улица -->
-                            <div class="col-lg-8 form-group">
-                                <label class="text-small text-uppercase" for="street">Улица</label>
-                                <input class="form-control form-control-lg" id="street" name="street"
-                                       type="text" required>
-                            </div>
-
-                            <!-- Дом -->
-                            <div class="col-lg-2 form-group">
-                                <label class="text-small text-uppercase" for="house">Дом</label>
-                                <input class="form-control form-control-lg" id="house" name="house"
-                                       type="text" required>
-                            </div>
-
-                            <!-- Квартира -->
-                            <div class="col-lg-2 form-group">
-                                <label class="text-small text-uppercase" for="apartment">Квартира</label>
-                                <input class="form-control form-control-lg" id="apartment" name="apartment"
-                                       type="text">
-                            </div>
-
-                            <!-- Индекс -->
-                            <div class="col-lg-4 form-group">
-                                <label class="text-small text-uppercase" for="zipcode">Почтовый индекс</label>
-                                <input class="form-control form-control-lg" id="zipcode" name="zipcode"
-                                       type="text">
-                            </div>
-
-                            <!-- Дополнительные поля -->
-                            <div class="col-lg-6 form-group">
-                                <label class="text-small text-uppercase" for="recipient">Получатель</label>
-                                <input class="form-control form-control-lg" id="recipient" name="recipient"
-                                       type="text" required value="{{ user.get_full_name|default:user.username }}">
-                            </div>
-
-                            <div class="col-lg-6 form-group">
-                                <label class="text-small text-uppercase" for="contact">Контактный телефон</label>
-                                <input class="form-control form-control-lg" id="contact" name="contact"
-                                       type="tel" required>
-                            </div>
-
-                            <!-- Чекбокс для сохранения адреса -->
-                            <div class="col-lg-12 form-group">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" id="save_address" name="save_address"
-                                           type="checkbox" checked>
-                                    <label class="custom-control-label text-small" for="save_address">
-                                        Сохранить этот адрес для будущих заказов
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Кнопка оформления -->
-                            <div class="col-lg-12 form-group">
-                                <button class="btn btn-dark" type="submit">Оформить заказ</button>
-                            </div>
-                        </div>
-                    </form>
+              <!-- Город -->
+              <div class="col-lg-6 form-group">
+                <label class="text-small text-uppercase" for="city">Город</label>
+                <input class="form-control form-control-lg"
+                       id="city"
+                       name="city"
+                       type="text"
+                       required />
+              </div>
+              <!-- Область/регион -->
+              <div class="col-lg-6 form-group">
+                <label class="text-small text-uppercase" for="state">Область/регион</label>
+                <input class="form-control form-control-lg"
+                       id="state"
+                       name="state"
+                       type="text"
+                       required />
+              </div>
+              <!-- Улица -->
+              <div class="col-lg-8 form-group">
+                <label class="text-small text-uppercase" for="street">Улица</label>
+                <input class="form-control form-control-lg"
+                       id="street"
+                       name="street"
+                       type="text"
+                       required />
+              </div>
+              <!-- Дом -->
+              <div class="col-lg-2 form-group">
+                <label class="text-small text-uppercase" for="house">Дом</label>
+                <input class="form-control form-control-lg"
+                       id="house"
+                       name="house"
+                       type="text"
+                       required />
+              </div>
+              <!-- Квартира -->
+              <div class="col-lg-2 form-group">
+                <label class="text-small text-uppercase" for="apartment">Квартира</label>
+                <input class="form-control form-control-lg"
+                       id="apartment"
+                       name="apartment"
+                       type="text" />
+              </div>
+              <!-- Индекс -->
+              <div class="col-lg-4 form-group">
+                <label class="text-small text-uppercase" for="zipcode">Почтовый индекс</label>
+                <input class="form-control form-control-lg"
+                       id="zipcode"
+                       name="zipcode"
+                       type="text" />
+              </div>
+              <!-- Дополнительные поля -->
+              <div class="col-lg-6 form-group">
+                <label class="text-small text-uppercase" for="recipient">Получатель</label>
+                <input class="form-control form-control-lg"
+                       id="recipient"
+                       name="recipient"
+                       type="text"
+                       required
+                       value="{{ user.get_full_name|default:user.username }}" />
+              </div>
+              <div class="col-lg-6 form-group">
+                <label class="text-small text-uppercase" for="contact">Контактный телефон</label>
+                <input class="form-control form-control-lg"
+                       id="contact"
+                       name="contact"
+                       type="tel"
+                       required />
+              </div>
+              <!-- Чекбокс для сохранения адреса -->
+              <div class="col-lg-12 form-group">
+                <div class="custom-control custom-checkbox">
+                  <input class="custom-control-input"
+                         id="save_address"
+                         name="save_address"
+                         type="checkbox"
+                         checked />
+                  <label class="custom-control-label text-small" for="save_address">Сохранить этот адрес для будущих заказов</label>
                 </div>
-
-                <!-- Блок с товарами -->
-                <div class="col-lg-4">
-                    <div class="card border-0 rounded-0 p-lg-4 bg-light">
-                        <div class="card-body">
-                            <h5 class="text-uppercase mb-4">Ваша покупка</h5>
-                            <ul class="list-unstyled mb-0">
-                                {% for item in basket_products %}
-                                    <li class="d-flex align-items-center justify-content-between mb-2">
-                                        <strong class="small font-weight-bold">{{ item.product.title }}</strong>
-                                        <span class="text-muted">× {{ item.quantity }}</span>
-                                        <span class="text-muted">{{ item.get_total_price }} ₽</span>
-                                    </li>
-                                {% endfor %}
-                                <li class="border-top my-2"></li>
-                                <li class="d-flex align-items-center justify-content-between mt-3">
-                                    <strong class="text-uppercase small font-weight-bold">Итого:</strong>
-                                    <span class="text-uppercase small font-weight-bold">{{ basket.get_total_cost }} ₽</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+              </div>
+              <!-- Кнопка оформления -->
+              <div class="col-lg-12 form-group">
+                <button class="btn btn-dark" type="submit">Оформить заказ</button>
+              </div>
             </div>
-        </section>
-    </div>
+          </form>
+        </div>
+        <!-- Блок с товарами -->
+        <div class="col-lg-4">
+          <div class="card border-0 rounded-0 p-lg-4 bg-light">
+            <div class="card-body">
+              <h5 class="text-uppercase mb-4">Ваша покупка</h5>
+              <ul class="list-unstyled mb-0">
+                {% for item in basket_products %}
+                  <li class="d-flex align-items-center justify-content-between mb-2">
+                    <strong class="small font-weight-bold">{{ item.product.title }}</strong>
+                    <span class="text-muted">× {{ item.quantity }}</span>
+                    <span class="text-muted">{{ item.get_total_price }} ₽</span>
+                  </li>
+                {% endfor %}
+                <li class="border-top my-2"></li>
+                <li class="d-flex align-items-center justify-content-between mt-3">
+                  <strong class="text-uppercase small font-weight-bold">Итого:</strong>
+                  <span class="text-uppercase small font-weight-bold">{{ basket.get_total_cost }} ₽</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 {% endblock %}

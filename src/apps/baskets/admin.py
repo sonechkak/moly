@@ -6,6 +6,7 @@ from .models import Basket
 @admin.register(Basket)
 class BasketAdmin(admin.ModelAdmin):
     """Админка для корзины."""
+
     list_display = ("user",)
     list_filter = ("user",)
     ordering = ("user",)

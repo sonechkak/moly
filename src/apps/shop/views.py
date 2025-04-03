@@ -2,15 +2,16 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 
-from .models import Product, Category
+from .forms import CustomerForm, ReviewForm
+from .models import Category, Product
 from .utils import get_random_products
-from .forms import ReviewForm, CustomerForm
 
 
 class Index(ListView):
     """Главная страница."""
+
     model = Category
     template_name = "index/index.html"
 
@@ -27,6 +28,7 @@ class Index(ListView):
 
 class SubCategories(ListView):
     """Вывод подкатегорий."""
+
     model = Product
     context_object_name = "products"
     template_name = "shop/grid/shop.html"
@@ -72,6 +74,7 @@ class SubCategories(ListView):
 
 class ProductDetail(DetailView):
     """Вывод информации о товаре."""
+
     model = Product
     context_object_name = "product"
     template_name = "shop/detalis/detail.html"
@@ -97,4 +100,4 @@ def add_review(request, product_pk):
         product = Product.objects.get(pk=product_pk)
         review.product = product
         review.save()
-        return redirect('shop:product_detail', slug=product.slug)
+        return redirect("shop:product_detail", slug=product.slug)
