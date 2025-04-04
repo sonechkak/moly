@@ -1,8 +1,13 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 
-from apps.baskets.models import Basket, BasketProduct
+from apps.baskets.models import (
+    Basket,
+    BasketProduct,
+)
 from apps.favs.models import FavoriteProducts
+from apps.orders.models import Order, OrderProduct
 from apps.shop.models import (
     Product,
     Category,
@@ -10,6 +15,7 @@ from apps.shop.models import (
     Review,
     Gallery
 )
+from apps.users.models import Profile
 
 
 @pytest.fixture
@@ -98,3 +104,21 @@ def favs_with_products(transactional_db, user):
 def favs_without_product(transactional_db, user):
     favs, _ = Basket.objects.get_or_create(user=user)
     return favs
+
+@pytest.fixture
+def order(transactional_db, user, basket_with_products):
+    order = Order.objects.create(
+        customer=get_object_or_404(Profile, user=user.id),
+        address="123 Main St",
+        recipient="Юра Борисов",
+        contact="89663068045",
+        total_cost=basket_with_products.get_total_cost,
+    )
+    for basket_product in basket_with_products.ordered_n.all():
+        OrderProduct.objects.create(
+            order=order,
+            product=basket_product.product,
+            quantity=basket_product.quantity,
+            price=basket_product.get_total_price,
+        )
+    return order

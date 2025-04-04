@@ -19,7 +19,7 @@
                   <a href="{% url 'shop:index' %}">На главную</a>
                 </li>
                 <li class="breadcrumb-item">
-                  <a href="{% url 'baskets:basket' %}">Корзина</a>
+                  <a href="{% url 'baskets:basket' user.basket.pk %}">Корзина</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
               </ol>
@@ -32,7 +32,7 @@
       <h2 class="h5 text-uppercase mb-4">Адрес доставки</h2>
       <div class="row">
         <div class="col-lg-8">
-          <form method="post" action="{% url 'orders:checkout' %}">
+          <form method="post" action="{% url 'orders:checkout' user.basket.pk %}">
             {% csrf_token %}
             <div class="row">
               <!-- Город -->
@@ -95,7 +95,7 @@
                        name="recipient"
                        type="text"
                        required
-                       value="{{ user.get_full_name|default:user.username }}" />
+                       value="{{ user.profile }}" />
               </div>
               <div class="col-lg-6 form-group">
                 <label class="text-small text-uppercase" for="contact">Контактный телефон</label>
@@ -109,11 +109,11 @@
               <div class="col-lg-12 form-group">
                 <div class="custom-control custom-checkbox">
                   <input class="custom-control-input"
-                         id="save_address"
-                         name="save_address"
+                         id="is_save_address"
+                         name="is_save_address"
                          type="checkbox"
                          checked />
-                  <label class="custom-control-label text-small" for="save_address">Сохранить этот адрес для будущих заказов</label>
+                  <label class="custom-control-label text-small" for="is_save_address">Сохранить этот адрес для будущих заказов</label>
                 </div>
               </div>
               <!-- Кнопка оформления -->

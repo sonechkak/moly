@@ -15,7 +15,7 @@ class Order(TimeStamp, models.Model):
     contact = models.CharField(max_length=255, blank=True, null=True)
     is_paid = models.BooleanField(default=False)
     total_cost = models.IntegerField(default=0, null=True, blank=True)
-    total_price = models.IntegerField(default=0, null=True, blank=True)
+    is_save_address = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Заказ"
@@ -23,7 +23,7 @@ class Order(TimeStamp, models.Model):
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"Заказ №{self.id}"
+        return f"{self.city}, {self.street}, {self.house}, {self.apartment}"
 
 
 class OrderProduct(models.Model):

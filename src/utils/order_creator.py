@@ -8,44 +8,42 @@ from django.shortcuts import redirect
 class OrderCreator(LoginRequiredMixin):
     """Класс для создания заказа."""
 
-    def __init__(self, user, products):
-        self.user = user
-        self.products = products
-
     @classmethod
-    def create_order(cls, user, form_data):
+    def create_order(cls, user, form_data, basket):
         """Создание заказа."""
-        # Все операции в одной транзакции
         with transaction.atomic():
-            # Добавляем профиль и корзину
-            profile = user.profile
-            basket_products = BasketProduct.objects.filter(basket__user=user).select_related("product")
+            basket_products = BasketProduct.objects.filter(basket=basket)
 
             if not basket_products.exists():
                 raise ValueError("Корзина пуста")
 
-            order = Order.objects.create(
-                customer=profile,
-                is_complete=False,
-                is_shipping=form_data["is_shipping"],
-                address=form_data["address"],
-                recipient=form_data["recipient"],
-                contact=form_data["contact"],
-                is_paid=False,
-                total_cost=profile.basket.basket_total_cost,
-                total_price=profile.basket.basket_total_price,
+            address = (
+                f"{form_data['city']}, "
+                f"{form_data['state']}, "
+                f"{form_data['street']} "
+                f"{form_data['house']}, "
+                f"{form_data['apartment']}"
             )
 
-            order_products = [
-                OrderProduct(
-                    order=order,
-                    product=product.product,
-                    quantity=product.quantity,
-                    price=product.get_total_price,
-                )
-                for product in basket_products
-            ]
+            order = Order.objects.create(
+                customer=user.profile,
+                is_paid=False,
+                is_complete=False,
+                is_shipping=True,
+                address=address,
+                recipient=form_data["recipient"],
+                contact=form_data["contact"],
+                is_save_address=form_data["is_save_address"],
+                total_cost=basket.get_total_cost,
+            )
 
-            OrderProduct.objects.bulk_create(order_products)
+            for basket_product in basket_products:
+                OrderProduct.objects.create(
+                    order=order,
+                    product=basket_product.product,
+                    quantity=basket_product.quantity,
+                    price=basket_product.get_total_price,
+                )
+
             basket_products.delete()
             return order
