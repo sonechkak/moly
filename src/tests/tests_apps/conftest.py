@@ -63,7 +63,7 @@ def basket_with_products(user, product):
     for i in range(3):
         p = Product.objects.create(
             title=f"Товар {i}",
-            price=100 + i*10,
+            price=100 + i,
             watched=0,
             quantity=10,
             description="Описание",

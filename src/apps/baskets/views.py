@@ -33,13 +33,15 @@ class AddToBasket(LoginRequiredMixin, View):
 class RemoveFromBasket(LoginRequiredMixin, View):
     """Вьюха для удаления товара из корзины."""
 
+    login_url = "users:login"
+
     def get(self, request, *args, **kwargs):
         user = self.request.user
         product = get_object_or_404(
             BasketProduct.objects.select_related("basket").filter(id=kwargs.get("pk"), basket__user=user)
         )
         product.delete()
-        return redirect("baskets:basket")
+        return redirect("baskets:basket", pk=product.basket.pk)
 
 
 class BasketView(LoginRequiredMixin, ListView):
