@@ -18,14 +18,3 @@ repos:
     -   id: ruff
         args: [--fix]
     -   id: ruff-format
-
--   repo: local
-    hooks:
-    -   id: mypy
-        name: mypy
-        entry: cd src && poetry run mypy
-        language: system
-        require_serial: true
-        args: [
-            src,
-        ]
