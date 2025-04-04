@@ -17,8 +17,3 @@ def load_local_dev_env():
         load_dotenv(env_file)
         return True
     return False
-
-
-# @pytest.fixture()
-# def client(transactional_db, load_local_dev_env):
-#     pass

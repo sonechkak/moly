@@ -15,13 +15,14 @@ class LoginView(FormView):
     extra_context = {"title": "Вход в аккаунт"}
 
     def form_valid(self, form):
-        try:
-            user = form.get_user()
-            login(self.request, user)
-            return redirect("users:profile", pk=user.pk)
-        except Exception:
-            messages.error(self.request, "Логин и пароль не совпадают")
-            return redirect("auth:login")
+        user = form.get_user()
+        login(self.request, user)
+        return redirect("users:profile", pk=user.pk)
+
+    def form_invalid(self, form):
+        for error in form.errors:
+            messages.error(self.request, form.errors[error].as_text())
+        return redirect("auth:login")
 
 
 class RegistrationView(FormView):
@@ -32,19 +33,18 @@ class RegistrationView(FormView):
     extra_context = {"title": "Регистрация пользователя"}
 
     def form_valid(self, form):
-        if form.is_valid():
-            user = form.save()
-            messages.success(self.request, "Аккаунт пользователя успешно создан")
-            login(self.request, user=user)
-            return redirect("users:profile", pk=user.pk)
-        else:
-            for error in form.errors:
-                messages.error(self.request, form.errors[error].as_text())
+        user = form.save()
+        messages.success(self.request, "Аккаунт пользователя успешно создан")
+        login(self.request, user=user)
+        return redirect("users:profile", pk=user.pk)
 
-        return redirect("auth:registration")
+    def form_invalid(self, form):
+        for error in form.errors:
+            messages.error(self.request, form.errors[error].as_text())
+        return redirect("auth:register")
 
 
-class LogoutView(LogoutView):
+class LogoutUserView(LogoutView):
     """Вьюха для выхода User."""
 
     def dispatch(self, request, *args, **kwargs):
