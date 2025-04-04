@@ -1,14 +1,14 @@
 from django.urls import path
 
 from .views import (
+    AddToFavoriteProducts,
     FavoriteProductsView,
-    add_favorite,
 )
 
 app_name = "favs"
 
 
 urlpatterns = [
-    path("add_favorite/<slug:product_slug>", add_favorite, name="add_favorite"),
+    path("add_favorite/<slug:slug>", AddToFavoriteProducts.as_view(), name="add_favorite"),
     path("user_favorites/", FavoriteProductsView.as_view(), name="favorites"),
 ]

@@ -1,7 +1,7 @@
 from apps.baskets.models import Basket, BasketProduct
+from apps.users.models import Profile
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, FormView
 from utils.order_creator import OrderCreator
@@ -11,12 +11,10 @@ from .models import Order
 
 
 class Checkout(LoginRequiredMixin, FormView):
-    """Вьюха для оформления заказа."""
+    """Вью для оформления заказа."""
 
     form_class = ShippingForm
-    model = Order
     template_name = "shop/basket/checkout.html"
-    success_url = "/checkout/success/"
 
     def get_queryset(self):
         user = self.request.user
@@ -33,30 +31,32 @@ class Checkout(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        try:
-            order = OrderCreator.create_order(
-                user=self.request.user,
-                form_data=form.cleaned_data,
-            )
-            messages.success(self.request, "Ваш заказ успешно оформлен!")
-            return redirect("orders:order_detail", pk=order.pk)
-        except ValueError as e:
-            form.add_error(None, e)
-            return self.form_invalid(form)
+        basket = get_object_or_404(Basket, user=self.request.user)
+        order = OrderCreator.create_order(
+            user=self.request.user,
+            form_data=form.cleaned_data,
+            basket=basket,
+        )
+        messages.success(self.request, "Ваш заказ успешно оформлен!")
+        return redirect("orders:order_detail", pk=order.pk)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Ошибка оформления заказа. Проверьте введенные данные.")
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class OrderDetail(LoginRequiredMixin, DetailView):
-    """Вьюха для детального заказа."""
+    """Вью для детального заказа."""
 
     model = Order
     template_name = "shop/basket/order_detail.html"
     context_object_name = "order"
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        customer = Profile.objects.get(user=self.request.user)
+        return Order.objects.filter(customer=customer)
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            return super().dispatch(request, *args, **kwargs)
-        except PermissionDenied:
-            messages.error()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = f"Детали заказа: {self.object.id}"
+        return context

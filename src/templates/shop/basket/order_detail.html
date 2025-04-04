@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Детали заказа
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Детали заказа: {{ order.id }}</h1>
+        <p><strong>Получатель:</strong> {{ order.recipient }}</p>
+        <p><strong>Контакт:</strong> {{ order.contact }}</p>
+        <p><strong>Адрес:</strong> {{ order.address }}</p>
+        <p><strong>Общая стоимость:</strong> {{ order.total_cost }}</p>
+        <p><strong>Статус оплаты:</strong> {{ order.is_paid|yesno:"Оплачено,Не оплачено" }}</p>
+        <p><strong>Статус завершения:</strong> {{ order.is_complete|yesno:"Завершено,Не завершено" }}</p>
+        <h2>Товары в заказе</h2>
+        <ul>
+            {% for product in order.order_products_n.all %}
+                <li>{{ product.product.title }} - {{ product.quantity }} шт. - {{ product.price }} руб.</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

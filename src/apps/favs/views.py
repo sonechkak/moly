@@ -1,7 +1,8 @@
 from apps.favs.models import FavoriteProducts
 from apps.shop.models import Product
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import ListView
 
 
@@ -26,18 +27,21 @@ class FavoriteProductsView(LoginRequiredMixin, ListView):
         return context
 
 
-def add_favorite(request, product_slug):
-    """Добавление или удаление товара из избранного."""
-    if request.user.is_authenticated:
-        user = request.user
-        product = Product.objects.get(slug=product_slug)
+class AddToFavoriteProducts(LoginRequiredMixin, View):
+    """Добавление товара в избранное."""
+
+    def get(self, request, *args, **kwargs):
+        """Добавление товара в избранное."""
+        user = self.request.user
+        product = get_object_or_404(Product, slug=kwargs["slug"])
+
         query_products = FavoriteProducts.objects.filter(user=user)
+
         if product in [i.product for i in query_products]:
             fav_product = FavoriteProducts.objects.get(user=user, product=product)
             fav_product.delete()
         else:
-            FavoriteProducts.objects.create(user=user, product=product)
+            fav_product = FavoriteProducts.objects.create(user=user, product=product)
 
-        next_page = request.META.get("HTTP_REFERER", None)
-
+        next_page = self.request.META.get("HTTP_REFERER", None)
         return redirect(next_page)

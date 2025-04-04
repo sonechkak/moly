@@ -35,6 +35,9 @@ class ShippingAddress(models.Model):
     street = models.CharField(max_length=80)
     house = models.CharField(max_length=6)
     apartment = models.CharField(max_length=6, null=True, blank=True)
+    recipient = models.CharField(max_length=100)
+    contact = models.CharField(max_length=100)
+    is_save_address = models.BooleanField(default=True)
     zipcode = models.CharField("zipcode", max_length=8, null=True, blank=True)
 
     class Meta:
