@@ -5,7 +5,7 @@ from django.db import transaction
 from django.shortcuts import redirect
 
 
-class OrderCreator:
+class OrderCreator(LoginRequiredMixin):
     """Класс для создания заказа."""
 
     @classmethod

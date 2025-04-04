@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, FormView, ListView
 
 from .forms import CustomerForm, ReviewForm
 from .models import Category, Product
@@ -22,7 +22,7 @@ class Index(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Главная страница"
-        context["products"] = Product.objects.order_by("-watched")[:12]
+        context["products"] = Product.objects.filter(available=True)[:12]
         return context
 
 
@@ -91,13 +91,19 @@ class ProductDetail(DetailView):
         return context
 
 
-def add_review(request, product_pk):
-    """Сохранение отзыва."""
-    form = ReviewForm(request.POST)
-    if form.is_valid():
+class AddReviewView(FormView):
+    """Добавление отзыва."""
+
+    form_class = ReviewForm
+
+    def form_valid(self, form, **kwargs):
         review = form.save(commit=False)
-        review.author = request.user
-        product = Product.objects.get(pk=product_pk)
+        review.author = self.request.user
+        product = Product.objects.get(pk=self.kwargs["pk"])
         review.product = product
         review.save()
         return redirect("shop:product_detail", slug=product.slug)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Ошибка добавления отзыва")
+        return redirect("shop:product_detail", slug=self.kwargs["slug"])
