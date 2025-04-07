@@ -13,6 +13,7 @@ class Index(ListView):
     """Главная страница."""
 
     model = Category
+    context_object_name = "categories"
     template_name = "index/index.html"
 
     def get_queryset(self):
