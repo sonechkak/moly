@@ -22,20 +22,24 @@ def hello(request):
 
 urlpatterns = [
     # Профиль
-    path("profile/<int:pk>", ProfileView.as_view(), name="profile"),
-    path("profile/<int:pk>/update/", ProfileUpdateView.as_view(), name="profile-update"),
+    path(r"^profile/<int:pk>", ProfileView.as_view(), name="profile"),
+    path(r"^profile/<int:pk>/update/", ProfileUpdateView.as_view(), name="profile-update"),
     # Адреса доставки
-    path("profile/<int:pk>/address/create/", ShippingAddressCreateView.as_view(), name="address-create"),
+    path(r"^profile/<int:pk>/address/create/", ShippingAddressCreateView.as_view(), name="address-create"),
     path(
-        "profile/<int:pk>/address/<int:address_pk>/update/", ShippingAddressUpdateView.as_view(), name="address-update"
+        r"^profile/<int:pk>/address/<int:address_pk>/update/",
+        ShippingAddressUpdateView.as_view(),
+        name="address-update",
     ),
     path(
-        "profile/<int:pk>/address/<int:address_pk>/delete/", ShippingAddressDeleteView.as_view(), name="address-delete"
+        r"^profile/<int:pk>/address/<int:address_pk>/delete/",
+        ShippingAddressDeleteView.as_view(),
+        name="address-delete",
     ),
     path(
-        "profile/<int:pk>/address/<int:address_pk>/set_primary/",
+        r"^profile/<int:pk>/address/<int:address_pk>/set_primary/",
         ShippingAddressSetPrimaryView.as_view(),
         name="address-set-primary",
     ),
-    path("hello/", hello, name="hello"),
+    path(r"^hello/", hello, name="hello"),
 ]

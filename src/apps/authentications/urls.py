@@ -9,7 +9,7 @@ from .views import (
 app_name = "auth"
 
 urlpatterns = [
-    path("login/", LoginView.as_view(), name="login"),
-    path("logout/", LogoutUserView.as_view(), name="logout"),
-    path("register/", RegistrationView.as_view(), name="register"),
+    path(r"^login/", LoginView.as_view(), name="login"),
+    path(r"^logout/", LogoutUserView.as_view(), name="logout"),
+    path(r"^register/", RegistrationView.as_view(), name="register"),
 ]

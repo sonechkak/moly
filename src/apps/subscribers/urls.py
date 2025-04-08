@@ -8,5 +8,5 @@ app_name = "subscribers"
 
 
 urlpatterns = [
-    path("subscribe/", SaveSubscribers.as_view(), name="subscribe"),
+    path(r"^subscribe/", SaveSubscribers.as_view(), name="subscribe"),
 ]
