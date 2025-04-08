@@ -1,4 +1,5 @@
 from apps.baskets.models import Basket, BasketProduct
+from apps.users.forms import ShippingForm
 from apps.users.models import Profile
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,7 +7,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, FormView
 from utils.order_creator import OrderCreator
 
-from .forms import ShippingForm
 from .models import Order
 
 

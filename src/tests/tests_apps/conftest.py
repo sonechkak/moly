@@ -1,20 +1,15 @@
+import tempfile
+
 import pytest
+from PIL import Image
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 
-from apps.baskets.models import (
-    Basket,
-    BasketProduct,
-)
+from apps.baskets.models import *
 from apps.favs.models import FavoriteProducts
 from apps.orders.models import Order, OrderProduct
-from apps.shop.models import (
-    Product,
-    Category,
-    Brand,
-    Review,
-    Gallery
-)
+from apps.shop.models import *
 from apps.users.models import Profile
 
 
@@ -35,6 +30,17 @@ def category(transactional_db):
     return category
 
 @pytest.fixture
+def categories(transactional_db):
+    categories = []
+    for i in range(5):
+        category = Category.objects.create(
+            title=f"test_category_{i}",
+            slug=f"test_category_{i}",
+        )
+        categories.append(category)
+    return categories
+
+@pytest.fixture
 def brand(transactional_db):
     brand = Brand.objects.create(
         title="Apple",
@@ -44,8 +50,8 @@ def brand(transactional_db):
     return brand
 
 @pytest.fixture
-def product(transactional_db):
-    return Product.objects.create(
+def product(transactional_db, category, brand):
+    product = Product.objects.create(
         title="Тестовый товар",
         price=100,
         watched=0,
@@ -55,7 +61,30 @@ def product(transactional_db):
         size=30,
         color="Красный",
         slug="test-product",
+        brand=brand,
     )
+    product.category.set([category])
+    return product
+
+@pytest.fixture
+def products(transactional_db, categories, brand):
+    products = []
+    for i in range(12):
+        product = Product.objects.create(
+            title=f"Товар {i}",
+            price=100 + i,
+            watched=10 + i,
+            quantity=10,
+            description="Описание",
+            info="Информация",
+            size=30,
+            color="Красный",
+            slug=f"test-product-{i}",
+            brand=brand,
+        )
+        product.category.set([categories[i % len(categories)]])
+        products.append(product)
+    return products
 
 @pytest.fixture
 def basket_with_product(transactional_db, user, product):
@@ -122,3 +151,22 @@ def order(transactional_db, user, basket_with_products):
             price=basket_product.get_total_price,
         )
     return order
+
+@pytest.fixture
+def test_avatar():
+    # Create a temporary file
+    image_file = tempfile.NamedTemporaryFile(suffix='.jpg')
+
+    # Create a small PIL image and save it to the temporary file
+    image = Image.new('RGB', (100, 100), color='red')
+    image.save(image_file, format='JPEG')
+
+    # Seek to the beginning of the file
+    image_file.seek(0)
+
+    # Create a SimpleUploadedFile from the temporary file
+    return SimpleUploadedFile(
+        "test_avatar.jpg",
+        image_file.read(),
+        content_type="image/jpeg"
+    )

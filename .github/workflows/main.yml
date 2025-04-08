@@ -130,17 +130,17 @@ jobs:
             sonyakarmeva1/moly:latest
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: push_to_registry
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: humbertocrispim/ssh-docker-compose-action@v1.0.0
-        name: Remote Deployment with Docker-Compose
-        with:
-          ssh_host: ${{ secrets.REMOTE_HOST }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh_user: ${{ secrets.SSH_USER }}
-          docker_compose_prefix: sonechkak_ru
-          pull: true # Update images when pulling
+#  deploy:
+#    runs-on: ubuntu-latest
+#    needs: push_to_registry
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - uses: humbertocrispim/ssh-docker-compose-action@v1.0.0
+#        name: Remote Deployment with Docker-Compose
+#        with:
+#          ssh_host: ${{ secrets.REMOTE_HOST }}
+#          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          ssh_user: ${{ secrets.SSH_USER }}
+#          docker_compose_prefix: sonechkak_ru
+#          pull: true # Update images when pulling
