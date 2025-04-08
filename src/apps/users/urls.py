@@ -13,7 +13,6 @@ from .views import (
 
 app_name = "users"
 
-import datetime
 
 from django.http import HttpResponse
 
