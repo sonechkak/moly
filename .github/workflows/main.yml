@@ -141,7 +141,9 @@ jobs:
           username: moly
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          script: pwd
+          script: |
+            cd moly
+            make docker-prod
 #  deploy:
 #    runs-on: ubuntu-latest
 #    needs: push_to_registry

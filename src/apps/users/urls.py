@@ -18,9 +18,8 @@ import datetime
 from django.http import HttpResponse
 
 
-def current_datetime(request):
-    now = datetime.datetime.now(pytz.timezone(settings.TIME_ZONE))
-    html = "<html><body>It is now %s.</body></html>" % now
+def hello(request):
+    html = "<html><body>Hello world</body></html>"
     return HttpResponse(html)
 
 
@@ -41,5 +40,5 @@ urlpatterns = [
         ShippingAddressSetPrimaryView.as_view(),
         name="address-set-primary",
     ),
-    path("hello/", current_datetime, name="hello"),
+    path("hello/", hello, name="hello"),
 ]
