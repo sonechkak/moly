@@ -1,45 +1,51 @@
-FROM python:3.13-alpine
+#python:3.10.16-alpine3.21
+FROM python:3.13-alpine as poetry
 
-LABEL maintainer="Sonya Karmeeva"
+#Hadolint DL4006
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
-ENV PYTHONUNBUFFERED 1
-ENV POETRY_HOME=/opt/poetry
-ENV PATH="$POETRY_HOME/bin:$PATH"
-ENV PYTHONPATH=/app
+#RUN adduser -h /app -D python &&      apk add --no-cache poetry
+RUN adduser -h /app -D python
+
+#USER python
+WORKDIR /
+
+ENV POETRY_HOME="/" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1
+
+ENV \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100
+
+ENV PATH="/app/venv/bin:/app/.local/bin:${PATH}"
+
+COPY ./pyproject.toml ./poetry.lock   /
+
+RUN python -c 'from urllib.request import urlopen; print(urlopen("https://install.python-poetry.org").read().decode())' | python -
+
+RUN poetry install --only main --no-root && \
+     chown -R python:python /.venv
+
+#python:3.10.16-alpine3.21
+FROM python:3.13-alpine as runtime
+
+RUN adduser -h /app -D python && \
+     apk add --no-cache gettext
+USER python
 
 WORKDIR /app
 
-RUN apk update && apk add --no-cache \
-    curl \
-    gcc \
-    musl-dev \
-    python3-dev \
-    libffi-dev \
-    openssl-dev \
-    postgresql-dev
-
-# Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
-    chmod a+x /opt/poetry/bin/poetry
-
-# Файлы зависимостей
-COPY pyproject.toml poetry.lock ./
-
-# Установка зависимостей
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-root --no-interaction --no-ansi
 
 # Копируем код проекта
-COPY src/ /app/src
+
 COPY entrypoint.sh /app/entrypoint.sh
 
 # Создаем и настраиваем пользователя
-RUN mkdir -p /vol/web/media /vol/web/static /app/conf/beat && \
-    adduser -D user && \
-    chown -R user:user /vol/ /app && \
-    chmod -R 755 /vol/web && \
-    chmod -R 777 /app/conf/beat
+COPY --chown=python:python --from=poetry /.venv /.venv
+ENV PATH="/.venv/bin:${PATH}"
 
-USER user
+COPY --chown=python:python ./src ./pyproject.toml ./poetry.lock /app/
 
 CMD ["/app/entrypoint.sh"]
