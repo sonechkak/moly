@@ -138,10 +138,10 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST }}
-          username: linuxserver.io
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: whoami
+          username: moly
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: pwd
 #  deploy:
 #    runs-on: ubuntu-latest
 #    needs: push_to_registry
