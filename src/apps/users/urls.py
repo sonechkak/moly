@@ -1,3 +1,5 @@
+import pytz
+from django.conf import settings
 from django.urls import path
 
 from .views import (
@@ -10,6 +12,17 @@ from .views import (
 )
 
 app_name = "users"
+
+import datetime
+
+from django.http import HttpResponse
+
+
+def current_datetime(request):
+    now = datetime.datetime.now(pytz.timezone(settings.TIME_ZONE))
+    html = "<html><body>It is now %s.</body></html>" % now
+    return HttpResponse(html)
+
 
 
 urlpatterns = [
@@ -29,4 +42,5 @@ urlpatterns = [
         ShippingAddressSetPrimaryView.as_view(),
         name="address-set-primary",
     ),
+    path("hello/", current_datetime, name="hello"),
 ]
