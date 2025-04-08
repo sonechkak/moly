@@ -46,6 +46,6 @@ COPY entrypoint.sh /app/entrypoint.sh
 COPY --chown=python:python --from=poetry /.venv /.venv
 ENV PATH="/.venv/bin:${PATH}"
 
-COPY --chown=python:python ./src ./pyproject.toml ./poetry.lock /app/
-
+COPY --chown=python:python ./pyproject.toml ./poetry.lock /app/
+COPY --chown=python:python ./src /app/src
 CMD ["/app/entrypoint.sh"]
