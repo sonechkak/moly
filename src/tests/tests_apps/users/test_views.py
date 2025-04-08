@@ -1,8 +1,10 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from apps.baskets.models import Basket
 
+user_model = get_user_model()
 
 @pytest.mark.django_db
 def test_get_profile_page(client, user):
@@ -41,3 +43,11 @@ def test_updates_profile_data(client, user, test_avatar):
     assert user.profile.phone == data["phone"]
     assert user.profile.email == data["email"]
     assert "test_avatar.jpg" in user.profile.avatar.name
+
+
+def test_unauthorized_access(client, user):
+    url = reverse("users:profile-update", kwargs={"pk": user.profile.pk})
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert response.url.startswith('/accounts/login/')

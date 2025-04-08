@@ -35,7 +35,6 @@ def test_registration_view(client):
     assert response.url == reverse("users:profile", kwargs={"pk": user.id})
     assert Profile.objects.filter(user=user).exists()
 
-
 @pytest.mark.django_db
 def test_logout_view(client, user):
     """Тест для LogoutView."""
