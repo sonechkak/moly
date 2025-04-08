@@ -112,6 +112,12 @@ def basket_with_products(transactional_db, user, product):
     return basket
 
 @pytest.fixture
+def favorite_product(transactional_db, user, product):
+    fav, _ = Basket.objects.get_or_create(user=user)
+    fav_product = FavoriteProducts.objects.create(user=user, product=product)
+    return fav_product
+
+@pytest.fixture
 def favs_with_products(transactional_db, user):
     products = []
     for i in range(3):
