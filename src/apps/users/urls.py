@@ -24,7 +24,6 @@ def current_datetime(request):
     return HttpResponse(html)
 
 
-
 urlpatterns = [
     # Профиль
     path("profile/<int:pk>", ProfileView.as_view(), name="profile"),
