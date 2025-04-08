@@ -16,6 +16,7 @@ psycopg2-binary = "^2.9.10"
 stripe = "^11.6.0"
 django-celery-beat = "^2.7.0"
 redis = ">=4.0.0"
+pytz = "^2025.2"
 
 
 [tool.poetry.group.dev.dependencies]

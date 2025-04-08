@@ -129,7 +129,21 @@ jobs:
             ${{ steps.meta.outputs.tags }}
             sonyakarmeva1/moly:latest
           labels: ${{ steps.meta.outputs.labels }}
-
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    steps:
+      - uses: actions/checkout@v3
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: moly
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd moly
+            make docker-prod
 #  deploy:
 #    runs-on: ubuntu-latest
 #    needs: push_to_registry

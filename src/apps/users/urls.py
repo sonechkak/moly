@@ -12,6 +12,14 @@ from .views import (
 app_name = "users"
 
 
+from django.http import HttpResponse
+
+
+def hello(request):
+    html = "<html><body>Hello world</body></html>"
+    return HttpResponse(html)
+
+
 urlpatterns = [
     # Профиль
     path("profile/<int:pk>", ProfileView.as_view(), name="profile"),
@@ -29,4 +37,5 @@ urlpatterns = [
         ShippingAddressSetPrimaryView.as_view(),
         name="address-set-primary",
     ),
+    path("hello/", hello, name="hello"),
 ]
