@@ -50,12 +50,12 @@
             </li>
           {% endif %}
         </ul>
-        {% if user.is_authenticated %}
+        {% if request.user.is_authenticated %}
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'baskets:basket' user.basket.pk %}">
+              <a class="nav-link" href="{% url 'baskets:basket' request.user.basket.pk %}">
                 <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
-                {% if products %}
+                {% if request.user.basket.ordered_n %}
                   <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
                 {% else %}
                   <small class="text-gray">(0)</small>

@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>
+                            {{ title }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'users:address-update' user.profile.pk address.pk %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    Пожалуйста, исправьте ошибки ниже
+                                </div>
+                            {% endif %}
+
+                            <div class="row g-3 mb-4">
+                                <!-- Основная информация -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">Название для
+                                        адреса*</label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.title.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="{{ form.city.id_for_label }}" class="form-label">Город*</label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.city.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="{{ form.state.id_for_label }}"
+                                           class="form-label">Область/Регион*</label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.state.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Адресная часть -->
+                                <div class="col-md-8">
+                                    <label for="{{ form.street.id_for_label }}" class="form-label">Улица*</label>
+                                    {{ form.street }}
+                                    {% if form.street.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.street.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.house.id_for_label }}" class="form-label">Дом*</label>
+                                    {{ form.house }}
+                                    {% if form.house.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.house.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Дополнительная информация -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.apartment.id_for_label }}"
+                                           class="form-label">Квартира</label>
+                                    {{ form.apartment }}
+                                    {% if form.apartment.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.apartment.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="{{ form.zipcode.id_for_label }}" class="form-label">Почтовый
+                                        индекс</label>
+                                    {{ form.zipcode }}
+                                    {% if form.zipcode.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.zipcode.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Контактная информация -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.recipient.id_for_label }}"
+                                           class="form-label">Получатель*</label>
+                                    {{ form.recipient }}
+                                    {% if form.recipient.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.recipient.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="{{ form.contact.id_for_label }}" class="form-label">Контактный
+                                        телефон*</label>
+                                    {{ form.contact }}
+                                    {% if form.contact.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.contact.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Чекбокс основного адреса -->
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        {{ form.is_primary }}
+                                        <label class="form-check-label" for="{{ form.is_primary.id_for_label }}">
+                                            Использовать как основной адрес доставки
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'users:profile' user.pk %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i> Назад
+                                </a>
+                                <div>
+                                    <button type="submit" name="save" class="btn btn-primary me-2">
+                                        <i class="bi bi-check-circle me-1"></i> Сохранить
+                                    </button>
+                                    <form method="post"
+                                          action="{% url 'users:address-delete' user.profile.pk address.id %}"
+                                          class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger small"
+                                                onclick="return confirm('Удалить этот адрес?')">
+                                            <i class="bi bi-trash me-1"></i> Удалить
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
