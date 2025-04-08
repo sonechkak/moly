@@ -1,20 +1,15 @@
+import tempfile
+
 import pytest
+from PIL import Image
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 
-from apps.baskets.models import (
-    Basket,
-    BasketProduct,
-)
+from apps.baskets.models import *
 from apps.favs.models import FavoriteProducts
 from apps.orders.models import Order, OrderProduct
-from apps.shop.models import (
-    Product,
-    Category,
-    Brand,
-    Review,
-    Gallery
-)
+from apps.shop.models import *
 from apps.users.models import Profile
 
 
@@ -156,3 +151,22 @@ def order(transactional_db, user, basket_with_products):
             price=basket_product.get_total_price,
         )
     return order
+
+@pytest.fixture
+def test_avatar():
+    # Create a temporary file
+    image_file = tempfile.NamedTemporaryFile(suffix='.jpg')
+
+    # Create a small PIL image and save it to the temporary file
+    image = Image.new('RGB', (100, 100), color='red')
+    image.save(image_file, format='JPEG')
+
+    # Seek to the beginning of the file
+    image_file.seek(0)
+
+    # Create a SimpleUploadedFile from the temporary file
+    return SimpleUploadedFile(
+        "test_avatar.jpg",
+        image_file.read(),
+        content_type="image/jpeg"
+    )

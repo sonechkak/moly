@@ -1,179 +1,175 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% include 'users/_components/style.html' %}
 
 {% block content %}
-  <div class="container py-5">
-    <div class="row">
-      <!-- Боковая панель профиля -->
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-body text-center">
-            <div class="mb-3">
-              <img src=" {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
-                   class="rounded-circle img-thumbnail"
-                   width="150"
-                   height="150"
-                   alt="Аватар" />
+    <div class="container py-5">
+        <div class="row">
+            <!-- Боковая панель профиля -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <img src="
+                                    {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
+                                 class="rounded-circle img-thumbnail"
+                                 width="150"
+                                 height="150"
+                                 alt="Аватар"/>
+                        </div>
+                        <h4 class="card-title">
+                            {% if user.profile.first_name or user.profile.last_name %}
+                                {{ user.profile.first_name }} {{ user.profile.last_name }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
+                        </h4>
+                        <p class="text-muted mb-1">{{ user.email }}</p>
+                        <p class="text-muted">{{ user.profile.phone|default:"Телефон не указан" }}</p>
+                        <!-- Меню профиля -->
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'users:profile' user.pk %}">
+                                    <i class="bi bi-person-fill me-2"></i>Личные данные
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="bi bi-bag-fill me-2"></i>Мои заказы
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <h4 class="card-title">
-              {% if user.profile.first_name or user.profile.last_name %}
-                {{ user.profile.first_name }} {{ user.profile.last_name }}
-              {% else %}
-                {{ user.username }}
-              {% endif %}
-            </h4>
-            <p class="text-muted mb-1">{{ user.email }}</p>
-            <p class="text-muted">{{ user.profile.phone|default:"Телефон не указан" }}</p>
-            <!-- Меню профиля -->
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link active" href="{% url 'users:profile' user.pk %}">
-                  <i class="bi bi-person-fill me-2"></i>Личные данные
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <i class="bi bi-bag-fill me-2"></i>Мои заказы
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <!-- Основное содержимое профиля -->
-      <div class="col-md-8">
-        <div class="card shadow-sm">
-          <div class="card-header bg-white">
-            <h5 class="mb-0">Личные данные</h5>
-          </div>
-          <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="row g-3">
-                <!-- Аватар -->
-                <div class="col-12">
-                  <label for="avatar" class="form-label">Аватар</label>
-                  <input class="form-control" type="file" id="avatar" name="avatar" />
+            <!-- Основное содержимое профиля -->
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Личные данные</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'users:profile-update' user.profile.pk %}" method="post"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <!-- Аватар -->
+                                <div class="col-12">
+                                    <label for="avatar" class="form-label">Аватар</label>
+                                    <input class="form-control" type="file" id="avatar" name="avatar"/>
+                                </div>
+                                <!-- Основные поля -->
+                                <div class="col-md-6">
+                                    <label for="first_name" class="form-label">Имя</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="first_name"
+                                           name="first_name"
+                                           value="{{ user.profile.first_name|default:'' }}"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="last_name" class="form-label">Фамилия</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="last_name"
+                                           name="last_name"
+                                           value="{{ user.profile.last_name|default:'' }}"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email"
+                                           class="form-control"
+                                           id="email"
+                                           name="email"
+                                           value="{{ user.email|default:'' }}"
+                                           required/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Телефон</label>
+                                    <input type="tel"
+                                           class="form-control"
+                                           id="phone"
+                                           name="phone"
+                                           value="{{ user.profile.phone|default:'' }}"/>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary px-4">Сохранить изменения</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <!-- Основные поля -->
-                <div class="col-md-6">
-                  <label for="first_name" class="form-label">Имя</label>
-                  <input type="text"
-                         class="form-control"
-                         id="first_name"
-                         name="first_name"
-                         value="{{ user.profile.first_name|default:'' }}" />
-                </div>
-                <div class="col-md-6">
-                  <label for="last_name" class="form-label">Фамилия</label>
-                  <input type="text"
-                         class="form-control"
-                         id="last_name"
-                         name="last_name"
-                         value="{{ user.profile.last_name|default:'' }}" />
-                </div>
-                <div class="col-md-6">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email"
-                         class="form-control"
-                         id="email"
-                         name="email"
-                         value="{{ user.email|default:'' }}"
-                         required />
-                </div>
-                <div class="col-md-6">
-                  <label for="phone" class="form-label">Телефон</label>
-                  <input type="tel"
-                         class="form-control"
-                         id="phone"
-                         name="phone"
-                         value="{{ user.profile.phone|default:'' }}" />
-                </div>
-                <div class="col-12 mt-4">
-                  <button type="submit" class="btn btn-primary px-4">Сохранить изменения</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <!-- Блок с адресами доставки -->
-        <div class="card shadow-sm mt-4">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Адреса доставки</h5>
-            <a href="#" class="btn btn-sm btn-outline-primary">
-              <i class="bi bi-plus"></i> Добавить адрес
-            </a>
-          </div>
-          <div class="card-body">
-            {% if user.profile.address.all %}
-              <div class="list-group">
-                {% for address in user.profile.address.all %}
-                  <div class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div>
-                        <h6 class="mb-1">
-                          {% if address.is_primary %}<span class="badge bg-primary me-2">Основной</span>{% endif %}
-                          Адрес #{{ forloop.counter }}
-                        </h6>
-                        <p class="mb-1">
-                          {{ address.city }}, {{ address.street }}, д. {{ address.house }}
-                          {% if address.apartment %}, кв. {{ address.apartment }}{% endif %}
-                        </p>
-                        <small class="text-muted">{{ address.zipcode }}</small>
-                      </div>
-                      <div class="btn-group">
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                          <i class="bi bi-pencil"></i>
+                <!-- Блок с адресами доставки -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Адреса доставки</h5>
+                        <a href="{% url 'users:address-create' user.profile.pk %}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus"></i> Добавить адрес
                         </a>
-                        <a href="#" class="btn btn-sm btn-outline-danger">
-                          <i class="bi bi-trash"></i>
-                        </a>
-                      </div>
                     </div>
-                  </div>
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="alert alert-info mb-0">У вас нет сохранённых адресов доставки</div>
-            {% endif %}
-          </div>
-          <div class="card-body">
-            <div class="list-group">
-              {% for address in user.profile.address.all %}
-                <div class="list-group-item">
-                  <div class="d-flex justify-content-between">
-                    <div>
-                      <h6 class="mb-1">
-                        {% if address.is_primary %}<span class="badge bg-primary me-2">Основной</span>{% endif %}
-                        Адрес #{{ forloop.counter }}
-                      </h6>
-                      <p class="mb-1">
-                        {{ address.city }}, {{ address.street }}, д. {{ address.house }}
-                        {% if address.apartment %}, кв. {{ address.apartment }}{% endif %}
-                      </p>
-                      <small class="text-muted">{{ address.zipcode }}</small>
+                    <div class="card-body">
+                        {% if user.profile.address.all %}
+                            <div class="list-group">
+                                {% for address in user.profile.address.all|dictsortreversed:"is_primary" %}
+                                    <div class="list-group-item {% if address.is_primary %}border-primary{% endif %}">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="me-3">
+                                                <h6 class="mb-1">
+                                                    {% if address.is_primary %}
+                                                        <span class="badge bg-primary me-2">Основной</span>
+                                                    {% endif %}
+                                                    {{ address.title }}
+                                                </h6>
+                                                <p class="mb-1">
+                                                    {{ address.city }}, {{ address.street }}, д. {{ address.house }}
+                                                    {% if address.apartment %}, кв. {{ address.apartment }}{% endif %}
+                                                </p>
+                                                <small class="text-muted">{{ address.zipcode }}</small>
+                                            </div>
+                                            <div class="btn-group btn-group-sm d-flex" style="gap: 5px;">
+                                                {% if not address.is_primary %}
+                                                    <form method="post"
+                                                          action="{% url 'users:address-set-primary' pk=user.profile.pk address_pk=address.pk %}"
+                                                          class="d-inline-flex flex-fill">
+                                                        {% csrf_token %}
+                                                        <button type="submit"
+                                                                class="btn btn-outline-primary flex-fill text-nowrap"
+                                                                title="Сделать основным">
+                                                            <i class="bi bi-star"></i> Основной
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                                <a href="{% url 'users:address-update' pk=user.profile.pk address_pk=address.pk %}"
+                                                   class="btn btn-outline-secondary flex-fill text-nowrap">
+                                                    <i class="bi bi-pencil"></i> Изменить
+                                                </a>
+                                                <form method="post"
+                                                      action="{% url 'users:address-delete' pk=user.pk address_pk=address.pk %}"
+                                                      class="d-inline-flex flex-fill">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger flex-fill text-nowrap">
+                                                        <i class="bi bi-trash"></i> Удалить
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">У вас нет сохранённых адресов доставки</div>
+                        {% endif %}
                     </div>
-                    <div class="btn-group">
-                      <a href="#" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                      <a href="#" class="btn btn-sm btn-outline-danger">
-                        <i class="bi bi-trash"></i>
-                      </a>
-                    </div>
-                  </div>
                 </div>
-              {% endfor %}
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 {% endblock %}
+{% include 'users/_components/js.html' %}

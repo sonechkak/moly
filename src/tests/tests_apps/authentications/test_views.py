@@ -2,6 +2,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+from apps.users.models import Profile
+
 
 @pytest.mark.django_db
 def test_login_view(client, user):
@@ -31,6 +33,8 @@ def test_registration_view(client):
     user = user_model.objects.get(username="test_user")
 
     assert response.url == reverse("users:profile", kwargs={"pk": user.id})
+    assert Profile.objects.filter(user=user).exists()
+
 
 @pytest.mark.django_db
 def test_logout_view(client, user):
