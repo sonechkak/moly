@@ -95,7 +95,8 @@ docker-test:
 
 docker-prod:
 	$(INFO) "Запуск prod окружения в Docker..."
-	docker compose down -f docker-compose.prod.yml web celery celery-beat
+	git pull
+	docker compose -f docker-compose.prod.yml down
 	docker compose pull -f docker-compose.prod.yml
 	docker compose -f docker-compose.prod.yml up -d --quiet-pull --force-recreate web
 	docker compose -f docker-compose.prod.yml up -d  --quiet-pull --force-recreate celery
