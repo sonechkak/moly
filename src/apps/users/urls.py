@@ -1,18 +1,9 @@
-from django.urls import path
+from django.http import HttpResponse
+from django.urls import path, re_path
 
-from .views import (
-    ProfileUpdateView,
-    ProfileView,
-    ShippingAddressCreateView,
-    ShippingAddressDeleteView,
-    ShippingAddressSetPrimaryView,
-    ShippingAddressUpdateView,
-)
+from .views import *
 
 app_name = "users"
-
-
-from django.http import HttpResponse
 
 
 def hello(request):
@@ -22,7 +13,7 @@ def hello(request):
 
 urlpatterns = [
     # Профиль
-    path("profile/<int:pk>", ProfileView.as_view(), name="profile"),
+    path("profile/<int:pk>/", ProfileView.as_view(), name="profile"),
     path("profile/<int:pk>/update/", ProfileUpdateView.as_view(), name="profile-update"),
     # Адреса доставки
     path("profile/<int:pk>/address/create/", ShippingAddressCreateView.as_view(), name="address-create"),

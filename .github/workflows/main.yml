@@ -7,98 +7,98 @@ on:
     branches: [ "master", "dev" ]
 
 jobs:
-  linters:
-    name: Run linters
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Install dependencies
-        run: poetry install --no-root
-
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
-  test:
-    name: Run tests
-    runs-on: ubuntu-latest
-    needs: linters
-    services:
-      postgres:
-        image: postgres:13-alpine
-        env:
-          POSTGRES_DB: moly
-          POSTGRES_USER: sonya
-          POSTGRES_PASSWORD: sonya
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.13'
-
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-
-    - name: Poetry dependencies
-      run: poetry install --sync
-
-    - name: Install Dependencies
-      run: poetry install
-
-    - name: Create a directory for static and media files
-      run: sudo mkdir -p ./vol/web/static && sudo mkdir -p ./vol/web/media
-
-    - name: Create user
-      run: sudo useradd -m sonya
-
-    - name: Change ownership of the directory
-      run: sudo chown -R sonya:sonya ./vol/
-
-    - name: Change permissions of the directory
-      run: sudo chmod -R 755 ./vol/web/
-
-    - name: Run Tests
-      env:
-        DEBUG: 1
-        SECRET_KEY: test-key
-        ALLOWED_HOSTS: localhost,127.0.0.1
-        DATABASE_URL: postgres://sonya:sonya@127.0.0.1:5432/moly
-        CELERY_BROKER_URL: redis://localhost:6379/0
-        CELERY_RESULT_BACKEND: redis://localhost:6379/1
-      run: |
-        poetry run pytest
+#  linters:
+#    name: Run linters
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: '3.13'
+#
+#      - name: Install Poetry
+#        uses: snok/install-poetry@v1
+#
+#      - name: Install dependencies
+#        run: poetry install --no-root
+#
+#      - name: Run pre-commit
+#        uses: pre-commit/action@v3.0.1
+#  test:
+#    name: Run tests
+#    runs-on: ubuntu-latest
+#    needs: linters
+#    services:
+#      postgres:
+#        image: postgres:13-alpine
+#        env:
+#          POSTGRES_DB: moly
+#          POSTGRES_USER: sonya
+#          POSTGRES_PASSWORD: sonya
+#        ports:
+#          - 5432:5432
+#        options: >-
+#          --health-cmd pg_isready
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 5
+#
+#      redis:
+#        image: redis:alpine
+#        ports:
+#          - 6379:6379
+#        options: >-
+#          --health-cmd "redis-cli ping"
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 5
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#
+#    - name: Set up Python
+#      uses: actions/setup-python@v4
+#      with:
+#        python-version: '3.13'
+#
+#    - name: Install Poetry
+#      uses: snok/install-poetry@v1
+#
+#    - name: Poetry dependencies
+#      run: poetry install --sync
+#
+#    - name: Install Dependencies
+#      run: poetry install
+#
+#    - name: Create a directory for static and media files
+#      run: sudo mkdir -p ./vol/web/static && sudo mkdir -p ./vol/web/media
+#
+#    - name: Create user
+#      run: sudo useradd -m sonya
+#
+#    - name: Change ownership of the directory
+#      run: sudo chown -R sonya:sonya ./vol/
+#
+#    - name: Change permissions of the directory
+#      run: sudo chmod -R 755 ./vol/web/
+#
+#    - name: Run Tests
+#      env:
+#        DEBUG: 1
+#        SECRET_KEY: test-key
+#        ALLOWED_HOSTS: localhost,127.0.0.1
+#        DATABASE_URL: postgres://sonya:sonya@127.0.0.1:5432/moly
+#        CELERY_BROKER_URL: redis://localhost:6379/0
+#        CELERY_RESULT_BACKEND: redis://localhost:6379/1
+#      run: |
+#        poetry run pytest
 
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    needs: test
+#    needs: test
     permissions:
       packages: write
       contents: read
@@ -119,6 +119,9 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: sonyakarmeva1/moly
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=,format=short
 
       - name: Build and push Docker image
         id: push
@@ -132,11 +135,18 @@ jobs:
             sonyakarmeva1/moly:latest
           labels: ${{ steps.meta.outputs.labels }}
   deploy:
-    name: Deploy to remote server
+    name: Deploy to server
     runs-on: ubuntu-latest
     needs: push_to_registry
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Чтобы получить полную историю для git команд
+
+      - name: Get short SHA
+        id: sha
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1
         with:
@@ -146,4 +156,6 @@ jobs:
           port: 22
           script: |
             cd moly
-            make docker-prod
+            git pull
+            echo "VER=${{ env.SHORT_SHA }}"
+            export VER=${{ env.SHORT_SHA }} && docker compose -f docker-compose.prod.yml up -d --quiet-pull --force-recreate

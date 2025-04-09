@@ -91,10 +91,11 @@ docker-test:
 	$(INFO) "Запуск тестов в Docker..."
 	docker compose -f docker-compose.yml up -d --build web
 	docker compose -f docker-compose.yml up -d --build celery
-	 compose -f docker-compose.yml up -d --build celery-beatdocker
+	compose -f docker-compose.yml up -d --build celery-beatdocker
 
 docker-prod:
 	$(INFO) "Запуск prod окружения в Docker..."
+	docker compose down
 	docker compose pull
 	docker compose -f docker-compose.prod.yml up -d --quiet-pull --force-recreate web
 	docker compose -f docker-compose.prod.yml up -d  --quiet-pull --force-recreate celery

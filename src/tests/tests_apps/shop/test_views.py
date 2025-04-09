@@ -17,12 +17,11 @@ def test_index_page(client, products, categories):
     assert "title" in response.context
     assert response.context["title"] == "Главная страница"
     assert response.context["products"].count() == 12
-    # assert response.context["categories"].count() == 3
 
 @pytest.mark.django_db
 def test_all_products_page(client, products):
     """Тестирование страницы с продуктами."""
-    response = client.get("/all_products/")
+    response = client.get(reverse("shop:all_products"))
 
     assert response.status_code == 200
     assert "products" in response.context

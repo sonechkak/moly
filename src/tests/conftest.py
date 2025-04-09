@@ -1,5 +1,6 @@
+import shutil
+import tempfile
 from pathlib import Path
-
 import pytest
 
 
@@ -7,7 +8,6 @@ import pytest
 def load_local_dev_env():
     import os
     import sys
-
     from dotenv import load_dotenv
 
     python_path = Path(__file__).resolve().parent.parent
@@ -17,3 +17,11 @@ def load_local_dev_env():
         load_dotenv(env_file)
         return True
     return False
+
+@pytest.fixture
+def temp_media_root(settings):
+    """Фикстура для временной медиа-папки."""
+    tmpdir = tempfile.mkdtemp()
+    settings.MEDIA_ROOT = tmpdir
+    yield tmpdir
+    shutil.rmtree(tmpdir, ignore_errors=True)
