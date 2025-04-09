@@ -157,5 +157,4 @@ jobs:
           script: |
             cd moly
             git pull
-            export VER=${{ env.SHORT_SHA }}
-            make docker-prod
+            export VER=${{ env.SHORT_SHA }} && make docker-prod
