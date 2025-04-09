@@ -157,4 +157,4 @@ jobs:
           script: |
             cd moly
             git pull
-            export VER=${{ env.SHORT_SHA }} && docker-compose.prod.yml up -d --quiet-pull --force-recreate
+            export VER=${{ env.SHORT_SHA }} && docker compose -f docker-compose.prod.yml up -d --quiet-pull --force-recreate
