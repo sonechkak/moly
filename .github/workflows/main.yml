@@ -156,5 +156,6 @@ jobs:
           port: 22
           script: |
             cd moly
+            git pull
             export VER=${{ env.SHORT_SHA }}
             make docker-prod
