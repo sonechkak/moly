@@ -151,9 +151,9 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST }}
-          username: linuxserver.io
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
+          username: moly
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
             cd moly
             export VER=${{ env.SHORT_SHA }}
