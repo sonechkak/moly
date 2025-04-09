@@ -1,7 +1,5 @@
 import pytest
-from cfgv import ValidationError
 
-from apps.orders.models import OrderProduct
 from apps.users.models import Profile
 
 

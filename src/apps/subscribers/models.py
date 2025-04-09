@@ -11,18 +11,23 @@ user_model = get_user_model()
 class Subscribe(models.Model):
     """Подписка."""
 
-    email = models.EmailField()
+    email = models.EmailField(blank=True, null=True)
     user = models.ForeignKey(user_model, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
-    is_general = models.BooleanField(default=False)
+    is_general = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
 
     def __str__(self):
-        return self.email
+        return self.email or self.user.email
+
+    def save(self, *args, **kwargs):
+        if self.product or self.category:
+            self.is_general = False
+        super().save(*args, **kwargs)
 
 
 class Promotion(models.Model):
