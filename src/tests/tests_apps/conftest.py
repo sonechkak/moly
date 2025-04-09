@@ -159,7 +159,17 @@ def order(transactional_db, user, basket_with_products):
     return order
 
 @pytest.fixture
-def test_avatar():
+def order_product(transactional_db, order, product):
+    order_product = OrderProduct.objects.create(
+        order=order,
+        product=product,
+        quantity=2,
+        price=1000,
+    )
+    return order_product
+
+@pytest.fixture
+def avatar():
     # Create a temporary file
     image_file = tempfile.NamedTemporaryFile(suffix='.jpg')
 

@@ -18,7 +18,7 @@ def test_get_profile_page(client, user):
     assert response.context["title"] == f"Профиль пользователя: {user.username}"
 
 @pytest.mark.django_db
-def test_updates_profile_data(client, user, test_avatar):
+def test_updates_profile_data(temp_media_root, client, user, avatar):
     client.force_login(user)
     basket = Basket.objects.get_or_create(user=user)
 
@@ -31,7 +31,7 @@ def test_updates_profile_data(client, user, test_avatar):
         "last_name": "NewLastName",
         "phone": "9876543210",
         "email": "new@example.com",
-        "avatar": test_avatar
+        "avatar": avatar
     }
     response = client.post(url, data, follow=True)
 
