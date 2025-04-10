@@ -25,7 +25,7 @@ class LoginView(FormView):
         login(self.request, user)
         if user.profile.is_mfa_enabled:
             return redirect("auth:verify_2fa")
-
+        self.request.session["mfa_verified"] = True
         return redirect("users:profile", pk=user.pk)
 
     def form_invalid(self, form):
@@ -35,6 +35,8 @@ class LoginView(FormView):
 
 
 class VerifyView(FormView):
+    """Подтверждение 2FA при входе."""
+
     template_name = "auth/verify_2fa.html"
     form_class = Verify2FAForm
 
@@ -50,7 +52,7 @@ class VerifyView(FormView):
 
         totp = pyotp.TOTP(profile.mfa_hash)
         if totp.verify(token):
-            # Успешная проверка, разрешаем доступ
+            self.request.session["mfa_verified"] = True
             return redirect("users:profile", pk=user.pk)
         else:
             messages.error(self.request, "Неверный код 2FA!")
@@ -73,22 +75,21 @@ class RegistrationView(FormView):
     def form_valid(self, form):
         user = form.save()
         user.is_mfa_enabled = form.cleaned_data["is_mfa_enabled"]
-        Profile.objects.update(is_mfa_enabled=form.cleaned_data["is_mfa_enabled"])
+        user.save()
         messages.success(self.request, "Аккаунт пользователя успешно создан")
         if form.cleaned_data["is_mfa_enabled"]:
             messages.success(self.request, "Настройте 2FA с помощью Google Authenticator или аналогичного приложения.")
             return redirect("auth:qrcode")
-        return redirect("users:profile", pk=self.request.user.pk)
+        return redirect("auth:login")
 
     def form_invalid(self, form):
-        for field, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f"{field}: {error}")
+        for error in form.errors:
+            messages.error(self.request, f"{error}")
         return redirect("auth:register")
 
 
 class QrCodeView(FormView):
-    """Генерация QR-кода."""
+    """Генерация QR-кода для регистрации."""
 
     template_name = "auth/qrcode.html"
     form_class = Verify2FAForm

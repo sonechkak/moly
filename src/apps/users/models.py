@@ -23,7 +23,7 @@ class Profile(models.Model):
     first_name = models.CharField("first name", max_length=150, blank=True, null=True)
     last_name = models.CharField("last name", max_length=150, blank=True, null=True)
     avatar = models.ImageField("Аватар", upload_to=get_avatar_upload_path, null=True, blank=True)
-    email = models.EmailField("email address", blank=True, null=True)
+    email = models.EmailField("email address", unique=True, null=True, blank=True)
     phone = models.CharField("phone", max_length=20, blank=True, null=True)
     mfa_hash = models.CharField("MFA Hash", max_length=50, null=True, blank=True)
     is_mfa_enabled = models.BooleanField("MFA", default=False)
