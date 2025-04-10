@@ -17,6 +17,8 @@ stripe = "^11.6.0"
 django-celery-beat = "^2.7.0"
 redis = ">=4.0.0"
 pytz = "^2025.2"
+pyotp = "^2.9.0"
+qrcode = "^8.1"
 
 
 [tool.poetry.group.dev.dependencies]

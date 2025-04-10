@@ -1,3 +1,4 @@
+import pyotp
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -10,6 +11,9 @@ class User(AbstractUser):
     username = models.CharField("Username", unique=True, max_length=255, null=True, blank=True)
     first_name = None
     last_name = None
+    is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
 
 class Profile(models.Model):
@@ -21,12 +25,25 @@ class Profile(models.Model):
     avatar = models.ImageField("Аватар", upload_to=get_avatar_upload_path, null=True, blank=True)
     email = models.EmailField("email address", blank=True, null=True)
     phone = models.CharField("phone", max_length=20, blank=True, null=True)
+    mfa_hash = models.CharField("MFA Hash", max_length=50, null=True, blank=True)
+    is_mfa_enabled = models.BooleanField("MFA", default=False)
+
+    class Meta:
+        verbose_name = "Профиль"
+        verbose_name_plural = "Профили"
 
     def __str__(self):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         else:
             return self.user.username or self.user.email
+
+    def get_mfa_hash(self):
+        """Возвращает хэш MFA."""
+        return pyotp.totp.TOTP(self.mfa_hash).provisioning_uri(
+            name=self.user.username or self.user.email,
+            issuer_name="moly",
+        )
 
 
 class ShippingAddress(models.Model):

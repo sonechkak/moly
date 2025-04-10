@@ -1,5 +1,5 @@
+import pyotp
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -12,4 +12,7 @@ User = get_user_model()
 def create_profile(sender, instance, created, **kwargs):
     """Создает профиль автоматически при создании нового пользователя."""
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.create(
+            user=instance,
+            mfa_hash=pyotp.random_base32(),
+        )
