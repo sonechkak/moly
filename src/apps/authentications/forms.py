@@ -22,15 +22,19 @@ class RegistrationForm(UserCreationForm):
     password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Подтвердите пароль"})
     )
+    is_mfa_enabled = forms.BooleanField(
+        required=False, initial=False, label="Включить 2FA", widget=forms.CheckboxInput(attrs={"class": "form-control"})
+    )
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = ("username", "email", "password1", "password2", "is_mfa_enabled")
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Ваше имя"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
             "password1": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Пароль"}),
             "password2": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Подтвердите пароль"}),
+            "is_mfa_enabled": forms.CheckboxInput(attrs={"class": "form-control", "placeholder": "Включить 2FA"}),
         }
 
 

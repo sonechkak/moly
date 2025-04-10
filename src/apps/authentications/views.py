@@ -23,12 +23,44 @@ class LoginView(FormView):
     def form_valid(self, form):
         user = form.get_user()
         login(self.request, user)
+        if user.profile.is_mfa_enabled:
+            return redirect("auth:verify_2fa")
+
         return redirect("users:profile", pk=user.pk)
 
     def form_invalid(self, form):
         for error in form.errors:
             messages.error(self.request, form.errors[error].as_text())
         return redirect("auth:login")
+
+
+class VerifyView(FormView):
+    template_name = "auth/verify_2fa.html"
+    form_class = Verify2FAForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("auth:login")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = self.request.user
+        profile = Profile.objects.get(user=user)
+        token = form.cleaned_data["token"]
+
+        totp = pyotp.TOTP(profile.mfa_hash)
+        if totp.verify(token):
+            # Успешная проверка, разрешаем доступ
+            return redirect("users:profile", pk=user.pk)
+        else:
+            messages.error(self.request, "Неверный код 2FA!")
+            return redirect("auth:verify_2fa")
+
+    def form_invalid(self, form):
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(self.request, f"{field}: {error}")
+        return redirect("auth:verify_2fa")
 
 
 class RegistrationView(FormView):
@@ -39,9 +71,14 @@ class RegistrationView(FormView):
     extra_context = {"title": "Регистрация пользователя"}
 
     def form_valid(self, form):
-        form.save()
+        user = form.save()
+        user.is_mfa_enabled = form.cleaned_data["is_mfa_enabled"]
+        Profile.objects.update(is_mfa_enabled=form.cleaned_data["is_mfa_enabled"])
         messages.success(self.request, "Аккаунт пользователя успешно создан")
-        return redirect("auth:qrcode")
+        if form.cleaned_data["is_mfa_enabled"]:
+            messages.success(self.request, "Настройте 2FA с помощью Google Authenticator или аналогичного приложения.")
+            return redirect("auth:qrcode")
+        return redirect("users:profile", pk=self.request.user.pk)
 
     def form_invalid(self, form):
         for field, errors in form.errors.items():
@@ -60,7 +97,12 @@ class QrCodeView(FormView):
         context = super().get_context_data(**kwargs)
         profile = Profile.objects.get(user=self.request.user)
 
-        mfa_hash = profile.get_mfa_hash()
+        if profile.mfa_hash:
+            mfa_hash = profile.mfa_hash
+        else:
+            mfa_hash = pyotp.random_base32()
+            profile.mfa_hash = mfa_hash
+            profile.save()
 
         img = qrcode.make(mfa_hash)
         buffer = BytesIO()
@@ -85,11 +127,15 @@ class QrCodeView(FormView):
         if totp.verify(token):
             profile.is_mfa_enabled = True
             profile.save()
-            messages.success(self.request, "2FA успешно настроена!")
-            return redirect("users:profile", pk=user.pk)
-        else:
-            messages.error(self.request, "Неверный код. Попробуйте ещё раз.")
-            return self.form_invalid(form)
+
+        messages.success(self.request, "2FA успешно настроена!")
+        return redirect("users:profile", pk=user.pk)
+
+    def form_invalid(self, form):
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(self.request, f"{field}: {error}")
+        return redirect("auth:qrcode")
 
 
 class LogoutUserView(LogoutView):
