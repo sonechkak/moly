@@ -66,7 +66,7 @@ class Product(TimeStamp, models.Model):
     """Класс товаров."""
 
     title = models.CharField("Наименование товара", max_length=255)
-    price = models.IntegerField("Цена товара")
+    price = models.PositiveIntegerField("Цена товара")
     previous_price = models.IntegerField("Предыдущая цена", null=True, blank=True, editable=False)
     watched = models.IntegerField("Количество просмотров")
     quantity = models.IntegerField("Количество товара на складе")
