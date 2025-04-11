@@ -1,7 +1,9 @@
 from typing import get_origin
 
 import pyotp
+import qrcode
 from apps.users.models import Profile
+from apps.users.utils import generate_totp_uri
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LogoutView
@@ -44,57 +46,46 @@ class Verify2FAView(FormView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.session.get("mfa_user_pk"):
-            messages.error(request, "Пользователь не найден.")
+            messages.error(request, "Сессия истекла. Пожалуйста, войдите снова.")
             return redirect("auth:login")
 
         try:
-            self.user = User.objects.get(pk=request.session.get("mfa_user_pk"))
+            User.objects.get(pk=request.session.get("mfa_user_pk"))
         except User.DoesNotExist:
+            messages.error(request, "Пользователь не найден.")
             return redirect("auth:login")
 
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = get_object_or_404(User, id=self.request.session.get("mfa_user_pk"))
 
-        user_id = self.request.session.get("mfa_user_pk")
-        user = get_object_or_404(User, id=user_id)
-
-        mfa_hash = user.profile.get_mfa_hash()
-        user.profile.mfa_hash = mfa_hash
-
-        img_str = generate_qrcode(mfa_hash)
+        if not user.profile.mfa_hash:
+            messages.error(self.request, "2FA не настроена для этого пользователя.")
+            return redirect("auth:login")
 
         context.update(
             {
-                "title": "Настройка 2FA",
-                "qr_code_img": f"data:image/png;base64,{img_str}",
-                "hash": mfa_hash,
+                "title": "Подтверждение 2FA",
                 "user": user,
             }
         )
         return context
 
     def form_valid(self, form):
-        user = get_user_model().objects.get(pk=self.request.session.get("mfa_user_pk"))
-        token = form.cleaned_data["token"]
+        user = get_object_or_404(User, id=self.request.session.get("mfa_user_pk"))
+        token = form.cleaned_data["token"].strip()
 
-        # Проверка токена
-        totp = pyotp.TOTP(user.profile.mfa_hash)
-        if totp.verify(token):
+        totp = pyotp.TOTP(user.profile.mfa_hash or user.profile.get_mfa_hash())
+
+        if totp.verify(token, valid_window=1):
             if "mfa_user_pk" in self.request.session:
                 del self.request.session["mfa_user_pk"]
-
-            login(self.request, user)
-            return redirect("users:profile", pk=user.pk)
-
-        messages.error(self.request, "Неверный код 2FA!")
-        return redirect("auth:verify_2fa")
-
-    def form_invalid(self, form):
-        for field, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f"{field}: {error}")
+                login(self.request, user)
+                messages.success(self.request, "Вы успешно вошли в систему.")
+                return redirect("users:profile", pk=user.pk)
+        messages.error(self.request, "Неверный токен. Пожалуйста, попробуйте снова.")
         return redirect("auth:verify_2fa")
 
 
@@ -140,21 +131,16 @@ class QrCodeView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profile = Profile.objects.get(user=self.request.session.get("mfa_user_pk"))
+        user_id = self.request.session.get("mfa_user_pk")
+        user = get_object_or_404(User, id=user_id)
+        profile = get_object_or_404(Profile, user=user_id)
 
-        if not profile.mfa_hash:
-            profile.mfa_hash = profile.get_mfa_hash()
-            profile.save()
+        totp_uri = generate_totp_uri(user=user, secret_key=profile.get_mfa_hash())
 
-        img_str = generate_qrcode(profile.mfa_hash)
+        img_str = generate_qrcode(totp_uri)
 
-        context.update(
-            {
-                "title": "Настройка 2FA",
-                "qr_code_img": f"data:image/png;base64,{img_str}",
-                "hash": profile.mfa_hash,
-            }
-        )
+        context["qr_code_img"] = f"data:image/png;base64,{img_str}"
+        context["hash"] = profile.mfa_hash
         return context
 
     def form_valid(self, form):

@@ -2,7 +2,7 @@ import pyotp
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .utils import get_avatar_upload_path
+from .utils import generate_totp_uri, get_avatar_upload_path
 
 
 class User(AbstractUser):
@@ -39,11 +39,10 @@ class Profile(models.Model):
             return self.user.username or self.user.email
 
     def get_mfa_hash(self):
-        """Возвращает хэш MFA."""
-        return pyotp.totp.TOTP(self.mfa_hash).provisioning_uri(
-            name=self.user.username or self.user.email,
-            issuer_name="moly",
-        )
+        """Обновляет хэш MFA."""
+        self.mfa_hash = pyotp.random_base32()
+        self.save()
+        return self.mfa_hash
 
 
 class ShippingAddress(models.Model):

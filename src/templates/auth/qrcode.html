@@ -1,40 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1>{{ title }}</h1>
+    <div class="container text-center">
+        <div class="card-body"></div>
+        <h1>{{ title }}</h1>
 
-    <div class="row">
-        <div class="col-md-6">
-            <h3>1. Отсканируйте QR-код</h3>
-            <div class="qr-code mb-4">
-                <img src="{{ qr_code_img }}" alt="QR Code" class="img-fluid">
-            </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card-body text-center"></div>
+                <h3>1. Отсканируйте QR-код</h3>
+                <div class="qr-code mb-4">
+                    {#                <img src="{{ qr_code_img }}" alt="QR Code" class="img-fluid">#}
+                    <h4>Test QR Display</h4>
+                    <img src="{{ qr_code_img }}" alt="TEST QR" style="width: 200px;">
 
-            <h3>2. Или введите ключ вручную</h3>
-            <div class="input-group mb-4">
-                <input type="text" class="form-control" value="{{ hash }}" id="secretKey" readonly>
-                <button class="btn btn-outline-secondary" onclick="copySecret()">Копировать</button>
+                    <h3>2. Или введите ключ вручную</h3>
+                    <div class="input-group mb-4">
+                        <label for="secretKey">
+                            <input type="text" class="form-control" value="{{ hash }}" id="secretKey" readonly/>
+                        </label>
+                        <button class="btn btn-outline-secondary" onclick="copySecret()">Копировать</button>
+                    </div>
+                    <h3>3. Подтвердите код</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Подтвердить</button>
+                    </form>
+                </div>
             </div>
         </div>
-
-        <div class="col-md-6">
-            <h3>3. Подтвердите код</h3>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Подтвердить</button>
-            </form>
-        </div>
+        <div class="card-body"></div>
     </div>
-</div>
 
-<script>
-function copySecret() {
-    const secretKey = document.getElementById('secretKey');
-    secretKey.select();
-    document.execCommand('copy');
-    alert('Секретный ключ скопирован!');
-}
-</script>
+    <script>
+        function copySecret() {
+            const secretKey = document.getElementById('secretKey');
+            secretKey.select();
+            document.execCommand('copy');
+            alert('Секретный ключ скопирован!');
+        }
+    </script>
 {% endblock %}
