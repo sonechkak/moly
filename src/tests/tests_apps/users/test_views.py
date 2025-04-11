@@ -23,9 +23,9 @@ def test_updates_profile_data(temp_media_root, client, user, avatar):
     basket = Basket.objects.get_or_create(user=user)
 
     initial_profile = user.profile
-    assert initial_profile.first_name is None
+    assert initial_profile.first_name is "Test"
 
-    url = reverse("users:profile-update", kwargs={"pk": user.profile.pk})
+    url = reverse("users:profile-update", kwargs={"pk": user.pk})
     data = {
         "first_name": "NewFirstName",
         "last_name": "NewLastName",

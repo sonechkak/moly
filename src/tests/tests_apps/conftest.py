@@ -7,19 +7,37 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 
 from apps.baskets.models import *
-from apps.favs.models import FavoriteProducts
-from apps.orders.models import Order, OrderProduct
+from apps.favs.models import *
+from apps.orders.models import *
 from apps.shop.models import *
 from apps.users.models import Profile
 
+User = get_user_model()
+
+@pytest.fixture
+def valid_registration_data():
+    return {
+        'username': 'test_user1',
+        'email': 'test@example.com',
+        'password1': 'ComplexPass123!',
+        'password2': 'ComplexPass123!',
+        'is_mfa_enabled': False
+    }
 
 @pytest.fixture
 def user(transactional_db):
-    user = get_user_model()
-    user = user.objects.create(username="test_user")
-    user.set_password("StrongPassword123!")
-    user.save()
+    user = User.objects.create(
+        username="test_user",
+        password="StrongPassword123!",
+        email="test@icloud.com"
+    )
+    Profile.objects.create(user=user,
+                           first_name="Test",
+                           last_name="User",
+                           phone="1234567890",
+                           is_mfa_enabled=False)
     return user
+
 
 @pytest.fixture
 def category(transactional_db):

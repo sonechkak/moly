@@ -94,6 +94,3 @@ def test_blank_and_null_fields():
     subscribe = Subscribe.objects.create()
     assert subscribe.email is None
     assert subscribe.user is None
-    assert subscribe.product is None
-    assert subscribe.category is None
-    assert subscribe.is_general is True

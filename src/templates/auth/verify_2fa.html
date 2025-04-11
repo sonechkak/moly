@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block header %}
+    {% include 'auth/_components/_header.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <h4 class="card-title mb-4">Введите код из Google Authenticator</h4>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <input type="text" name="token" id="token"
+                                       class="form-control form-control-lg text-center" placeholder="Введите код"
+                                       maxlength="6" pattern="\d{6}" required style="width: 120px; margin: 0 auto;" />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                Подтвердить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
