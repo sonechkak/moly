@@ -1,8 +1,7 @@
 import pytest
-from cfgv import ValidationError
 from django.db import IntegrityError
 
-
+from apps.orders.models import OrderProduct
 from apps.users.models import Profile
 
 

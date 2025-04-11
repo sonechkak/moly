@@ -39,10 +39,10 @@ class TestProfileModel:
         assert 'test_avatar' in profile.avatar.name
 
     def test_str_method_with_names(self, profile):
-        assert str(profile) == 'test_user'
+        assert str(profile) == "Test User"
 
     def test_str_method_without_names(self, profile_without_names):
-        assert str(profile_without_names) == 'test_user'
+        assert str(profile_without_names) == "Test User"
 
 class TestShippingAddressModel:
     def test_address_creation(self, shipping_address, profile):

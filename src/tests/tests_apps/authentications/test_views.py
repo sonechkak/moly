@@ -11,14 +11,20 @@ User = get_user_model()
 @pytest.mark.django_db
 def test_login_view(client, user):
     """Тест для LoginView."""
+    # Убедитесь, что пароль установлен корректно
+
+    user.set_password("StrongPassword123!")
+    user.is_active = True
+    user.save()
 
     url = reverse("auth:login")
     response = client.post(url, {
         "username": user.username,
-        "password": user.password,
+        "password": "StrongPassword123!",
     })
+
     assert response.status_code == 302
-    assert response.url == reverse("auth:login")
+    assert response.url == reverse("users:profile", kwargs={"pk": user.pk})
 
 
 @pytest.mark.django_db
