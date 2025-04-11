@@ -6,7 +6,7 @@ from apps.users.models import *
 
 class TestUserModel:
     def test_create_user(self, user):
-        assert user.username == 'testuser'
+        assert user.username == 'test_user'
         assert user.is_active is True
         assert user.is_staff is False
         assert user.is_superuser is False
@@ -23,7 +23,7 @@ class TestProfileModel:
         profile, created = Profile.objects.get_or_create(
             user=user,
         )
-        assert profile.user.username == 'testuser'
+        assert profile.user.username == 'test_user'
         assert profile.user.is_active is True
         assert profile.user.is_staff is False
         assert profile.user.is_superuser is False
@@ -39,10 +39,10 @@ class TestProfileModel:
         assert 'test_avatar' in profile.avatar.name
 
     def test_str_method_with_names(self, profile):
-        assert str(profile) == 'testuser'
+        assert str(profile) == 'test_user'
 
     def test_str_method_without_names(self, profile_without_names):
-        assert str(profile_without_names) == 'testuser'
+        assert str(profile_without_names) == 'test_user'
 
 class TestShippingAddressModel:
     def test_address_creation(self, shipping_address, profile):

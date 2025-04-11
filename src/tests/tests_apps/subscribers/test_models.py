@@ -13,7 +13,7 @@ def test_create_subscribe_with_email_only():
     assert subscribe.user is None
     assert subscribe.product is None
     assert subscribe.category is None
-    assert subscribe.is_general is True
+    assert subscribe.is_general is False
 
 
 @pytest.mark.django_db
@@ -21,10 +21,10 @@ def test_create_subscribe_with_user_only(user):
     """Тест создания подписки только с пользователем."""
     subscribe = Subscribe.objects.create(user=user)
     assert subscribe.user == user
-    assert subscribe.email is None
+    assert subscribe.email is user.email
     assert subscribe.product is None
     assert subscribe.category is None
-    assert subscribe.is_general is True
+    assert subscribe.is_general is False
 
 
 @pytest.mark.django_db
@@ -92,8 +92,7 @@ def test_invalid_email():
 def test_blank_and_null_fields():
     """Тест, что все поля могут быть blank и null."""
     subscribe = Subscribe.objects.create()
-    assert subscribe.email is None
-    assert subscribe.user is None
-    assert subscribe.product is None
-    assert subscribe.category is None
-    assert subscribe.is_general is True
+
+    with pytest.raises(ValidationError):
+        subscribe.full_clean()
+        subscribe.save()

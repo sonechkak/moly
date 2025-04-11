@@ -39,7 +39,7 @@ def test_valid_registration_without_mfa(client, valid_registration_data):
     url = reverse('auth:register')
     response = client.post(url, valid_registration_data)
 
-    user = User.objects.get(username='testuser')
+    user = User.objects.get(username='test_user1')
     profile = Profile.objects.get(user=user)
 
     # Проверяем email в модели User, а не Profile
@@ -61,7 +61,7 @@ def test_valid_registration_with_mfa(client, valid_registration_data):
     url = reverse('auth:register')
     response = client.post(url, data, follow=True)
 
-    user = User.objects.get(username='testuser')
+    user = User.objects.get(username='test_user1')
     profile = Profile.objects.get(user=user)
 
     assert profile.is_mfa_enabled
@@ -99,7 +99,7 @@ def test_profile_auto_creation(client, valid_registration_data):
     url = reverse('auth:register')
     client.post(url, valid_registration_data)
 
-    user = User.objects.get(username='testuser')
+    user = User.objects.get(username='test_user1')
     assert hasattr(user, 'profile')
     assert user.profile is not None
 
@@ -112,7 +112,7 @@ def test_mfa_hash_generation(client, valid_registration_data):
     url = reverse('auth:register')
     client.post(url, data)
 
-    profile = Profile.objects.get(user__username='testuser')
+    profile = Profile.objects.get(user__username='test_user1')
     assert profile.mfa_hash is not None
     assert len(profile.mfa_hash) == 32
 

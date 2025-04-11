@@ -4,12 +4,8 @@ from django.contrib.auth import get_user_model
 
 from apps.users.models import *
 
+
 User = get_user_model()
-
-
-@pytest.fixture
-def user(transactional_db):
-    return User.objects.create_user(username='testuser', password='testpass123')
 
 
 @pytest.fixture

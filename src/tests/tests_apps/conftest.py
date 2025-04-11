@@ -16,7 +16,7 @@ from apps.users.models import Profile
 @pytest.fixture
 def valid_registration_data():
     return {
-        'username': 'testuser',
+        'username': 'test_user1',
         'email': 'test@example.com',
         'password1': 'ComplexPass123!',
         'password2': 'ComplexPass123!',
