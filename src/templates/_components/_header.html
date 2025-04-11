@@ -53,42 +53,32 @@
                     {% endif %}
                 </ul>
                 {% if request.user.is_authenticated %}
-                    {% if not request.user.profile.is_mfa_enabled or request.session.mfa_verified %}
-                        <ul class="navbar-nav ml-auto">
-                            {% if request.user.basket %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'baskets:basket' request.user.basket.pk %}">
-                                        <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
-                                        <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
-                                    </a>
-                                </li>
-                            {% endif %}
+                    <ul class="navbar-nav ml-auto">
+                        {% if request.user.basket %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'favs:favorites' %}">
-                                    <i class="far fa-heart mr-1"></i>
-                                    <small class="text-gray">({{ request.user.favorite.count }})</small>
+                                <a class="nav-link" href="{% url 'baskets:basket' request.user.basket.pk %}">
+                                    <i class="fas fa-dolly-flatbed mr-1 text-gray"></i>Корзина
+                                    <small class="text-gray">({{ request.user.basket.ordered_n.count }})</small>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'users:profile' user.pk %}">
-                                    <i class="fas fa-user-alt mr-1 text-gray"></i>Мой профиль
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'auth:logout' %}">
-                                    <i class="fas fa-user-alt mr-1 text-gray"></i>Выйти
-                                </a>
-                            </li>
-                        </ul>
-                    {% else %}
-                        <ul class="navbar-nav ml-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'auth:logout' %}">
-                                    <i class="fas fa-sign-out-alt mr-1"></i>Выйти
-                                </a>
-                            </li>
-                        </ul>
-                    {% endif %}
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'favs:favorites' %}">
+                                <i class="far fa-heart mr-1"></i>
+                                <small class="text-gray">({{ request.user.favorite.count }})</small>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'users:profile' user.pk %}">
+                                <i class="fas fa-user-alt mr-1 text-gray"></i>Мой профиль
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'auth:logout' %}">
+                                <i class="fas fa-user-alt mr-1 text-gray"></i>Выйти
+                            </a>
+                        </li>
+                    </ul>
                 {% else %}
                     <!-- Код для неавторизованных пользователей -->
                     <ul class="navbar-nav ml-auto">

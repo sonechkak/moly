@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block header %}
+    {% include 'auth/_components/_header.html' %}
+{% endblock %}
+
 {% block content %}
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -11,7 +15,7 @@
                             {% csrf_token %}
                             <div class="form-group mb-3">
                                 <input type="text" name="token" id="token"
-                                       class="form-control form-control-lg text-center" placeholder="6-значный код"
+                                       class="form-control form-control-lg text-center" placeholder="Введите код"
                                        maxlength="6" pattern="\d{6}" required style="width: 120px; margin: 0 auto;" />
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">

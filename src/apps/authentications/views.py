@@ -1,16 +1,15 @@
-import base64
-from io import BytesIO
+from typing import get_origin
 
 import pyotp
-import qrcode
 from apps.users.models import Profile
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LogoutView
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import FormView
 
 from .forms import *
+from .utils import generate_qrcode
 
 
 class LoginView(FormView):
@@ -22,10 +21,13 @@ class LoginView(FormView):
 
     def form_valid(self, form):
         user = form.get_user()
-        login(self.request, user)
-        if user.profile.is_mfa_enabled:
+        profile = Profile.objects.get(user=user)
+
+        if profile.is_mfa_enabled:
+            self.request.session["mfa_user_pk"] = user.pk
             return redirect("auth:verify_2fa")
-        self.request.session["mfa_verified"] = True
+
+        login(self.request, user)
         return redirect("users:profile", pk=user.pk)
 
     def form_invalid(self, form):
@@ -34,29 +36,60 @@ class LoginView(FormView):
         return redirect("auth:login")
 
 
-class VerifyView(FormView):
+class Verify2FAView(FormView):
     """Подтверждение 2FA при входе."""
 
     template_name = "auth/verify_2fa.html"
     form_class = Verify2FAForm
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
+        if not request.session.get("mfa_user_pk"):
+            messages.error(request, "Пользователь не найден.")
             return redirect("auth:login")
+
+        try:
+            self.user = User.objects.get(pk=request.session.get("mfa_user_pk"))
+        except User.DoesNotExist:
+            return redirect("auth:login")
+
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user_id = self.request.session.get("mfa_user_pk")
+        user = get_object_or_404(User, id=user_id)
+
+        mfa_hash = user.profile.get_mfa_hash()
+        user.profile.mfa_hash = mfa_hash
+
+        img_str = generate_qrcode(mfa_hash)
+
+        context.update(
+            {
+                "title": "Настройка 2FA",
+                "qr_code_img": f"data:image/png;base64,{img_str}",
+                "hash": mfa_hash,
+                "user": user,
+            }
+        )
+        return context
+
     def form_valid(self, form):
-        user = self.request.user
-        profile = Profile.objects.get(user=user)
+        user = get_user_model().objects.get(pk=self.request.session.get("mfa_user_pk"))
         token = form.cleaned_data["token"]
 
-        totp = pyotp.TOTP(profile.mfa_hash)
+        # Проверка токена
+        totp = pyotp.TOTP(user.profile.mfa_hash)
         if totp.verify(token):
-            self.request.session["mfa_verified"] = True
+            if "mfa_user_pk" in self.request.session:
+                del self.request.session["mfa_user_pk"]
+
+            login(self.request, user)
             return redirect("users:profile", pk=user.pk)
-        else:
-            messages.error(self.request, "Неверный код 2FA!")
-            return redirect("auth:verify_2fa")
+
+        messages.error(self.request, "Неверный код 2FA!")
+        return redirect("auth:verify_2fa")
 
     def form_invalid(self, form):
         for field, errors in form.errors.items():
@@ -73,18 +106,29 @@ class RegistrationView(FormView):
     extra_context = {"title": "Регистрация пользователя"}
 
     def form_valid(self, form):
-        user = form.save()
-        user.is_mfa_enabled = form.cleaned_data["is_mfa_enabled"]
+        user = form.save(commit=False)
+        is_mfa_enabled = form.cleaned_data["is_mfa_enabled"]
         user.save()
+
+        Profile.objects.create(
+            user=user,
+            is_mfa_enabled=is_mfa_enabled,
+            mfa_hash=pyotp.random_base32() if is_mfa_enabled else None,
+        )
         messages.success(self.request, "Аккаунт пользователя успешно создан")
-        if form.cleaned_data["is_mfa_enabled"]:
+
+        if is_mfa_enabled:
+            self.request.session["mfa_user_pk"] = user.pk
             messages.success(self.request, "Настройте 2FA с помощью Google Authenticator или аналогичного приложения.")
             return redirect("auth:qrcode")
-        return redirect("auth:login")
+
+        login(self.request, user)
+        return redirect("users:profile", pk=user.pk)
 
     def form_invalid(self, form):
-        for error in form.errors:
-            messages.error(self.request, f"{error}")
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(self.request, f"{field}: {error}")
         return redirect("auth:register")
 
 
@@ -96,19 +140,13 @@ class QrCodeView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profile = Profile.objects.get(user=self.request.user)
+        profile = Profile.objects.get(user=self.request.session.get("mfa_user_pk"))
 
-        if profile.mfa_hash:
-            mfa_hash = profile.mfa_hash
-        else:
-            mfa_hash = pyotp.random_base32()
-            profile.mfa_hash = mfa_hash
+        if not profile.mfa_hash:
+            profile.mfa_hash = profile.get_mfa_hash()
             profile.save()
 
-        img = qrcode.make(mfa_hash)
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        img_str = base64.b64encode(buffer.getvalue()).decode()
+        img_str = generate_qrcode(profile.mfa_hash)
 
         context.update(
             {
@@ -120,17 +158,19 @@ class QrCodeView(FormView):
         return context
 
     def form_valid(self, form):
-        user = self.request.user
+        user = get_user_model().objects.get(pk=self.request.session.get("mfa_user_pk"))
         profile = Profile.objects.get(user=user)
         token = form.cleaned_data["token"]
 
+        # Проверка токена
         totp = pyotp.TOTP(profile.mfa_hash)
         if totp.verify(token):
-            profile.is_mfa_enabled = True
+            if "mfa_user_pk" in self.request.session:
+                del self.request.session["mfa_user_pk"]
             profile.save()
+            messages.success(self.request, "2FA успешно настроена!")
 
-        messages.success(self.request, "2FA успешно настроена!")
-        return redirect("users:profile", pk=user.pk)
+        return redirect("auth:login")
 
     def form_invalid(self, form):
         for field, errors in form.errors.items():

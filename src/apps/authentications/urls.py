@@ -9,5 +9,5 @@ urlpatterns = [
     path("logout/", LogoutUserView.as_view(), name="logout"),
     path("register/", RegistrationView.as_view(), name="register"),
     path("qrcode/", QrCodeView.as_view(), name="qrcode"),
-    path("verify_2fa/", VerifyView.as_view(), name="verify_2fa"),
+    path("verify_2fa/", Verify2FAView.as_view(), name="verify_2fa"),
 ]

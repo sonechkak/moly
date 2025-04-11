@@ -14,10 +14,20 @@ from apps.users.models import Profile
 
 
 @pytest.fixture
+def valid_registration_data():
+    return {
+        'username': 'testuser',
+        'email': 'test@example.com',
+        'password1': 'ComplexPass123!',
+        'password2': 'ComplexPass123!',
+        'is_mfa_enabled': False
+    }
+
+@pytest.fixture
 def user(transactional_db):
-    user = get_user_model()
-    user = user.objects.create(username="test_user")
+    user = get_user_model().objects.create(username="test_user")
     user.set_password("StrongPassword123!")
+    Profile.objects.create(user=user)
     user.save()
     return user
 
