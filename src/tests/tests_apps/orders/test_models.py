@@ -2,7 +2,7 @@ import pytest
 from cfgv import ValidationError
 from django.db import IntegrityError
 
-from apps.orders.models import OrderProduct
+
 from apps.users.models import Profile
 
 
@@ -18,6 +18,7 @@ def test_order_product_creation(order_product, order, product):
     assert order_product.product == product
     assert order_product.quantity == 2
     assert order_product.price == 1000
+
 
 @pytest.mark.django_db
 def test_order_product_price_validation(order, product):
