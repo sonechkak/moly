@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from apps.baskets.models import Basket, BasketProduct
+from apps.baskets.models import BasketProduct
 
 
 @pytest.mark.django_db
@@ -16,6 +16,7 @@ def test_checkout(client, user, basket_with_products):
     basket_products = BasketProduct.objects.filter(basket=basket_with_products)
     assert response.context["basket_products"].count() == basket_products.count()
     assert response.context["form"] is not None
+
 
 @pytest.mark.django_db
 def test_order_detail(client, user, order):

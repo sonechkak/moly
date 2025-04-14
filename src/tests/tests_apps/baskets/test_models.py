@@ -1,6 +1,6 @@
 import pytest
 
-from apps.baskets.models import Basket, BasketProduct
+from apps.baskets.models import Basket
 
 
 @pytest.mark.django_db
@@ -8,6 +8,7 @@ def test_basket_creation(user, basket_with_products):
     """Проверка создания корзины."""
     assert basket_with_products.user == user
     assert basket_with_products.pk == Basket.objects.get(user=user).pk
+
 
 @pytest.mark.django_db
 def test_basket_model(user, basket_with_products):

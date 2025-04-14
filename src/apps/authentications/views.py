@@ -2,13 +2,19 @@ import pyotp
 from apps.users.models import Profile
 from apps.users.utils import generate_totp_uri
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.views import LogoutView
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import FormView
 
-from .forms import *
+from .forms import (
+    LoginForm,
+    RegistrationForm,
+    Verify2FAForm,
+)
 from .utils import generate_qrcode
+
+User = get_user_model()
 
 
 class LoginView(FormView):

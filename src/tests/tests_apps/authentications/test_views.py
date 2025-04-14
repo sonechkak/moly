@@ -6,7 +6,9 @@ from django.urls import reverse
 from apps.authentications.forms import RegistrationForm
 from apps.users.models import Profile
 
+
 User = get_user_model()
+
 
 @pytest.mark.django_db
 def test_login_view(client, user):
@@ -122,6 +124,7 @@ def test_mfa_hash_generation(client, valid_registration_data):
     assert profile.mfa_hash is not None
     assert len(profile.mfa_hash) == 32
 
+
 @pytest.mark.django_db
 def test_logout_view(client, user):
     """Тест для LogoutView."""
@@ -132,6 +135,7 @@ def test_logout_view(client, user):
 
     assert response.status_code == 302
     assert response.url == reverse("auth:login")
+
 
 @pytest.mark.django_db
 def test_login_view_invalid_credentials(client):
@@ -145,6 +149,7 @@ def test_login_view_invalid_credentials(client):
 
     assert response.status_code == 302
     assert response.url == reverse("auth:login")
+
 
 @pytest.mark.django_db
 def test_registration_view_invalid_data(client):

@@ -6,13 +6,27 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 
-from apps.baskets.models import *
-from apps.favs.models import *
-from apps.orders.models import *
-from apps.shop.models import *
+from apps.baskets.models import (
+    Basket,
+    BasketProduct
+)
+from apps.favs.models import (
+    FavoriteProducts
+)
+from apps.orders.models import (
+    Order,
+    OrderProduct
+)
+from apps.shop.models import (
+    Category,
+    Brand,
+    Product
+)
 from apps.users.models import Profile
 
+
 User = get_user_model()
+
 
 @pytest.fixture
 def valid_registration_data():
@@ -23,6 +37,7 @@ def valid_registration_data():
         'password2': 'ComplexPass123!',
         'is_mfa_enabled': False
     }
+
 
 @pytest.fixture
 def user(transactional_db):
@@ -47,6 +62,7 @@ def category(transactional_db):
     )
     return category
 
+
 @pytest.fixture
 def categories(transactional_db):
     categories = []
@@ -58,6 +74,7 @@ def categories(transactional_db):
         categories.append(category)
     return categories
 
+
 @pytest.fixture
 def brand(transactional_db):
     brand = Brand.objects.create(
@@ -66,6 +83,7 @@ def brand(transactional_db):
         slug="apple",
     )
     return brand
+
 
 @pytest.fixture
 def product(transactional_db, category, brand):
@@ -83,6 +101,7 @@ def product(transactional_db, category, brand):
     )
     product.category.set([category])
     return product
+
 
 @pytest.fixture
 def products(transactional_db, categories, brand):
@@ -104,11 +123,13 @@ def products(transactional_db, categories, brand):
         products.append(product)
     return products
 
+
 @pytest.fixture
 def basket_with_product(transactional_db, user, product):
     basket, _ = Basket.objects.get_or_create(user=user)
     basket_product = BasketProduct.objects.create(basket=basket, product=product, quantity=1)
     return basket
+
 
 @pytest.fixture
 def basket_with_products(transactional_db, user, product):
@@ -129,11 +150,13 @@ def basket_with_products(transactional_db, user, product):
         BasketProduct.objects.create(basket=basket, product=p, quantity=i+1)
     return basket
 
+
 @pytest.fixture
 def favorite_product(transactional_db, user, product):
     fav, _ = Basket.objects.get_or_create(user=user)
     fav_product = FavoriteProducts.objects.create(user=user, product=product)
     return fav_product
+
 
 @pytest.fixture
 def favs_with_products(transactional_db, user):
@@ -153,10 +176,12 @@ def favs_with_products(transactional_db, user):
         FavoriteProducts.objects.create(user=user, product=p)
     return products
 
+
 @pytest.fixture
 def favs_without_product(transactional_db, user):
     favs, _ = Basket.objects.get_or_create(user=user)
     return favs
+
 
 @pytest.fixture
 def order(transactional_db, user, basket_with_products):
@@ -176,6 +201,7 @@ def order(transactional_db, user, basket_with_products):
         )
     return order
 
+
 @pytest.fixture
 def order_product(transactional_db, order, product):
     order_product = OrderProduct.objects.create(
@@ -185,6 +211,7 @@ def order_product(transactional_db, order, product):
         price=1000,
     )
     return order_product
+
 
 @pytest.fixture
 def avatar():

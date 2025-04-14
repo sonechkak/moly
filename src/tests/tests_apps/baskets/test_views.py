@@ -15,6 +15,7 @@ def test_basket_view(client, user, basket_with_products):
     assert response.context_data["basket"] == basket_with_products
     assert response.context_data["title"] == "Корзина"
 
+
 @pytest.mark.django_db
 def test_add_to_basket(client, user, product):
     """Тест добавления товара в корзину."""
@@ -27,6 +28,7 @@ def test_add_to_basket(client, user, product):
     assert response.status_code == 302
     assert response.url == referer_url
     assert BasketProduct.objects.filter(basket=user.basket, product=product).exists()
+
 
 @pytest.mark.django_db
 def test_remove_from_basket(client, user, basket_with_product):

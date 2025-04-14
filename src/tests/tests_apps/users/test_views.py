@@ -4,7 +4,9 @@ from django.urls import reverse
 
 from apps.baskets.models import Basket
 
+
 user_model = get_user_model()
+
 
 @pytest.mark.django_db
 def test_get_profile_page(client, user):
@@ -16,6 +18,7 @@ def test_get_profile_page(client, user):
     assert response.status_code == 200
     assert response.context["user"] == user
     assert response.context["title"] == f"Профиль пользователя: {user.username}"
+
 
 @pytest.mark.django_db
 def test_updates_profile_data(temp_media_root, client, user, avatar):

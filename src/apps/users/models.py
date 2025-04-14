@@ -2,7 +2,7 @@ import pyotp
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .utils import generate_totp_uri, get_avatar_upload_path
+from .utils import get_avatar_upload_path
 
 
 class User(AbstractUser):

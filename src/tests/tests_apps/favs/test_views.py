@@ -15,6 +15,7 @@ def test_favs_detail(client, user, favs_with_products):
     assert response.context["title"] == "Избранные товары"
     assert response.context_data["products"] == favs_with_products
 
+
 @pytest.mark.django_db
 def test_add_fav(client, user, product):
     client.force_login(user)
