@@ -1,7 +1,4 @@
-from typing import get_origin
-
 import pyotp
-import qrcode
 from apps.users.models import Profile
 from apps.users.utils import generate_totp_uri
 from django.contrib import messages

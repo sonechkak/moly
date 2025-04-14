@@ -18,6 +18,8 @@ class LoginForm(AuthenticationForm):
 class RegistrationForm(UserCreationForm):
     """Форма для регистрации пользователя."""
 
+    username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Ваш никнейм"}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Ваш e-mail"}))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Пароль"}))
     password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Подтвердите пароль"})
@@ -29,13 +31,6 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2", "is_mfa_enabled")
-        widgets = {
-            "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Ваше имя"}),
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
-            "password1": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Пароль"}),
-            "password2": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Подтвердите пароль"}),
-            "is_mfa_enabled": forms.CheckboxInput(attrs={"class": "form-control", "placeholder": "Включить 2FA"}),
-        }
 
 
 class Verify2FAForm(forms.Form):
