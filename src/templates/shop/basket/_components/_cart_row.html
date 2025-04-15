@@ -1,48 +1,49 @@
 {% for item in products %}
-  <tr>
-    <th class="pl-0 border-0" scope="row">
-      <div class="media align-items-center">
-        <a class="reset-anchor d-block animsition-link"
-           href="{% url 'shop:product_detail' item.product.slug %}">
-          <img src="{{ item.product.get_main_photo }}"
-               alt="{{ product }}"
-               width="70" />
-        </a>
-        <div class="media-body ml-3">
-          <strong class="h6">
-            <a class="reset-anchor animsition-link"
-               href="{% url 'shop:product_detail' item.product.slug %}">{{ item.product.title }}</a>
-          </strong>
-        </div>
-      </div>
-    </th>
-    <td class="align-middle border-0">
-      <p class="mb-0 small">{{ item.product.price }} руб.</p>
-    </td>
-    <td class="align-middle border-0">
-      <div class="border d-flex align-items-center justify-content-between px-3">
-        <span class="small text-uppercase text-gray headings-font-family">Количество</span>
-        <div class="quantity">
-          <button class="dec-btn p-0">
-            <i class="fas fa-caret-left"></i>
-          </button>
-          <input class="form-control form-control-sm border-0 shadow-0 p-0"
-                 type="text"
-                 value="{% if item.quantity > 1 %}{{ item.quantity }}{% else %}1{% endif %}" />
-          <button class="inc-btn p-0"
-                  type="submit"
-                  href="{% url 'baskets:to_basket' item.pk %}">
-            <i class="fas fa-caret-right"></i>
-          </button>
-        </div>
-      </div>
-    </td>
-    <td class="align-middle border-0">
-      <p class="mb-0 small">{{ item.get_total_price }} руб.</p>
-    </td>
-    <td class="align-middle border-0">
-      <a class="reset-anchor" href="{% url 'baskets:from_basket' item.pk %}">
-        <i class="fas fa-trash-alt small text-muted"></i></a>
-    </td>
-  </tr>
+    <tr>
+        <td class="ps-4 border-0" scope="row">
+            <div class="d-flex align-items-center">
+                <a class="text-decoration-none d-block me-3" href="{% url 'shop:product_detail' item.product.slug %}">
+                    <img src="{{ item.product.get_main_photo }}"
+                         alt="{{ product }}"
+                         class="img-fluid rounded"
+                         width="70"/>
+                </a>
+                <div>
+                    <h6 class="mb-0">
+                        <a class="text-dark text-decoration-none"
+                           href="{% url 'shop:product_detail' item.product.slug %}">
+                            {{ item.product.title }}
+                        </a>
+                    </h6>
+                    <small class="text-muted">Арт.: {{ item.product.id }}</small>
+                </div>
+            </div>
+        </td>
+        <td class="align-middle border-0">
+            <span class="fw-semibold">{{ item.product.price }} ₽</span>
+        </td>
+        <td class="align-middle border-0">
+            <div class="input-group input-group-sm quantity-selector" style="width: 130px;">
+                <a href="{% url 'baskets:from_basket' item.pk %}" class="btn btn-outline-secondary border"
+                   type="button">
+                    <i class="fas fa-minus"></i>
+                </a>
+                <input type="text" class="form-control text-center border"
+                       value="{% if item.quantity > 1 %}{{ item.quantity }}{% else %}1{% endif %}"
+                       aria-label="Количество" readonly>
+                <a href="{% url 'baskets:to_basket' item.pk %}" class="btn btn-outline-secondary border" type="button">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        </td>
+        <td class="align-middle border-0">
+            <span class="fw-bold">{{ item.get_total_price }} ₽</span>
+        </td>
+        <td class="align-middle border-0 text-end pe-4">
+            <a href="{% url 'baskets:from_basket' item.pk %}" class="btn btn-sm btn-outline-danger"
+               data-bs-toggle="tooltip" title="Удалить товар">
+                <i class="fas fa-trash-alt"></i>
+            </a>
+        </td>
+    </tr>
 {% endfor %}

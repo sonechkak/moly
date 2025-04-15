@@ -1,28 +1,204 @@
 <!-- PRODUCT SLIDER-->
-<div class="row m-sm-0">
-  <div class="col-sm-2 p-sm-0 order-2 order-sm-1 mt-2 mt-sm-0">
-    <div class="owl-thumbs d-flex flex-row flex-sm-column" data-slider-id="1">
-      {% if product.images.exists %}
-        {% for product in product.images.all %}
-          <div class="owl-thumb-item flex-fill mb-2 mr-2 mr-sm-0">
-            <img class="w-100" src="{{ product.image.url }}" alt="{{ product }}" />
-          </div>
-        {% endfor %}
-      {% endif %}
+<div class="product-gallery">
+    <div class="row g-2">
+        <!-- Основное изображение -->
+        <div class="col-sm-10 order-1 order-sm-2">
+            <div class="main-image-container position-relative mb-2">
+                {% if product.images.exists %}
+                    <div id="productMainCarousel" class="carousel slide" data-bs-ride="false">
+                        <div class="carousel-inner rounded-3 shadow-sm overflow-hidden">
+                            {% for image in product.images.all %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <a href="{{ image.image.url }}" data-fancybox="product-gallery">
+                                        <img src="{{ image.image.url }}"
+                                             class="d-block w-100 product-main-image"
+                                             alt="{{ image }}"
+                                             id="main-image-{{ forloop.counter }}">
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if product.images.count > 1 %}
+                            <button class="carousel-control carousel-control-prev bg-white rounded-circle shadow-sm"
+                                    type="button"
+                                    data-bs-target="#productMainCarousel"
+                                    data-bs-slide="prev"
+                                    style="width: 40px; height: 40px; top: 50%; left: 10px; transform: translateY(-50%);">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Предыдущее</span>
+                            </button>
+                            <button class="carousel-control carousel-control-next bg-white rounded-circle shadow-sm"
+                                    type="button"
+                                    data-bs-target="#productMainCarousel"
+                                    data-bs-slide="next"
+                                    style="width: 40px; height: 40px; top: 50%; right: 10px; transform: translateY(-50%);">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Следующее</span>
+                            </button>
+                        {% endif %}
+
+                        <!-- Значки для выделения особенностей товара -->
+                        <div class="product-badges position-absolute top-0 start-0 p-3">
+                            {% if product.is_new %}
+                                <span class="badge bg-success rounded-pill mb-2 d-block">Новинка</span>
+                            {% endif %}
+                            {% if product.is_hit %}
+                                <span class="badge bg-danger rounded-pill mb-2 d-block">Хит продаж</span>
+                            {% endif %}
+                            {% if product.discount_percent > 0 %}
+                                <span class="badge bg-warning text-dark rounded-pill d-block">-{{ product.discount_percent }}%</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Кнопки действий с изображением -->
+                        <div class="image-actions position-absolute bottom-0 end-0 p-3">
+                            <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm me-2"
+                                    id="zoomImageBtn">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm"
+                                    id="fullscreenImageBtn">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Заглушка, если нет изображений -->
+                    <div class="rounded-3 bg-light d-flex align-items-center justify-content-center"
+                         style="height: 500px;">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-image fa-3x mb-3"></i>
+                            <p>Изображение товара отсутствует</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Миниатюры -->
+        <div class="col-sm-2 order-2 order-sm-1">
+            <div class="thumbnails d-flex flex-row flex-sm-column gap-2 h-100">
+                {% if product.images.exists %}
+                    {% for image in product.images.all %}
+                        <div class="thumbnail-item flex-fill">
+                            <img src="{{ image.image.url }}"
+                                 class="w-100 img-thumbnail thumbnail-image {% if forloop.first %}active{% endif %}"
+                                 alt="{{ image }}"
+                                 data-bs-target="#productMainCarousel"
+                                 data-bs-slide-to="{{ forloop.counter0 }}"
+                                 aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                                 aria-label="Slide {{ forloop.counter }}">
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-sm-10 order-1 order-sm-2">
-    <div class="owl-carousel product-slider" data-slider-id="1">
-      {% if product.images.exists %}
-        {% for image in product.images.all %}
-          <a class="d-block"
-             href="{{ image.image.url }}"
-             data-lightbox="product"
-             title="Product item">
-            <img class="img-fluid" src="{{ image.image.url }}" alt="{{ image }}" />
-          </a>
-        {% endfor %}
-      {% endif %}
-    </div>
-  </div>
 </div>
+
+<style>
+    /* Стили для галереи товара */
+    .product-main-image {
+        height: 500px;
+        object-fit: contain;
+        background-color: #fff;
+    }
+
+    .thumbnail-image {
+        cursor: pointer;
+        height: 80px;
+        object-fit: cover;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+        border: 2px solid transparent;
+    }
+
+    .thumbnail-image:hover {
+        opacity: 1;
+    }
+
+    .thumbnail-image.active {
+        opacity: 1;
+        border-color: var(--bs-primary);
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        filter: invert(1) grayscale(100);
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    @media (max-width: 576px) {
+        .product-main-image {
+            height: 350px;
+        }
+
+        .thumbnails {
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumbnail-item {
+            min-width: 80px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Активация миниатюр при клике
+        const thumbnails = document.querySelectorAll('.thumbnail-image');
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                // Удаляем активный класс у всех миниатюр
+                thumbnails.forEach(t => t.classList.remove('active'));
+                // Добавляем активный класс к выбранной миниатюре
+                this.classList.add('active');
+
+                // Переключаем основной слайд
+                const mainCarousel = document.getElementById('productMainCarousel');
+                const slideIndex = this.getAttribute('data-bs-slide-to');
+                const carousel = new bootstrap.Carousel(mainCarousel);
+                carousel.to(slideIndex);
+            });
+        });
+
+        // Синхронизация активной миниатюры при переключении слайда
+        const mainCarousel = document.getElementById('productMainCarousel');
+        if (mainCarousel) {
+            mainCarousel.addEventListener('slide.bs.carousel', function (e) {
+                const slideIndex = e.to;
+                thumbnails.forEach(t => {
+                    t.classList.remove('active');
+                    if (t.getAttribute('data-bs-slide-to') == slideIndex) {
+                        t.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Функциональность кнопки увеличения
+        const zoomBtn = document.getElementById('zoomImageBtn');
+        if (zoomBtn) {
+            zoomBtn.addEventListener('click', function () {
+                const activeImage = document.querySelector('.carousel-item.active a');
+                if (activeImage) {
+                    activeImage.click(); // Эмулируем клик по активному изображению для открытия галереи
+                }
+            });
+        }
+
+        // Функциональность кнопки полного экрана
+        const fullscreenBtn = document.getElementById('fullscreenImageBtn');
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', function () {
+                const activeImage = document.querySelector('.carousel-item.active img');
+                if (activeImage && activeImage.requestFullscreen) {
+                    activeImage.requestFullscreen();
+                }
+            });
+        }
+    });
+</script>

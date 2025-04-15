@@ -1,44 +1,77 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
 {% block content %}
-    <div class="container text-center">
-        <div class="card-body"></div>
-        <h1>{{ title }}</h1>
-
+    <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card-body text-center"></div>
-                <h3>1. Отсканируйте QR-код</h3>
-                <div class="qr-code mb-4">
-                    {#                <img src="{{ qr_code_img }}" alt="QR Code" class="img-fluid">#}
-                    <h4>Test QR Display</h4>
-                    <img src="{{ qr_code_img }}" alt="TEST QR" style="width: 200px;">
-
-                    <h3>2. Или введите ключ вручную</h3>
-                    <div class="input-group mb-4">
-                        <label for="secretKey">
-                            <input type="text" class="form-control" value="{{ hash }}" id="secretKey" readonly/>
-                        </label>
-                        <button class="btn btn-outline-secondary" onclick="copySecret()">Копировать</button>
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light text-center py-3">
+                        <h2 class="mb-0">{{ title }}</h2>
                     </div>
-                    <h3>3. Подтвердите код</h3>
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Подтвердить</button>
-                    </form>
+                    <div class="card-body">
+                        <div class="setup-steps">
+                            <div class="step mb-4">
+                                <h4 class="fw-bold mb-3"><span class="badge bg-primary me-2">1</span>Отсканируйте QR-код
+                                </h4>
+                                <div class="qr-code text-center p-3 border rounded bg-light">
+                                    <img src="{{ qr_code_img }}" alt="QR код для настройки 2FA" class="img-fluid"
+                                         style="max-width: 200px;">
+                                </div>
+                            </div>
+
+                            <div class="step mb-4">
+                                <h4 class="fw-bold mb-3"><span class="badge bg-primary me-2">2</span>
+                                    Или введите ключ вручную</h4>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="{{ hash }}" id="secretKey" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyButton">
+                                        Копировать
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <h4 class="fw-bold mb-3"><span class="badge bg-primary me-2">3</span>
+                                    Подтвердите код
+                                </h4>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {% bootstrap_form form %}
+                                    <div class="d-grid gap-2 mt-4">
+                                        <button type="submit" class="btn btn-primary">Подтвердить</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-body"></div>
     </div>
 
     <script>
-        function copySecret() {
+        document.getElementById('copyButton').addEventListener('click', function () {
             const secretKey = document.getElementById('secretKey');
-            secretKey.select();
-            document.execCommand('copy');
-            alert('Секретный ключ скопирован!');
-        }
+            navigator.clipboard.writeText(secretKey.value)
+                .then(() => {
+                    // Создаем временный элемент для уведомления
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success mt-2';
+                    alert.textContent = 'Секретный ключ скопирован!';
+
+                    // Находим родительский элемент для уведомления
+                    const inputGroup = secretKey.closest('.input-group');
+                    inputGroup.parentNode.insertBefore(alert, inputGroup.nextSibling);
+
+                    // Удаляем уведомление через 3 секунды
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('Не удалось скопировать текст: ', err);
+                });
+        });
     </script>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 
 {% block title %}Добавление адреса доставки{% endblock %}
 
@@ -11,115 +12,56 @@
                         <h4 class="mb-0">Добавить новый адрес доставки</h4>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{% url 'users:address-create' user.pk %}">
+                        <form method="post" action="{% url 'users:address-create' user.pk %}" enctype="multipart/form-data">
                             {% csrf_token %}
-                            {% if form.non_field_errors %}
-                                <div class="alert alert-danger">
-                                    {{ form.non_field_errors }}
-                                </div>
-                            {% endif %}
+
+                            {% bootstrap_form_errors form type='non_fields' %}
 
                             <div class="row g-3">
-                                <!-- Город и Область/Регион -->
+                                <!-- City and State -->
                                 <div class="col-md-6">
-                                    <label for="{{ form.city.id_for_label }}" class="form-label">Город*</label>
-                                    {{ form.city }}
-                                    {% if form.city.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.city.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.city label_class="form-label" %}
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="{{ form.state.id_for_label }}"
-                                           class="form-label">Область/Регион*</label>
-                                    {{ form.state }}
-                                    {% if form.state.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.state.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.state label_class="form-label" %}
                                 </div>
 
-                                <!-- Улица и Дом -->
+                                <!-- Street and House -->
                                 <div class="col-md-8">
-                                    <label for="{{ form.street.id_for_label }}" class="form-label">Улица*</label>
-                                    {{ form.street }}
-                                    {% if form.street.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.street.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.street label_class="form-label" %}
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="{{ form.house.id_for_label }}" class="form-label">Дом*</label>
-                                    {{ form.house }}
-                                    {% if form.house.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.house.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.house label_class="form-label" %}
                                 </div>
 
-                                <!-- Квартира и Индекс -->
+                                <!-- Apartment and Zipcode -->
                                 <div class="col-md-6">
-                                    <label for="{{ form.apartment.id_for_label }}" class="form-label">Квартира</label>
-                                    {{ form.apartment }}
-                                    {% if form.apartment.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.apartment.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.apartment label_class="form-label" %}
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="{{ form.zipcode.id_for_label }}" class="form-label">Почтовый индекс</label>
-                                    {{ form.zipcode }}
-                                    {% if form.zipcode.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.zipcode.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.zipcode label_class="form-label" %}
                                 </div>
 
-                                <!-- Получатель и Контакт -->
+                                <!-- Recipient and Contact -->
                                 <div class="col-md-6">
-                                    <label for="{{ form.recipient.id_for_label }}"
-                                           class="form-label">ФИО получателя*</label>
-                                    {{ form.recipient }}
-                                    {% if form.recipient.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.recipient.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.recipient label_class="form-label" %}
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="{{ form.contact.id_for_label }}" class="form-label">Контактный
-                                        телефон*</label>
-                                    {{ form.contact }}
-                                    {% if form.contact.errors %}
-                                        <div class="invalid-feedback d-block">
-                                            {{ form.contact.errors }}
-                                        </div>
-                                    {% endif %}
+                                    {% bootstrap_field form.contact label_class="form-label" %}
                                 </div>
 
-                                <!-- Сохранить адрес -->
+                                <!-- Save Address -->
                                 <div class="col-12">
-                                    <div class="form-check">
-                                        {{ form.is_save_address }}
-                                        <label class="form-check-label" for="{{ form.is_save_address.id_for_label }}">
-                                            Сохранить этот адрес для будущих заказов
-                                        </label>
-                                    </div>
+                                    {% bootstrap_field form.is_save_address %}
                                 </div>
                             </div>
 
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{% url 'users:profile' user.profile.pk %}" class="btn btn-outline-secondary">
-                                    <i class="bi bi-arrow-left"></i> Назад
+                                    <i class="bi bi-arrow-left me-2"></i>Назад
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-check-lg"></i> Сохранить адрес
+                                    <i class="bi bi-check-lg me-2"></i>Сохранить адрес
                                 </button>
                             </div>
                         </form>

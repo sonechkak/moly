@@ -19,6 +19,7 @@ redis = ">=4.0.0"
 pytz = "^2025.2"
 pyotp = "^2.9.0"
 qrcode = "^8.1"
+django-bootstrap5 = "^25.1"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,62 +1,261 @@
 {% load static %}
 
 <!-- Отзывы -->
-<div class="tab-pane fade"
-     id="reviews"
-     role="tabpanel"
-     aria-labelledby="reviews-tab">
-  <div class="p-4 p-lg-5 bg-white">
-    {% if request.user.is_authenticated %}
-      <div class="row">
-        <div class="container">
-          <form action="{% url 'shop:add_review' product.pk %}"
-                method="post"
-                enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-success">Добавить отзыв</button>
-          </form>
-        </div>
-      </div>
-    {% else %}
-      <div class="container">
-        <h6 class="text-center">
-          <a href="{% url 'auth:login' %}">Отзывы могут оставлять только зарегистрированные пользователи</a>
-        </h6>
-      </div>
-    {% endif %}
-    {% if product.reviews %}
-      {% for review in product.reviews.all %}
-        <div class="row">
-          <div class="col-lg-8">
-            <div class="media mb-3">
-              <img class="rounded-circle"
-                   src="{% static 'img/customer-1.png' %}"
-                   alt=""
-                   width="50" />
-              <div class="media-body ml-3">
-                <h6 class="mb-0 text-uppercase">{{ review.author }}</h6>
-                <p class="small text-muted mb-0 text-uppercase">{{ review.created_at }}</p>
-                <ul class="list-inline mb-1 text-xs">
-                  {% if review.grade %}
-                    {% for _ in review.grade|get_positive_range %}
-                      <li class="list-inline-item m-0">
-                        <i class="fas fa-star text-warning"></i>
-                      </li>
-                    {% endfor %}
-                    {% for _ in review.grade|get_negative_range %}
-                      <li class="list-inline-item m-0">
-                        <i class="fas fa-star-half-alt text-muted"></i>
-                      </li>
-                    {% endfor %}
-                  {% endif %}
-                </ul>
-                <p class="text-small mb-0 text-muted">{{ review.text }}</p>
-              </div>
+<div class="row g-4">
+    <!-- Форма добавления отзыва -->
+    <div class="col-lg-4 order-lg-2">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="mb-0 fw-bold">Оставить отзыв</h5>
             </div>
-          </div>
+            <div class="card-body">
+                {% if request.user.is_authenticated %}
+                    <form action="{% url 'shop:add_review' product.pk %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="id_grade" class="form-label">Ваша оценка</label>
+                            <div class="rating-stars mb-2">
+                                <div class="d-flex">
+                                    {% for i in "12345" %}
+                                        <input type="radio" name="grade" id="star{{ i }}" value="{{ i }}"
+                                               style="position: absolute; opacity: 0;" {% if forloop.last %}required{% endif %}>
+                                        <label for="star{{ i }}" class="me-1 fs-4 text-muted rating-star">
+                                            <i class="far fa-star"></i>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_text" class="form-label">Ваш отзыв</label>
+                            <textarea name="text" id="id_text" class="form-control" rows="4"
+                                      placeholder="Поделитесь своими впечатлениями о товаре" required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Отправить отзыв
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="text-center py-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-lock text-muted fs-1"></i>
+                        </div>
+                        <h6 class="mb-3">Отзывы могут оставлять только зарегистрированные пользователи</h6>
+                        <a href="{% url 'auth:login' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Войти
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-      {% endfor %}
-    {% endif %}
-  </div>
+    </div>
+
+    <!-- Список отзывов -->
+    <div class="col-lg-8 order-lg-1">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Отзывы о товаре</h5>
+                {% if product.reviews %}
+                    <span class="badge bg-primary rounded-pill">{{ product.reviews.count }}</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if product.reviews %}
+                    <div class="list-group list-group-flush">
+                        {% for review in product.reviews.all %}
+                            <div class="list-group-item p-4 border-0 border-bottom">
+                                <div class="d-flex mb-3">
+                                    <img class="rounded-circle me-3"
+                                         src="{% static 'img/customer-1.png' %}"
+                                         alt="{{ review.author }}"
+                                         width="50" height="50"/>
+                                    <div>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <h6 class="mb-0 me-2">{{ review.author }}</h6>
+                                            <span class="badge bg-light text-dark">Покупатель</span>
+                                        </div>
+                                        <p class="small text-muted mb-0">{{ review.created_at|date:"d.m.Y" }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    {% if review.grade %}
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-2">
+                                                {% for _ in review.grade|get_positive_range %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% endfor %}
+                                                {% for _ in review.grade|get_negative_range %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endfor %}
+                                            </div>
+                                            <span class="fw-bold">{{ review.grade }}.0</span>
+                                        </div>
+                                    {% endif %}
+                                    <p class="mb-0">{{ review.text }}</p>
+                                </div>
+
+                                {% if review.images %}
+                                    <div class="review-images mt-3">
+                                        <div class="row g-2">
+                                            {% for image in review.images.all %}
+                                                <div class="col-3 col-md-2">
+                                                    <a href="{{ image.image.url }}"
+                                                       data-fancybox="review-{{ review.id }}">
+                                                        <img src="{{ image.image.url }}"
+                                                             alt="Фото от {{ review.author }}"
+                                                             class="img-fluid rounded">
+                                                    </a>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="d-flex align-items-center">
+                                        <button type="button"
+                                                class="btn btn-sm btn-light me-2 d-flex align-items-center">
+                                            <i class="far fa-thumbs-up me-1"></i>
+                                            <span>Полезно</span>
+                                        </button>
+                                        <span class="small text-muted">3 человека считают этот отзыв полезным</span>
+                                    </div>
+
+                                    {% if request.user == review.author %}
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i
+                                                        class="fas fa-pencil-alt me-2"></i>Редактировать</a></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fas fa-trash-alt me-2"></i>Удалить</a></li>
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="fas fa-comment-slash text-muted fs-1"></i>
+                        </div>
+                        <h6 class="text-muted mb-4">У этого товара пока нет отзывов</h6>
+                        <p class="mb-0">Станьте первым, кто оставит отзыв о данном товаре!</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if product.reviews.count > 5 %}
+                <div class="card-footer bg-white border-0 py-3">
+                    <button class="btn btn-outline-primary w-100" id="loadMoreReviews">
+                        Показать ещё отзывы
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingStars = document.querySelectorAll('.rating-star');
+            ratingStars.forEach(star => {
+                star.addEventListener('mouseover', function () {
+                    const starId = this.getAttribute('for');
+                    const starValue = parseInt(starId.replace('star', ''));
+
+                    for (let i = 1; i <= 5; i++) {
+                        const currentStar = document.querySelector(`label[for="star${i}"]`);
+                        if (i <= starValue) {
+                            currentStar.innerHTML = '<i class="fas fa-star text-warning"></i>';
+                        } else {
+                            currentStar.innerHTML = '<i class="far fa-star"></i>';
+                        }
+                    }
+                });
+
+                star.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const starId = this.getAttribute('for');
+                    const radioInput = document.getElementById(starId);
+
+                    if (radioInput) {
+                        radioInput.checked = true;
+
+                        console.log('Выбрана оценка:', radioInput.value);
+
+                        document.querySelectorAll('.rating-star').forEach(s => {
+                            s.removeAttribute('data-selected');
+                        });
+                        this.setAttribute('data-selected', 'true');
+                    }
+                });
+            });
+
+            const ratingContainer = document.querySelector('.rating-stars');
+            if (ratingContainer) {
+                ratingContainer.addEventListener('mouseout', function () {
+                    const selectedInput = document.querySelector('input[name="grade"]:checked');
+
+                    if (selectedInput) {
+                        const selectedValue = parseInt(selectedInput.value);
+
+                        for (let i = 1; i <= 5; i++) {
+                            const currentStar = document.querySelector(`label[for="star${i}"]`);
+                            if (i <= selectedValue) {
+                                currentStar.innerHTML = '<i class="fas fa-star text-warning"></i>';
+                            } else {
+                                currentStar.innerHTML = '<i class="far fa-star"></i>';
+                            }
+                        }
+                    } else {
+                        ratingStars.forEach(star => {
+                            star.innerHTML = '<i class="far fa-star"></i>';
+                        });
+                    }
+                });
+            }
+
+            const selectedInput = document.querySelector('input[name="grade"]:checked');
+            if (selectedInput) {
+                const selectedValue = parseInt(selectedInput.value);
+
+                for (let i = 1; i <= 5; i++) {
+                    const currentStar = document.querySelector(`label[for="star${i}"]`);
+                    if (i <= selectedValue) {
+                        currentStar.innerHTML = '<i class="fas fa-star text-warning"></i>';
+                    } else {
+                        currentStar.innerHTML = '<i class="far fa-star"></i>';
+                    }
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .rating-star {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .rating-star:hover {
+            transform: scale(1.15);
+        }
+
+        .rating-star[data-selected="true"] {
+            color: #FFC107;
+        }
+    </style>
+{% endblock %}

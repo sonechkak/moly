@@ -1,22 +1,29 @@
+{% load django_bootstrap5 %}
 {% load static %}
 
 <!-- CATEGORIES SECTION-->
 <section class="pt-5">
-  <header class="text-center">
-    <p class="small text-muted small text-uppercase mb-1">Качественные товары</p>
-    <h2 class="h5 text-uppercase mb-4">Изучите категории</h2>
-  </header>
-  <div class="row">
-    {% for cat in categories %}
-      <div class="col-md-4 mb-4 mb-md-0">
-        <a class="category-item" href="{{ cat.get_absolute_url }}">
-          <img class="img-fluid"
-               src="{{ cat.image.url }}"
-               alt=""
-               style="width: 150px;
-                      height: 170px" />
-          <strong class="category-item-title">{{ cat.title }}</strong></a>
-      </div>
-    {% endfor %}
-  </div>
+    <header class="text-center mb-4">
+        <span class="badge bg-primary rounded-pill mb-2">Каталог</span>
+        <h2 class="h4 text-uppercase fw-bold mb-2">Изучите категории</h2>
+        <div class="divider mx-auto my-2" style="width: 60px; height: 2px; background-color: #dee2e6;"></div>
+        <p class="text-muted">Качественные товары для всех потребностей</p>
+    </header>
+    <div class="row g-4">
+        {% for cat in categories %}
+            <div class="col-md-4">
+                <a class="category-item text-decoration-none d-block text-center position-relative overflow-hidden rounded shadow-sm"
+                   href="{{ cat.get_absolute_url }}">
+                    <div class="p-4 bg-light">
+                        <img class="img-fluid mb-3"
+                             src="{{ cat.image.url }}"
+                             alt="{{ cat.title }}"
+                             style="max-width: 160px; height: auto;"/>
+                        <h3 class="h5 text-dark">{{ cat.title }}</h3>
+                        <span class="btn btn-sm btn-outline-dark mt-2">Посмотреть товары</span>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
 </section>

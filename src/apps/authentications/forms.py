@@ -24,7 +24,10 @@ class RegistrationForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Подтвердите пароль"})
     )
     is_mfa_enabled = forms.BooleanField(
-        required=False, initial=False, label="Включить 2FA", widget=forms.CheckboxInput(attrs={"class": "form-control"})
+        required=False,
+        initial=False,
+        label="Включить 2FA",
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
     )
 
     class Meta:
@@ -38,5 +41,6 @@ class Verify2FAForm(forms.Form):
     token = forms.CharField(
         label="Токен",
         max_length=6,
+        required=True,
         widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите токен"}),
     )

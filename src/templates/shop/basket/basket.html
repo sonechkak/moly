@@ -1,104 +1,151 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
 {% block content %}
-  <div class="container">
     <!-- HERO SECTION-->
     <section class="py-5 bg-light">
-      <div class="container">
-        <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
-          <div class="col-lg-6">
-            <h1 class="h2 text-uppercase mb-0">{{ title }}</h1>
-          </div>
-          <div class="col-lg-6 text-lg-right">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
-                <li class="breadcrumb-item">
-                  <a href="{% url 'shop:index' %}">На главную</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
-              </ol>
-            </nav>
-          </div>
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="fw-bold text-primary mb-0">{{ title }}</h1>
+                </div>
+                <div class="col-lg-6">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'shop:index' %}" class="text-decoration-none">На главную</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
         </div>
-      </div>
     </section>
+
     <section class="py-5">
-      {% if products %}
-        <div class="row">
-          <div class="col-lg-8 mb-4 mb-lg-0">
-            <!-- CART TABLE-->
-            <div class="table-responsive mb-4">
-              <table class="table">
-                <thead class="bg-light">
-                  <tr>
-                    <th class="border-0" scope="col">
-                      <strong class="text-small text-uppercase">Товар</strong>
-                    </th>
-                    <th class="border-0" scope="col">
-                      <strong class="text-small text-uppercase">Цена</strong>
-                    </th>
-                    <th class="border-0" scope="col">
-                      <strong class="text-small text-uppercase">Количество</strong>
-                    </th>
-                    <th class="border-0" scope="col">
-                      <strong class="text-small text-uppercase">Стоимость</strong>
-                    </th>
-                    <th class="border-0" scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% include 'shop/basket/_components/_cart_row.html' %}
-                </tbody>
-              </table>
-            </div>
-            <!-- CART NAV-->
-            <div class="bg-light px-4 py-3">
-              <div class="row align-items-center text-center">
-                <div class="col-md-6 mb-3 mb-md-0 text-md-left">
-                  <a class="btn btn-link p-0 text-dark btn-sm"
-                     href="{% url 'shop:all_products' %}">
-                    <i class="fas fa-long-arrow-alt-left mr-2"></i>Вернуться к товарам</a>
+        <div class="container">
+            {% if products %}
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <!-- CART TABLE-->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 border-0">
+                                <h5 class="mb-0 fw-bold">Ваша корзина</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table align-middle mb-0">
+                                        <thead class="bg-light">
+                                        <tr>
+                                            <th class="border-0 ps-4" scope="col">
+                                                <span class="text-uppercase fw-semibold small">Товар</span>
+                                            </th>
+                                            <th class="border-0" scope="col">
+                                                <span class="text-uppercase fw-semibold small">Цена</span>
+                                            </th>
+                                            <th class="border-0" scope="col">
+                                                <span class="text-uppercase fw-semibold small">Количество</span>
+                                            </th>
+                                            <th class="border-0" scope="col">
+                                                <span class="text-uppercase fw-semibold small">Стоимость</span>
+                                            </th>
+                                            <th class="border-0" scope="col"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% include 'shop/basket/_components/_cart_row.html' %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- CART NAV -->
+                            <div class="card-footer bg-white py-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <a class="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center justify-content-md-start"
+                                           href="{% url 'shop:all_products' %}">
+                                            <i class="fas fa-arrow-left me-2"></i>
+                                            Продолжить покупки
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a class="btn btn-primary rounded-pill d-flex align-items-center justify-content-center justify-content-md-end"
+                                           href="{% url 'orders:checkout' basket.pk %}">
+                                            Перейти к оформлению
+                                            <i class="fas fa-arrow-right ms-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ORDER TOTAL-->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white py-3 border-0">
+                                <h5 class="mb-0 fw-bold">Сводка заказа</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush mb-4">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                        <span class="fw-semibold text-muted">Всего товаров</span>
+                                        <span class="badge bg-primary rounded-pill">{{ basket.get_total_quantity }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                        <span class="fw-semibold text-muted">Подытог</span>
+                                        <span class="fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-bottom">
+                                        <span class="fw-semibold text-muted">Доставка</span>
+                                        <span class="text-success fw-semibold">Бесплатно</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-0">
+                                        <span class="h5 fw-bold mb-0">Итого</span>
+                                        <span class="h5 fw-bold mb-0">{{ basket.get_total_cost }} ₽</span>
+                                    </li>
+                                </ul>
+
+                                <div class="card bg-light border-0 rounded-3 mb-3">
+                                    <div class="card-body">
+                                        <form action="#">
+                                            <div class="mb-3">
+                                                <label for="coupon"
+                                                       class="form-label small fw-semibold">Промокод</label>
+                                                <div class="input-group">
+                                                    <input id="coupon" class="form-control" type="text"
+                                                           placeholder="Введите промокод"/>
+                                                    <button class="btn btn-outline-dark" type="submit">
+                                                        <i class="fas fa-tag"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <a href="{% url 'orders:checkout' basket.pk %}" class="btn btn-primary btn-lg">
+                                        Оформить заказ
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-right">
-                  <a class="btn btn-outline-dark btn-sm"
-                     href="{% url 'orders:checkout' basket.pk %}">
-                    Перейти к оформлению
-                    <i class="fas fa-long-arrow-alt-right ml-2"></i></a>
+            {% else %}
+                <div class="card border-0 shadow-sm p-5 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+                    </div>
+                    <h3>Ваша корзина пуста</h3>
+                    <p class="text-muted mb-4">Похоже, вы еще не добавили товары в корзину.</p>
+                    <a href="{% url 'shop:all_products' %}" class="btn btn-primary rounded-pill px-4">
+                        Перейти к покупкам
+                    </a>
                 </div>
-              </div>
-            </div>
-          </div>
-          <!-- ORDER TOTAL-->
-          <div class="col-lg-4">
-            <div class="card border-0 rounded-0 p-lg-4 bg-light">
-              <div class="card-body">
-                <h5 class="text-uppercase mb-4">ИТОГО</h5>
-                <ul class="list-unstyled mb-0">
-                  <li class="d-flex align-items-center justify-content-between">
-                    <strong class="text-uppercase small font-weight-bold">Всего товаров:</strong><span class="text-muted small">{{ basket.get_total_quantity }}</span>
-                  </li>
-                  <li class="border-bottom my-2"></li>
-                  <li class="d-flex align-items-center justify-content-between mb-4">
-                    <strong class="text-uppercase small font-weight-bold">Стоимость</strong><span>{{ basket.get_total_cost }} руб.</span>
-                  </li>
-                  <li>
-                    <form action="#">
-                      <div class="form-group mb-0">
-                        <input class="form-control" type="text" placeholder="Enter your coupon" />
-                        <button class="btn btn-dark btn-sm btn-block" type="submit">
-                          <i class="fas fa-gift mr-2"></i>Применить купон
-                        </button>
-                      </div>
-                    </form>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+            {% endif %}
         </div>
-      {% else %}
-        <h1>{{ title }}</h1>
-      {% endif %}
     </section>
-  </div>
 {% endblock %}

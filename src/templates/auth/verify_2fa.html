@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 
 {% block header %}
     {% include 'auth/_components/_header.html' %}
@@ -13,14 +14,23 @@
                         <h4 class="card-title mb-4">Введите код из Google Authenticator</h4>
                         <form method="post">
                             {% csrf_token %}
-                            <div class="form-group mb-3">
+                            <div class="mb-4">
                                 <input type="text" name="token" id="token"
                                        class="form-control form-control-lg text-center" placeholder="Введите код"
-                                       maxlength="6" pattern="\d{6}" required style="width: 120px; margin: 0 auto;" />
+                                       maxlength="6" pattern="\d{6}" required style="width: 180px; margin: 0 auto;"
+                                       autocomplete="off" autofocus inputmode="numeric"/>
+                                <div class="form-text">
+                                    Введите 6-значный код из приложения
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">
-                                Подтвердить
-                            </button>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Подтвердить
+                                </button>
+                                <a href="{% url 'auth:login' %}" class="btn btn-outline-secondary">
+                                    Назад
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </div>
