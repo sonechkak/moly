@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
+from django.conf.global_settings import LOGIN_URL
+
 # if os.environ.get('TESTING'):
 #     load_dotenv('.env.test')
 # else:
@@ -136,3 +138,5 @@ AUTH_USER_MODEL = "users.User"
 # Celery
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
+
+LOGIN_URL = "auth:login"

@@ -3,8 +3,9 @@ from apps.users.models import Profile
 from apps.users.utils import generate_totp_uri
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
-from django.contrib.auth.views import LogoutView
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import FormView
 
 from .forms import (
@@ -25,20 +26,31 @@ class LoginView(FormView):
     extra_context = {"title": "Вход в аккаунт"}
 
     def form_valid(self, form):
+        result = super().form_valid(form)
         user = form.get_user()
         profile = Profile.objects.get(user=user)
 
         if profile.is_mfa_enabled:
             self.request.session["mfa_user_pk"] = user.pk
             return redirect("auth:verify_2fa")
-
-        login(self.request, user)
-        return redirect("users:profile", pk=user.pk)
+        else:
+            login(self.request, user)
+            messages.success(self.request, "Вы успешно вошли в систему.")
+            if "mfa_user_pk" in self.request.session:
+                del self.request.session["mfa_user_pk"]
+        return result
 
     def form_invalid(self, form):
+        result = super().form_invalid(form)
         for error in form.errors:
             messages.error(self.request, form.errors[error].as_text())
-        return redirect("auth:login")
+        return result
+
+    def get_success_url(self):
+        if self.request.user.is_authenticated:
+            return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
+        else:
+            return reverse_lazy("auth:verify_2fa")
 
 
 class Verify2FAView(FormView):
@@ -77,6 +89,7 @@ class Verify2FAView(FormView):
         return context
 
     def form_valid(self, form):
+        form_valid = super().form_valid(form)
         user = get_object_or_404(User, id=self.request.session.get("mfa_user_pk"))
         token = form.cleaned_data["token"].strip()
 
@@ -89,7 +102,10 @@ class Verify2FAView(FormView):
                 messages.success(self.request, "Вы успешно вошли в систему.")
                 return redirect("users:profile", pk=user.pk)
         messages.error(self.request, "Неверный токен. Пожалуйста, попробуйте снова.")
-        return redirect("auth:verify_2fa")
+        return form_valid
+
+    def get_success_url(self):
+        return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
 
 
 class RegistrationView(FormView):
@@ -100,6 +116,8 @@ class RegistrationView(FormView):
     extra_context = {"title": "Регистрация пользователя"}
 
     def form_valid(self, form):
+        result = super().form_valid(form)
+
         user = form.save(commit=False)
         is_mfa_enabled = form.cleaned_data["is_mfa_enabled"]
         user.save()
@@ -115,15 +133,25 @@ class RegistrationView(FormView):
             self.request.session["mfa_user_pk"] = user.pk
             messages.success(self.request, "Настройте 2FA с помощью Google Authenticator или аналогичного приложения.")
             return redirect("auth:qrcode")
+        else:
+            login(self.request, user)
+            messages.success(self.request, "Вы успешно вошли в систему.")
+            if "mfa_user_pk" in self.request.session:
+                del self.request.session["mfa_user_pk"]
 
-        login(self.request, user)
-        return redirect("users:profile", pk=user.pk)
+        return result
 
     def form_invalid(self, form):
         for field, errors in form.errors.items():
             for error in errors:
                 messages.error(self.request, f"{field}: {error}")
         return redirect("auth:register")
+
+    def get_success_url(self):
+        if self.request.user.is_authenticated:
+            return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
+        else:
+            return reverse_lazy("auth:qrcode")
 
 
 class QrCodeView(FormView):
@@ -147,6 +175,7 @@ class QrCodeView(FormView):
         return context
 
     def form_valid(self, form):
+        result = super().form_valid(form)
         user = get_user_model().objects.get(pk=self.request.session.get("mfa_user_pk"))
         profile = Profile.objects.get(user=user)
         token = form.cleaned_data["token"]
@@ -159,18 +188,23 @@ class QrCodeView(FormView):
             profile.save()
             messages.success(self.request, "2FA успешно настроена!")
 
-        return redirect("auth:login")
+        return result
 
     def form_invalid(self, form):
+        result = super().form_invalid(form)
         for field, errors in form.errors.items():
             for error in errors:
                 messages.error(self.request, f"{field}: {error}")
-        return redirect("auth:qrcode")
+        return result
+
+    def get_success_url(self):
+        return redirect("auth:login")
 
 
-class LogoutUserView(LogoutView):
-    """Вьюха для выхода User."""
+class LogoutUserView(View):
+    """Вью для выхода User."""
 
     def dispatch(self, request, *args, **kwargs):
         logout(request)
+        messages.success(request, "Вы вышли из системы.")
         return redirect("auth:login")
