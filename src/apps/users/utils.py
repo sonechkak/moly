@@ -4,10 +4,6 @@ import pyotp
 from django.utils.text import slugify
 
 
-def generate_totp_uri(user, secret_key):
-    return pyotp.totp.TOTP(secret_key).provisioning_uri(name=user.username or user.email, issuer_name="moly")
-
-
 def get_avatar_upload_path(instance, filename):
     """Для загрузки изображений в папку avatars."""
     try:

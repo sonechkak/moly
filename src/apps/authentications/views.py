@@ -1,10 +1,9 @@
 import pyotp
 from apps.users.models import Profile
-from apps.users.utils import generate_totp_uri
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import FormView
 
@@ -13,7 +12,7 @@ from .forms import (
     RegistrationForm,
     Verify2FAForm,
 )
-from .utils import generate_qrcode
+from .utils import generate_qrcode, generate_totp_uri
 
 User = get_user_model()
 
@@ -26,19 +25,15 @@ class LoginView(FormView):
     extra_context = {"title": "Вход в аккаунт"}
 
     def form_valid(self, form):
-        result = super().form_valid(form)
         user = form.get_user()
-        profile = Profile.objects.get(user=user)
 
-        if profile.is_mfa_enabled:
+        if user.is_mfa_enabled:
             self.request.session["mfa_user_pk"] = user.pk
-            return redirect("auth:verify_2fa")
         else:
-            login(self.request, user)
-            messages.success(self.request, "Вы успешно вошли в систему.")
-            if "mfa_user_pk" in self.request.session:
-                del self.request.session["mfa_user_pk"]
-        return result
+            login(self.request, user=user)
+
+        messages.success(self.request, "Вы успешно вошли в систему.")
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         result = super().form_invalid(form)
@@ -50,7 +45,7 @@ class LoginView(FormView):
         if self.request.user.is_authenticated:
             return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
         else:
-            return reverse_lazy("auth:verify_2fa")
+            return reverse("auth:verify_2fa")
 
 
 class Verify2FAView(FormView):
@@ -76,7 +71,7 @@ class Verify2FAView(FormView):
         context = super().get_context_data(**kwargs)
         user = get_object_or_404(User, id=self.request.session.get("mfa_user_pk"))
 
-        if not user.profile.mfa_hash:
+        if not user.mfa_hash:
             messages.error(self.request, "2FA не настроена для этого пользователя.")
             return redirect("auth:login")
 
@@ -89,20 +84,20 @@ class Verify2FAView(FormView):
         return context
 
     def form_valid(self, form):
-        form_valid = super().form_valid(form)
         user = get_object_or_404(User, id=self.request.session.get("mfa_user_pk"))
         token = form.cleaned_data["token"].strip()
 
-        totp = pyotp.TOTP(user.profile.mfa_hash or user.profile.get_mfa_hash())
+        totp = pyotp.TOTP(user.mfa_hash or user.get_mfa_hash())
 
         if totp.verify(token, valid_window=1):
             if "mfa_user_pk" in self.request.session:
                 del self.request.session["mfa_user_pk"]
                 login(self.request, user)
                 messages.success(self.request, "Вы успешно вошли в систему.")
-                return redirect("users:profile", pk=user.pk)
-        messages.error(self.request, "Неверный токен. Пожалуйста, попробуйте снова.")
-        return form_valid
+        else:
+            messages.error(self.request, "Неверный токен. Пожалуйста, попробуйте снова.")
+            return super().form_invalid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
@@ -120,14 +115,14 @@ class RegistrationView(FormView):
 
         user = form.save(commit=False)
         is_mfa_enabled = form.cleaned_data["is_mfa_enabled"]
-        user.save()
 
-        Profile.objects.create(
-            user=user,
-            is_mfa_enabled=is_mfa_enabled,
-            mfa_hash=pyotp.random_base32() if is_mfa_enabled else None,
-        )
-        messages.success(self.request, "Аккаунт пользователя успешно создан")
+        if is_mfa_enabled:
+            user.is_mfa_enabled = True
+            user.mfa_hash = pyotp.random_base32()
+
+        user.save()
+        Profile.objects.create(user=user)
+        messages.success(self.request, "Аккаунт пользователя успешно создан.")
 
         if is_mfa_enabled:
             self.request.session["mfa_user_pk"] = user.pk
@@ -138,6 +133,7 @@ class RegistrationView(FormView):
             messages.success(self.request, "Вы успешно вошли в систему.")
             if "mfa_user_pk" in self.request.session:
                 del self.request.session["mfa_user_pk"]
+            return redirect("users:profile", pk=user.pk)
 
         return result
 
@@ -151,7 +147,7 @@ class RegistrationView(FormView):
         if self.request.user.is_authenticated:
             return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
         else:
-            return reverse_lazy("auth:qrcode")
+            return reverse("auth:login")
 
 
 class QrCodeView(FormView):
@@ -162,31 +158,34 @@ class QrCodeView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_id = self.request.session.get("mfa_user_pk")
-        user = get_object_or_404(User, id=user_id)
-        profile = get_object_or_404(Profile, user=user_id)
+        user = get_object_or_404(User, id=self.request.session.get("mfa_user_pk"))
 
-        totp_uri = generate_totp_uri(user=user, secret_key=profile.get_mfa_hash())
+        if not user.mfa_hash:
+            user.mfa_hash = pyotp.random_base32()
+            user.save()
+
+        totp_uri = generate_totp_uri(user=user, secret_key=user.mfa_hash)
 
         img_str = generate_qrcode(totp_uri)
 
         context["qr_code_img"] = f"data:image/png;base64,{img_str}"
-        context["hash"] = profile.mfa_hash
+        context["hash"] = user.mfa_hash
         return context
 
     def form_valid(self, form):
         result = super().form_valid(form)
         user = get_user_model().objects.get(pk=self.request.session.get("mfa_user_pk"))
-        profile = Profile.objects.get(user=user)
         token = form.cleaned_data["token"]
 
         # Проверка токена
-        totp = pyotp.TOTP(profile.mfa_hash)
+        totp = pyotp.TOTP(user.mfa_hash)
         if totp.verify(token):
             if "mfa_user_pk" in self.request.session:
                 del self.request.session["mfa_user_pk"]
-            profile.save()
             messages.success(self.request, "2FA успешно настроена!")
+        else:
+            messages.error(self.request, "Неверный токен. Пожалуйста, попробуйте снова.")
+            return super().form_invalid(form)
 
         return result
 
@@ -198,7 +197,7 @@ class QrCodeView(FormView):
         return result
 
     def get_success_url(self):
-        return redirect("auth:login")
+        return reverse("auth:login")
 
 
 class LogoutUserView(View):

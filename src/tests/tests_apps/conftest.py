@@ -44,13 +44,13 @@ def user(transactional_db):
     user = User.objects.create(
         username="test_user",
         password="StrongPassword123!",
-        email="test@icloud.com"
+        email="test@icloud.com",
+        is_mfa_enabled=False
     )
     Profile.objects.create(user=user,
                            first_name="Test",
                            last_name="User",
-                           phone="1234567890",
-                           is_mfa_enabled=False)
+                           phone="1234567890")
     return user
 
 
