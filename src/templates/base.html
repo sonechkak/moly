@@ -1,3 +1,4 @@
+{% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="robots" content="all,follow"/>
     <!-- Fav and Stylesheets -->
-    {% include '_components/_style.html' %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% block extra_head %}{% endblock %}
     <!-- Custom Stylesheets -->
     {% block style %}
     {% endblock style %}

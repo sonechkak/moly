@@ -1,46 +1,75 @@
+{% load django_bootstrap5 %}
 <!-- SERVICES-->
-<section class="py-5 bg-light">
-  <div class="container">
-    <div class="row text-center">
-      <div class="col-lg-4 mb-3 mb-lg-0">
-        <div class="d-inline-block">
-          <div class="media align-items-end">
-            <svg class="svg-icon svg-icon-big svg-icon-light">
-              <use xlink:href="#delivery-time-1"></use>
-            </svg>
-            <div class="media-body text-left ml-3">
-              <h6 class="text-uppercase mb-1">Бесплатная доставка</h6>
-              <p class="text-small mb-0 text-muted">По г. Ростову-на-Дону</p>
-            </div>
-          </div>
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Наши преимущества</h2>
+            <div class="divider mx-auto my-3"
+                 style="width: 60px; height: 3px; background-color: var(--bs-primary);"></div>
         </div>
-      </div>
-      <div class="col-lg-4 mb-3 mb-lg-0">
-        <div class="d-inline-block">
-          <div class="media align-items-end">
-            <svg class="svg-icon svg-icon-big svg-icon-light">
-              <use xlink:href="#helpline-24h-1"></use>
-            </svg>
-            <div class="media-body text-left ml-3">
-              <h6 class="text-uppercase mb-1">24 x 7 поддержка</h6>
-              <p class="text-small mb-0 text-muted">Задавайте вопросы</p>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift transition-300">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box rounded-circle bg-primary bg-opacity-10 mx-auto mb-4 d-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px;">
+                            <svg class="svg-icon text-primary" style="width: 40px; height: 40px;">
+                                <use xlink:href="#delivery-time-1"></use>
+                            </svg>
+                        </div>
+                        <h5 class="card-title fw-bold text-uppercase mb-3">Бесплатная доставка</h5>
+                        <p class="card-text text-muted mb-3">По г. Ростову-на-Дону при заказе от 1000₽. Быстро и точно в
+                            срок!</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">Подробнее</a>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="d-inline-block">
-          <div class="media align-items-end">
-            <svg class="svg-icon svg-icon-big svg-icon-light">
-              <use xlink:href="#label-tag-1"></use>
-            </svg>
-            <div class="media-body text-left ml-3">
-              <h6 class="text-uppercase mb-1">Постоянные акции</h6>
-              <p class="text-small mb-0 text-muted">Покупайте с выгодой</p>
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift transition-300">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box rounded-circle bg-primary bg-opacity-10 mx-auto mb-4 d-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px;">
+                            <svg class="svg-icon text-primary" style="width: 40px; height: 40px;">
+                                <use xlink:href="#helpline-24h-1"></use>
+                            </svg>
+                        </div>
+                        <h5 class="card-title fw-bold text-uppercase mb-3">24 x 7 поддержка</h5>
+                        <p class="card-text text-muted mb-3">Задавайте вопросы в любое время суток. Наши специалисты
+                            всегда на связи!</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">Связаться</a>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift transition-300">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box rounded-circle bg-primary bg-opacity-10 mx-auto mb-4 d-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px;">
+                            <svg class="svg-icon text-primary" style="width: 40px; height: 40px;">
+                                <use xlink:href="#label-tag-1"></use>
+                            </svg>
+                        </div>
+                        <h5 class="card-title fw-bold text-uppercase mb-3">Постоянные акции</h5>
+                        <p class="card-text text-muted mb-3">Покупайте с выгодой! Регулярные скидки и специальные
+                            предложения для наших клиентов.</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">Смотреть акции</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
+
+<style>
+    .hover-lift {
+        transition: transform 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-10px);
+    }
+
+    .transition-300 {
+        transition: all 0.3s ease;
+    }
+</style>

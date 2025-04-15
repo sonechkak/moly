@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
-
+{% load django_bootstrap5 %}
 {% load static %}
-{% include 'users/_components/style.html' %}
 
 {% block content %}
     <div class="container py-5">
@@ -16,90 +15,81 @@
                                  class="rounded-circle img-thumbnail"
                                  width="150"
                                  height="150"
-                                 alt="Аватар"/>
+                                 alt="Аватар профиля"
+                                 onerror="this.src='{% static 'images/default-avatar.jpg' %}'">
                         </div>
-                        <h4 class="card-title">
-                            {% if user.profile.first_name or user.profile.last_name %}
-                                {{ user.profile.first_name }} {{ user.profile.last_name }}
-                            {% else %}
-                                {{ user.username }}
-                            {% endif %}
-                        </h4>
+                        <h4 class="card-title">{{ user.profile }}</h4>
                         <p class="text-muted mb-1">{{ user.email }}</p>
                         <p class="text-muted">{{ user.profile.phone|default:"Телефон не указан" }}</p>
+
                         <!-- Меню профиля -->
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a class="nav-link active" href="{% url 'users:profile' user.pk %}">
-                                    <i class="bi bi-person-fill me-2"></i>Личные данные
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="bi bi-bag-fill me-2"></i>Мои заказы
-                                </a>
-                            </li>
-                        </ul>
+                        <div class="list-group mt-3">
+                            <a href="{% url 'users:profile' user.pk %}"
+                               class="list-group-item list-group-item-action active">
+                                <i class="bi bi-person-fill me-2"></i>Личные данные
+                            </a>
+                            <a href="#addresses" class="list-group-item list-group-item-action">
+                                <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="bi bi-bag-fill me-2"></i>Мои заказы
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <!-- Основное содержимое профиля -->
             <div class="col-md-8">
-                <div class="card shadow-sm">
+                <!-- Форма личных данных -->
+                <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">Личные данные</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{% url 'users:profile-update' user.profile.pk %}" method="post"
+                        <form method="post"
+                              action="{% url 'users:profile-update' user.profile.pk %}"
                               enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row g-3">
                                 <!-- Аватар -->
                                 <div class="col-12">
-                                    <label for="avatar" class="form-label">Аватар</label>
-                                    <input class="form-control" type="file" id="avatar" name="avatar"/>
+                                    <label for="id_avatar" class="form-label">Аватар</label>
+                                    <input class="form-control" type="file" id="id_avatar" name="avatar"
+                                           accept="image/*">
+                                    {% if user.profile.avatar %}
+                                        <div class="mt-2">
+                                            <small>Текущий аватар:</small>
+                                            <img src="{{ user.profile.avatar.url }}" width="50" class="ms-2">
+                                        </div>
+                                    {% endif %}
                                 </div>
+
                                 <!-- Основные поля -->
                                 <div class="col-md-6">
-                                    <label for="first_name" class="form-label">Имя</label>
-                                    <input type="text"
-                                           class="form-control"
-                                           id="first_name"
-                                           name="first_name"
-                                           value="{{ user.profile.first_name|default:'' }}"/>
+                                    <label for="id_first_name" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="id_first_name" name="first_name"
+                                           value="{{ user.profile.first_name|default:'' }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="last_name" class="form-label">Фамилия</label>
-                                    <input type="text"
-                                           class="form-control"
-                                           id="last_name"
-                                           name="last_name"
-                                           value="{{ user.profile.last_name|default:'' }}"/>
+                                    <label for="id_last_name" class="form-label">Фамилия</label>
+                                    <input type="text" class="form-control" id="id_last_name" name="last_name"
+                                           value="{{ user.profile.last_name|default:'' }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email"
-                                           class="form-control"
-                                           id="email"
-                                           name="email"
-                                           value="{{ user.email|default:'' }}"
-                                           required/>
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="id_email" name="email"
+                                           value="{{ user.email|default:'' }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="phone" class="form-label">Телефон</label>
-                                    <input type="tel"
-                                           class="form-control"
-                                           id="phone"
-                                           name="phone"
-                                           value="{{ user.profile.phone|default:'' }}"/>
+                                    <label for="id_phone" class="form-label">Телефон</label>
+                                    <input type="tel" class="form-control" id="id_phone" name="phone"
+                                           value="{{ user.profile.phone|default:'' }}">
                                 </div>
-                                <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-primary px-4">Сохранить изменения</button>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-check-circle me-1"></i> Сохранить изменения
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -172,4 +162,3 @@
         </div>
     </div>
 {% endblock %}
-{% include 'users/_components/js.html' %}

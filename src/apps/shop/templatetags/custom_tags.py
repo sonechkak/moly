@@ -6,6 +6,11 @@ register = template.Library()
 
 
 @register.simple_tag()
+def multiply(value, arg):
+    return float(value) * float(arg)
+
+
+@register.simple_tag()
 def get_subcategories(category):
     """Получение подкатегорий."""
     return Category.objects.filter(parent=category)

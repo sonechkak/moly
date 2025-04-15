@@ -28,11 +28,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user.profile
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Редактирование профиля"
-        return context
-
     def get_success_url(self):
         return reverse_lazy("users:profile", kwargs={"pk": self.object.pk})
 
@@ -43,9 +38,8 @@ class ShippingAddressCreateView(LoginRequiredMixin, CreateView):
     template_name = "users/address-create.html"
 
     def form_valid(self, form):
-        result = super().form_valid(form)
         form.instance.customer = Profile.objects.get(user=self.request.user)
-        return result
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

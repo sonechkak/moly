@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # other
+    "django_bootstrap5",
     "stripe",
     "django_celery_beat",
     # 3d apps
