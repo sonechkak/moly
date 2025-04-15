@@ -31,18 +31,23 @@ class Checkout(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
+        result = super().form_valid(form)
         basket = get_object_or_404(Basket, user=self.request.user)
-        order = OrderCreator.create_order(
+        OrderCreator.create_order(
             user=self.request.user,
             form_data=form.cleaned_data,
             basket=basket,
         )
         messages.success(self.request, "Ваш заказ успешно оформлен!")
-        return redirect("orders:order_detail", pk=order.pk)
+        return result
 
     def form_invalid(self, form):
+        result = super().form_invalid(form)
         messages.error(self.request, "Ошибка оформления заказа. Проверьте введенные данные.")
-        return self.render_to_response(self.get_context_data(form=form))
+        return result
+
+    def get_success_url(self):
+        return redirect("orders:order_detail", pk=self.object.pk)
 
 
 class OrderDetail(LoginRequiredMixin, DetailView):
