@@ -1,8 +1,10 @@
 import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 
-from apps.users.models import *
+from apps.users.models import (
+    Profile,
+    ShippingAddress,
+)
 
 
 User = get_user_model()

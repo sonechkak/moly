@@ -2,7 +2,7 @@ import pyotp
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .utils import generate_totp_uri, get_avatar_upload_path
+from .utils import get_avatar_upload_path
 
 
 class User(AbstractUser):
@@ -14,6 +14,18 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_mfa_enabled = models.BooleanField("MFA", default=False, null=True, blank=True)
+    mfa_hash = models.CharField("MFA Hash", max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return self.username or self.email
+
+    def get_mfa_hash(self):
+        """Обновляет хэш MFA."""
+        if not self.mfa_hash:
+            self.mfa_hash = pyotp.random_base32()
+            self.save()
+        return self.mfa_hash
 
 
 class Profile(models.Model):
@@ -25,8 +37,6 @@ class Profile(models.Model):
     avatar = models.ImageField("Аватар", upload_to=get_avatar_upload_path, null=True, blank=True)
     email = models.EmailField("email address", unique=True, null=True, blank=True)
     phone = models.CharField("phone", max_length=20, blank=True, null=True)
-    mfa_hash = models.CharField("MFA Hash", max_length=50, null=True, blank=True)
-    is_mfa_enabled = models.BooleanField("MFA", default=False)
 
     class Meta:
         verbose_name = "Профиль"
@@ -37,12 +47,6 @@ class Profile(models.Model):
             return f"{self.first_name} {self.last_name}"
         else:
             return self.user.username or self.user.email
-
-    def get_mfa_hash(self):
-        """Обновляет хэш MFA."""
-        self.mfa_hash = pyotp.random_base32()
-        self.save()
-        return self.mfa_hash
 
 
 class ShippingAddress(models.Model):

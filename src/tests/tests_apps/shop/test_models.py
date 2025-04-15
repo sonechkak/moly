@@ -5,7 +5,11 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
-from apps.shop.models import *
+from apps.shop.models import (
+    Category,
+    Gallery,
+    Review,
+)
 
 
 @pytest.mark.django_db
@@ -14,6 +18,7 @@ def test_category_creation(category):
         assert category.slug == "test_category"
         assert str(category) == "test_category"
         assert category.get_absolute_url() == reverse("shop:category_list", kwargs={"slug": "test_category"})
+
 
 @pytest.mark.django_db
 def test_parent_category(category):
@@ -26,12 +31,14 @@ def test_parent_category(category):
     assert child.parent == category
     assert child in category.subcategories.all()
 
+
 @pytest.mark.django_db
 def test_brand_creation(brand):
     """Тест создания бренда"""
     assert brand.title == "Apple"
     assert brand.slug == "apple"
     assert str(brand) == "Apple"
+
 
 @pytest.mark.django_db
 def test_product_creation(product, category, brand):
@@ -42,6 +49,7 @@ def test_product_creation(product, category, brand):
     assert product.brand == brand
     assert str(product) == "Тестовый товар"
 
+
 @pytest.mark.django_db
 def test_price_changes(product):
     """Тест отслеживания изменения цены"""
@@ -51,6 +59,7 @@ def test_price_changes(product):
     product.refresh_from_db()
     assert product.price == 150
 
+
 @pytest.mark.django_db
 def test_invalid_price_changes(product):
     """Тест отслеживания изменения цены"""
@@ -59,6 +68,7 @@ def test_invalid_price_changes(product):
 
     product.refresh_from_db()
     assert product.price == original_price
+
 
 @pytest.mark.django_db
 def test_get_main_photo(temp_media_root, product):
@@ -71,16 +81,19 @@ def test_get_main_photo(temp_media_root, product):
 
     assert product.get_main_photo() is not None
 
+
 @pytest.mark.django_db
 def test_old_price_calculation(product):
     """Тест расчета старой цены"""
     assert product.old_price() == product.price * 1.2
+
 
 @pytest.mark.django_db
 def test_absolute_url(product):
     """Тест абсолютного URL продукта"""
     expected_url = reverse("shop:product_detail", kwargs={"slug": product.slug})
     assert product.get_absolute_url() == expected_url
+
 
 @pytest.mark.django_db
 def test_gallery_creation(temp_media_root, product):
@@ -91,6 +104,7 @@ def test_gallery_creation(temp_media_root, product):
     gallery = Gallery.objects.create(product=product, image=image)
     assert str(gallery) == product.title
     assert gallery in product.images.all()
+
 
 @pytest.mark.django_db
 def test_main_image_logic(temp_media_root, product):
@@ -121,6 +135,7 @@ def test_main_image_logic(temp_media_root, product):
     )
     assert expected_path_pattern.match(main_image.image.name) is not None
 
+
 @pytest.mark.django_db
 def test_review_creation(user, product):
     """Тест создания отзыва"""
@@ -135,6 +150,7 @@ def test_review_creation(user, product):
     assert review in product.reviews.all()
     assert review.grade == "5"
     assert review.text == "Отличный товар!"
+
 
 @pytest.mark.django_db
 def test_grade_choices_validation(user, product):

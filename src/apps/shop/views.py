@@ -1,10 +1,8 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import IntegrityError
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import DetailView, FormView, ListView
 
-from .forms import CustomerForm, ReviewForm
+from .forms import ReviewForm
 from .models import Category, Product
 from .utils import get_random_products
 

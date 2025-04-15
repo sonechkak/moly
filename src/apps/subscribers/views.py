@@ -1,7 +1,6 @@
 from apps.subscribers.models import Subscribe
 from django.contrib import messages
-from django.db import IntegrityError
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.views import View
 
 

@@ -2,7 +2,6 @@ from apps.baskets.models import BasketProduct
 from apps.orders.models import Order, OrderProduct
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.shortcuts import redirect
 
 
 class OrderCreator(LoginRequiredMixin):

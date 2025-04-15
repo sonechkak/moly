@@ -1,8 +1,6 @@
 from django.urls import path
 
-from .views import (
-    SaveSubscribers,
-)
+from .views import SaveSubscribers
 
 app_name = "subscribers"
 

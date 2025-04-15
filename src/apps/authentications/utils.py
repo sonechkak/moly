@@ -8,13 +8,14 @@ import qrcode
 def generate_qrcode(mfa_hash):
     """Утилита для генерации QR-кода."""
 
-    try:
-        img = qrcode.make(mfa_hash)
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
-
-    except Exception as e:
-        raise ValueError(f"Error generating QR code: {e}")
+    img = qrcode.make(mfa_hash)
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    stream = buffer.getvalue()
+    img_str = base64.b64encode(stream).decode("utf-8")
 
     return img_str
+
+
+def generate_totp_uri(user, secret_key):
+    return pyotp.totp.TOTP(secret_key).provisioning_uri(name=user.username or user.email, issuer_name="moly")

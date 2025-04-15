@@ -1,6 +1,5 @@
 import pytest
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 
 from apps.subscribers.models import Subscribe
 

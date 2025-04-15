@@ -6,7 +6,9 @@ from django.urls import reverse
 from apps.authentications.forms import RegistrationForm
 from apps.users.models import Profile
 
+
 User = get_user_model()
+
 
 @pytest.mark.django_db
 def test_login_view(client, user):
@@ -46,15 +48,13 @@ def test_valid_registration_without_mfa(client, valid_registration_data):
     response = client.post(url, valid_registration_data)
 
     user = User.objects.get(username='test_user1')
-    profile = Profile.objects.get(user=user)
 
-    # Проверяем email в модели User, а не Profile
     assert user.email == 'test@example.com'
-    assert not profile.is_mfa_enabled
-    assert profile.mfa_hash is None
+    assert not user.is_mfa_enabled
+    assert user.mfa_hash is None
 
     messages = list(get_messages(response.wsgi_request))
-    assert str(messages[0]) == "Аккаунт пользователя успешно создан"
+    assert str(messages[0]) == "Аккаунт пользователя успешно создан."
     assert response.url == reverse('users:profile', kwargs={'pk': user.pk})
 
 
@@ -68,14 +68,13 @@ def test_valid_registration_with_mfa(client, valid_registration_data):
     response = client.post(url, data, follow=True)
 
     user = User.objects.get(username='test_user1')
-    profile = Profile.objects.get(user=user)
 
-    assert profile.is_mfa_enabled
-    assert profile.mfa_hash is not None
+    assert user.is_mfa_enabled
+    assert user.mfa_hash is not None
     assert client.session['mfa_user_pk'] == user.pk
 
     messages = list(get_messages(response.wsgi_request))
-    assert str(messages[0]) == "Аккаунт пользователя успешно создан"
+    assert str(messages[0]) == "Аккаунт пользователя успешно создан."
     assert str(messages[1]) == "Настройте 2FA с помощью Google Authenticator или аналогичного приложения."
     assert response.redirect_chain[-1][0] == reverse('auth:qrcode')
 
@@ -118,9 +117,10 @@ def test_mfa_hash_generation(client, valid_registration_data):
     url = reverse('auth:register')
     client.post(url, data)
 
-    profile = Profile.objects.get(user__username='test_user1')
-    assert profile.mfa_hash is not None
-    assert len(profile.mfa_hash) == 32
+    user = User.objects.get(username=valid_registration_data['username'])
+    assert user.mfa_hash is not None
+    assert len(user.mfa_hash) == 32
+
 
 @pytest.mark.django_db
 def test_logout_view(client, user):
@@ -133,6 +133,7 @@ def test_logout_view(client, user):
     assert response.status_code == 302
     assert response.url == reverse("auth:login")
 
+
 @pytest.mark.django_db
 def test_login_view_invalid_credentials(client):
     """Тест для LoginView с неверными учетными данными."""
@@ -143,8 +144,10 @@ def test_login_view_invalid_credentials(client):
         "password": "invalid_password",
     })
 
-    assert response.status_code == 302
-    assert response.url == reverse("auth:login")
+    assert response.status_code == 200
+    assert "form" in response.context
+    assert response.context["form"].errors
+
 
 @pytest.mark.django_db
 def test_registration_view_invalid_data(client):

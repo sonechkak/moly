@@ -1,6 +1,12 @@
-from django.urls import include, path, re_path
+from django.urls import path
 
-from .views import *
+from .views import (
+    LoginView,
+    LogoutUserView,
+    QrCodeView,
+    RegistrationView,
+    Verify2FAView,
+)
 
 app_name = "auth"
 

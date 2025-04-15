@@ -18,6 +18,7 @@ def test_index_page(client, products, categories):
     assert response.context["title"] == "Главная страница"
     assert response.context["products"].count() == 12
 
+
 @pytest.mark.django_db
 def test_all_products_page(client, products):
     """Тестирование страницы с продуктами."""
@@ -28,6 +29,7 @@ def test_all_products_page(client, products):
     assert "title" in response.context
     assert response.context["title"] == "Все товары"
     assert response.context["products"].count() == 12
+
 
 @pytest.mark.django_db
 def test_product_detail_page(client, product):
@@ -41,6 +43,7 @@ def test_product_detail_page(client, product):
     assert response.context["product"].title == product.title
     assert response.context["product"].price == product.price
 
+
 @pytest.mark.django_db
 def test_category_list_page(client, categories, products):
     """Тестирование страницы с продуктами по категориям."""
@@ -53,6 +56,7 @@ def test_category_list_page(client, categories, products):
     assert response.context["title"] == f"Товары по категории: {categories[0].title}"
     assert list(response.context["products"]) == list(Product.objects.filter(category=category))
     assert list(response.context["categories"]) == list(Category.objects.filter(parent=None))
+
 
 @pytest.mark.django_db
 def test_add_review_valid(client, product, user):

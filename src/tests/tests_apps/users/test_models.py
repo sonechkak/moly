@@ -1,7 +1,9 @@
-import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.users.models import *
+from apps.users.models import (
+    Profile,
+    ShippingAddress
+)
 
 
 class TestUserModel:
@@ -43,6 +45,7 @@ class TestProfileModel:
 
     def test_str_method_without_names(self, profile_without_names):
         assert str(profile_without_names) == "Test User"
+
 
 class TestShippingAddressModel:
     def test_address_creation(self, shipping_address, profile):

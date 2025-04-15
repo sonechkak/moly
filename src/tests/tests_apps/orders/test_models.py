@@ -11,6 +11,7 @@ def test_order_creation(user, order):
     assert order.customer == Profile.objects.get(user=user)
     assert order.is_complete is False
 
+
 @pytest.mark.django_db
 def test_order_product_creation(order_product, order, product):
     """Тест создания товара в заказе"""
