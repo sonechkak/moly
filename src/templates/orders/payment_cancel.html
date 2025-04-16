@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="mb-0"><i class="fas fa-times-circle me-2"></i>Платеж отменен</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <h4 class="alert-heading">Вы отменили платеж</h4>
+                            <p>Ваш заказ #{{ order.id }} сохранен, но не оплачен.</p>
+                            <hr>
+                            <p class="mb-0">Вы можете вернуться и попробовать оплатить заказ снова.</p>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a href="{{ retry_url }}" class="btn btn-primary">
+                                <i class="fas fa-credit-card me-2"></i>Попробовать снова
+                            </a>
+                            <a href="{% url 'shop:index' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-home me-2"></i>На главную
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

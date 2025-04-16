@@ -1,5 +1,6 @@
 from apps.baskets.models import BasketProduct
 from apps.orders.models import Order, OrderProduct
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 
@@ -29,6 +30,7 @@ class OrderCreator(LoginRequiredMixin):
                 is_paid=False,
                 is_complete=False,
                 is_shipping=True,
+                payment_method=form_data["payment_method"],
                 address=address,
                 recipient=form_data["recipient"],
                 contact=form_data["contact"],
@@ -44,5 +46,4 @@ class OrderCreator(LoginRequiredMixin):
                     price=basket_product.get_total_price,
                 )
 
-            basket_products.delete()
             return order

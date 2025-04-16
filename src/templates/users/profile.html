@@ -31,7 +31,7 @@
                             <a href="#addresses" class="list-group-item list-group-item-action">
                                 <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action">
+                            <a href="{% url 'orders:my_orders' user.pk %}" class="list-group-item list-group-item-action">
                                 <i class="bi bi-bag-fill me-2"></i>Мои заказы
                             </a>
                         </div>

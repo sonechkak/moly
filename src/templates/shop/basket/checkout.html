@@ -164,7 +164,15 @@
                                     <h6 class="fw-bold mb-3">Способ оплаты</h6>
                                     <div class="form-check mb-2">
                                         <input class="form-check-input" type="radio" name="payment_method" id="payment1"
-                                               value="card" checked>
+                                               value="card_online" checked>
+                                        <label class="form-check-label" for="payment1">
+                                            <i class="fab fa-cc-stripe me-2"></i>
+                                            Оплата картой онлайн (Stripe)
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="payment1"
+                                               value="card_later" checked>
                                         <label class="form-check-label" for="payment1">
                                             Банковской картой при получении
                                         </label>
@@ -264,3 +272,58 @@
         </div>
     </section>
 {% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+    const submitBtn = document.getElementById('submit-btn');
+
+    submitBtn.addEventListener('click', async function() {
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+        if (paymentMethod === 'card_online') {
+            // Для онлайн-оплаты через Stripe
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Обработка...';
+
+            try {
+                // 1. Сначала сохраняем заказ
+                const formData = new FormData(document.getElementById('address-form'));
+                const response = await fetch('{% url "orders:create_order" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 2. Перенаправляем на Stripe Checkout
+                    const result = await stripe.redirectToCheckout({
+                        sessionId: data.session_id
+                    });
+
+                    if (result.error) {
+                        alert(result.error.message);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
+                    }
+                } else {
+                    alert(data.message || 'Ошибка при создании заказа');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Произошла ошибка при обработке заказа');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
+            }
+        } else {
+            // Для других методов оплаты просто отправляем форму
+            document.getElementById('address-form').submit();
+        }
+    });
+});
+</script>
