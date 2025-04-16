@@ -11,26 +11,24 @@ def handle_stripe_payment(self, order):
 
     try:
         session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-            'price_data': {
-                'currency': 'rub',
-                'product_data': {
-                    'name': f'Заказ #{order.pk}',
-                },
-                'unit_amount': int(order.total_cost * 100),
-            },
-            'quantity': 1,
-        }],
-            mode='payment',
-            success_url=self.request.build_absolute_uri(
-                reverse('orders:payment_success', kwargs={'pk': order.pk})
-            ),
-            cancel_url=self.request.build_absolute_uri(
-                reverse('orders:payment_cancel', kwargs={'pk': order.pk})
-            ),
-            metadata={'order_id': order.pk},
-            customer_email = order.customer.email,
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "rub",
+                        "product_data": {
+                            "name": f"Заказ #{order.pk}",
+                        },
+                        "unit_amount": int(order.total_cost * 100),
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url=self.request.build_absolute_uri(reverse("orders:payment_success", kwargs={"pk": order.pk})),
+            cancel_url=self.request.build_absolute_uri(reverse("orders:payment_cancel", kwargs={"pk": order.pk})),
+            metadata={"order_id": order.pk},
+            customer_email=order.customer.email,
         )
 
         order.stripe_session_id = session.id
@@ -38,7 +36,6 @@ def handle_stripe_payment(self, order):
 
         return redirect(session.url)
 
-    except stripe.error.StripeError as e:
-        messages.error(self.request, 'Произошла ошибка при обработке платежа. Пожалуйста, попробуйте еще раз.')
-        return redirect('orders:checkout', order.pk)
-
+    except stripe.error.StripeError:
+        messages.error(self.request, "Произошла ошибка при обработке платежа. Пожалуйста, попробуйте еще раз.")
+        return redirect("orders:checkout", order.pk)

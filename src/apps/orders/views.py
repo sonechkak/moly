@@ -31,7 +31,6 @@ class UserOrders(LoginRequiredMixin, ListView):
 
         context["total_orders"] = self.get_queryset().count()
         context["total_spent"] = sum(order.total_price for order in context["orders"] if order.payment_status == "paid")
-
         context["status_choices"] = Order.PAYMENT_STATUS_CHOICES
 
         return context
@@ -119,7 +118,6 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
         order_id = kwargs.get("pk")
         order = get_object_or_404(Order, pk=order_id, customer=request.user.profile)
 
-        # Проверяем платеж через Stripe API
         try:
             if order.stripe_session_id:
                 session = stripe.checkout.Session.retrieve(order.stripe_session_id)
