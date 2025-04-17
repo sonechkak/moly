@@ -1,14 +1,26 @@
 import pyotp
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 from .utils import get_avatar_upload_path
+from .validators.password_validator import PasswordValidator
 
 
 class User(AbstractUser):
     """Модель пользователя."""
 
-    username = models.CharField("Username", unique=True, max_length=255, null=True, blank=True)
+    username = models.CharField(
+        "Username",
+        unique=True,
+        max_length=255,
+        validators=[UnicodeUsernameValidator()],
+    )
+    password = models.CharField(
+        "Password",
+        max_length=255,
+        validators=[PasswordValidator()],
+    )
     first_name = None
     last_name = None
     is_active = models.BooleanField(default=True)
