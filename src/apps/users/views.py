@@ -56,8 +56,7 @@ class ShippingAddressSetPrimaryView(LoginRequiredMixin, View):
         address = get_object_or_404(ShippingAddress, pk=self.kwargs.get("address_pk"), customer__user=user)
         ShippingAddress.objects.filter(customer__user=user, is_primary=True).update(is_primary=False)
 
-        address.is_primary = True
-        address.save()
+        address.save(update_fields=["is_primary"])
 
         return redirect(reverse_lazy("users:profile", kwargs={"pk": user.pk}))
 
