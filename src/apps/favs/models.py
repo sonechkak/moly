@@ -1,8 +1,8 @@
 from apps.shop.models import Product
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 
-user_model = get_user_model()
+user_model = settings.AUTH_USER_MODEL
 
 
 class FavoriteProducts(models.Model):
