@@ -8,7 +8,6 @@ from string import (
 
 from django import forms
 
-
 MIN_LENGTH = 8
 SPECIAL_SYMBOLS_PATTERN = re.compile(f"[{re.escape(punctuation)}]")
 UPPERCASE_LETTERS_PATTERN = re.compile(f"[{ascii_uppercase}]")
