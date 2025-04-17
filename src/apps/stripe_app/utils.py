@@ -32,7 +32,7 @@ def handle_stripe_payment(self, order):
         )
 
         order.stripe_session_id = session.id
-        order.save()
+        order.save(order.stripe_session_id)
 
         return redirect(session.url)
 

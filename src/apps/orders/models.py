@@ -3,6 +3,8 @@ from apps.users.models import Profile
 from django.db import models
 from utils.db import TimeStamp
 
+payment_status = {"pending": "warning", "paid": "success", "failed": "danger", "refunded": "info"}
+
 
 class Order(TimeStamp, models.Model):
     """Модель заказа."""
@@ -33,7 +35,10 @@ class Order(TimeStamp, models.Model):
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"Заказ: №{self.pk}. Покупатель: {self.customer}"
+        return f"Заказ: #{self.pk}. Покупатель: {self.customer}"
+
+    def get_status_color(self):
+        return payment_status.get(self.payment_status, "secondary")
 
 
 class OrderProduct(models.Model):
@@ -51,8 +56,3 @@ class OrderProduct(models.Model):
 
     def __str__(self):
         return f"{self.product.title} ({self.quantity})"
-
-    def get_status_color(self):
-        return {"pending": "warning", "paid": "success", "failed": "danger", "refunded": "info"}.get(
-            self.payment_status, "secondary"
-        )

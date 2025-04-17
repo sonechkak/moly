@@ -1,8 +1,20 @@
 from django import forms
-from django.core.validators import RegexValidator
+
+DELIVERY_METHODS = (
+    ("courier", "Курьерская доставка"),
+    ("pickup", "Самовывоз из магазина"),
+)
+
+PAYMENT_METHODS = (
+    ("card_online", "Оплата картой онлайн (Stripe)"),
+    ("card_later", "Банковской картой при получении"),
+    ("cash", "Наличными при получении"),
+)
 
 
 class OrderForm(forms.Form):
+    """Форма для оформления заказа."""
+
     # Информация о получателе
     recipient = forms.CharField(
         label="Получатель",
@@ -48,22 +60,11 @@ class OrderForm(forms.Form):
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
     )
 
-    DELIVERY_METHODS = (
-        ("courier", "Курьерская доставка"),
-        ("pickup", "Самовывоз из магазина"),
-    )
-
     delivery_method = forms.ChoiceField(
         label="Способ доставки",
         choices=DELIVERY_METHODS,
         initial="courier",
         widget=forms.RadioSelect(attrs={"class": "form-check-input"}),
-    )
-
-    PAYMENT_METHODS = (
-        ("card_online", "Оплата картой онлайн (Stripe)"),
-        ("card_later", "Банковской картой при получении"),
-        ("cash", "Наличными при получении"),
     )
 
     payment_method = forms.ChoiceField(

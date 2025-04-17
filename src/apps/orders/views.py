@@ -119,16 +119,15 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
         order = get_object_or_404(Order, pk=order_id, customer=request.user.profile)
 
         try:
-            if order.stripe_session_id:
-                session = stripe.checkout.Session.retrieve(order.stripe_session_id)
+            session = stripe.checkout.Session.retrieve(order.stripe_session_id)
 
-                if session.payment_status == "paid":
-                    order.is_paid = True
-                    order.payment_status = "completed"
-                    order.save()
-                    messages.success(request, "Платеж успешно завершен! Ваш заказ обрабатывается.")
-                else:
-                    messages.warning(request, "Платеж еще не подтвержден. Мы уведомим вас, когда платеж будет получен.")
+            if session.payment_status == "paid":
+                order.is_paid = True
+                order.payment_status = "completed"
+                order.save()
+                messages.success(request, "Платеж успешно завершен! Ваш заказ обрабатывается.")
+            else:
+                messages.warning(request, "Платеж еще не подтвержден. Мы уведомим вас, когда платеж будет получен.")
 
         except stripe.error.StripeError:
             messages.error(request, "Ошибка при проверке статуса платежа. Пожалуйста, свяжитесь с поддержкой.")
