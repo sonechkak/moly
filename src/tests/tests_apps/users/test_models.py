@@ -4,6 +4,7 @@ from apps.users.models import (
     Profile,
     ShippingAddress
 )
+from tests.tests_apps.conftest import avatar
 
 
 class TestUserModel:
@@ -37,7 +38,7 @@ class TestProfileModel:
             content_type='image/jpeg'
         )
         profile.avatar = avatar
-        profile.save()
+        profile.save(update_fields=['avatar'])
         assert 'test_avatar' in profile.avatar.name
 
     def test_str_method_with_names(self, profile):
