@@ -12,7 +12,7 @@ class FavoriteProductsView(LoginRequiredMixin, ListView):
     model = FavoriteProducts
     context_object_name = "products"
     template_name = "shop/favorite_products/favorite_products.html"
-    login_url = "auth:login_registration"
+    login_url = "auth:login"
     paginate_by = 12
 
     def get_queryset(self):
