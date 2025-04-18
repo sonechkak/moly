@@ -1,44 +1,12 @@
 from apps.shop.models import Category
 from django import template
 from django.core.cache import caches
+from django.db.models import Avg, IntegerField
+from django.db.models.functions import Cast
 from django.template.defaultfilters import register as range_register
 
 cache = caches["default"]
 register = template.Library()
-
-
-def calculate_average(values):
-    """Вычисление среднего значения."""
-
-    if not values:
-        return 0
-
-    total = 0
-    count = 0
-
-    for value in values:
-        if isinstance(value, str):
-            total += int(value)
-            count += 1
-
-    if count == 0:
-        return 0
-
-    return round(total / count)
-
-
-@register.simple_tag()
-def multiply(value, arg):
-    """Умножение двух чисел."""
-
-    cache_key = f"multiply_{value}_{arg}"
-    result = cache.get(cache_key)
-
-    if result is None:
-        result = float(value) * float(arg)
-        cache.set(cache_key, result, 60 * 15)
-
-    return result
 
 
 @register.simple_tag()
@@ -128,29 +96,13 @@ def get_negative_range(value):
     return negative_range
 
 
-@range_register.filter()
-def get_average_rating(values):
-    """Фильтр для среднего значения."""
+@register.filter(name="get_average_rating")
+def get_average_rating(reviews):
+    """Фильтр для вычисления среднего рейтинга из CharField с choices."""
 
-    cache_key = f"average_rating_{values}"
-    average_rating = cache.get(cache_key)
+    if not reviews.exists():
+        return 0.0
 
-    if average_rating is None:
-        average_rating = calculate_average(values)
-        cache.set(cache_key, average_rating, 60 * 15)
+    result = reviews.annotate(grade_int=Cast("grade", IntegerField())).aggregate(avg_rating=Avg("grade_int"))
 
-    return average_rating
-
-
-@register.filter
-def mapping(queryset, attr):
-    """Фильтр для извлечения значений атрибута из QuerySet."""
-
-    cache_key = f"mapping_{attr}"
-    mapping_result = cache.get(cache_key)
-
-    if mapping_result is None:
-        mapping_result = [getattr(obj, attr) for obj in queryset]
-        cache.set(cache_key, mapping_result, 60 * 15)
-
-    return mapping_result
+    return round(float(result["avg_rating"]), 1) if result["avg_rating"] else 0.0
