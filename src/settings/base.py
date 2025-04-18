@@ -4,12 +4,6 @@ from urllib.parse import urlparse
 
 from django.conf.global_settings import LOGIN_URL
 
-# if os.environ.get('TESTING'):
-#     load_dotenv('.env.test')
-# else:
-#     load_dotenv('.env')
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
@@ -89,9 +83,20 @@ DATABASES = {
         "PASSWORD": db_url.password,
         "HOST": db_url.hostname,
         "PORT": db_url.port or "5432",
-    }
+    },
 }
 
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis:///sonya:sonya@127.0.0.1:6379/moly",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "IGNORE_EXCEPTIONS": True,
+        },
+    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -138,3 +143,9 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+# Redis
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_DB = os.getenv("REDIS_DB")
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
