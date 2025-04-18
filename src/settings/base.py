@@ -4,12 +4,6 @@ from urllib.parse import urlparse
 
 from django.conf.global_settings import LOGIN_URL
 
-# if os.environ.get('TESTING'):
-#     load_dotenv('.env.test')
-# else:
-#     load_dotenv('.env')
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
@@ -89,9 +83,19 @@ DATABASES = {
         "PASSWORD": db_url.password,
         "HOST": db_url.hostname,
         "PORT": db_url.port or "5432",
-    }
+    },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "IGNORE_EXCEPTIONS": True,
+        },
+    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
