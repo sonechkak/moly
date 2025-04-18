@@ -11,7 +11,7 @@ from .utils import add_product
 class AddToBasket(LoginRequiredMixin, View):
     """Вьюха для добавления товара в корзину."""
 
-    login_url = "users:login_registration"
+    login_url = "auth:login"
 
     def get(self, request, *args, **kwargs):
         """Добавление товара в корзину."""
@@ -33,7 +33,7 @@ class AddToBasket(LoginRequiredMixin, View):
 class RemoveFromBasket(LoginRequiredMixin, View):
     """Вьюха для удаления товара из корзины."""
 
-    login_url = "users:login"
+    login_url = "auth:login"
 
     def get(self, request, *args, **kwargs):
         user = self.request.user
@@ -48,7 +48,7 @@ class BasketView(LoginRequiredMixin, ListView):
     """Вьюха для корзины."""
 
     template_name = "shop/basket/basket.html"
-    login_url = "users:login"
+    login_url = "auth:login"
 
     def get_queryset(self):
         user = self.request.user
