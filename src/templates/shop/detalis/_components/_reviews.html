@@ -19,8 +19,8 @@
                                 <div class="d-flex">
                                     {% for i in "12345" %}
                                         <input type="radio" name="grade" id="star{{ i }}" value="{{ i }}"
-                                               style="position: absolute; opacity: 0;" {% if forloop.last %}required{% endif %}>
-                                        <label for="star{{ i }}" class="me-1 fs-4 text-muted rating-star">
+                                               class="visually-hidden" {% if forloop.last %}required{% endif %}>
+                                        <label for="star{{ i }}" class="me-1 fs-4 rating-star" data-value="{{ i }}">
                                             <i class="far fa-star"></i>
                                         </label>
                                     {% endfor %}
@@ -169,93 +169,97 @@
 {% block scripts %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const ratingStars = document.querySelectorAll('.rating-star');
-            ratingStars.forEach(star => {
-                star.addEventListener('mouseover', function () {
-                    const starId = this.getAttribute('for');
-                    const starValue = parseInt(starId.replace('star', ''));
+            const stars = document.querySelectorAll('.rating-star');
+            const form = document.querySelector('form[method="post"]');
 
-                    for (let i = 1; i <= 5; i++) {
-                        const currentStar = document.querySelector(`label[for="star${i}"]`);
-                        if (i <= starValue) {
-                            currentStar.innerHTML = '<i class="fas fa-star text-warning"></i>';
-                        } else {
-                            currentStar.innerHTML = '<i class="far fa-star"></i>';
-                        }
+            // Инициализация звёзд
+            function initStars() {
+                stars.forEach(star => {
+                    star.querySelector('i').className = 'far fa-star';
+                    star.style.color = '#6c757d';
+                });
+            }
+
+            // Подсветка звёзд до указанного значения
+            function highlightStars(value) {
+                stars.forEach(star => {
+                    const starValue = parseInt(star.getAttribute('data-value'));
+                    const icon = star.querySelector('i');
+
+                    if (starValue <= value) {
+                        icon.className = 'fas fa-star text-warning';
+                    } else {
+                        icon.className = 'far fa-star';
                     }
                 });
+            }
 
-                star.addEventListener('click', function (e) {
-                    e.preventDefault();
+            // Обработчики событий
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    const input = document.getElementById(`star${value}`);
+                    input.checked = true;
+                    highlightStars(value);
+                });
 
-                    const starId = this.getAttribute('for');
-                    const radioInput = document.getElementById(starId);
-
-                    if (radioInput) {
-                        radioInput.checked = true;
-
-                        console.log('Выбрана оценка:', radioInput.value);
-
-                        document.querySelectorAll('.rating-star').forEach(s => {
-                            s.removeAttribute('data-selected');
-                        });
-                        this.setAttribute('data-selected', 'true');
-                    }
+                star.addEventListener('mouseover', function () {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    highlightStars(value);
                 });
             });
 
-            const ratingContainer = document.querySelector('.rating-stars');
-            if (ratingContainer) {
-                ratingContainer.addEventListener('mouseout', function () {
-                    const selectedInput = document.querySelector('input[name="grade"]:checked');
+            // Возврат к выбранному значению при уходе мыши
+            document.querySelector('.rating-stars').addEventListener('mouseleave', function () {
+                const checkedInput = document.querySelector('input[name="grade"]:checked');
+                if (checkedInput) {
+                    highlightStars(parseInt(checkedInput.value));
+                } else {
+                    initStars();
+                }
+            });
 
-                    if (selectedInput) {
-                        const selectedValue = parseInt(selectedInput.value);
-
-                        for (let i = 1; i <= 5; i++) {
-                            const currentStar = document.querySelector(`label[for="star${i}"]`);
-                            if (i <= selectedValue) {
-                                currentStar.innerHTML = '<i class="fas fa-star text-warning"></i>';
-                            } else {
-                                currentStar.innerHTML = '<i class="far fa-star"></i>';
-                            }
-                        }
-                    } else {
-                        ratingStars.forEach(star => {
-                            star.innerHTML = '<i class="far fa-star"></i>';
-                        });
+            // Проверка при отправке формы
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const gradeInput = document.querySelector('input[name="grade"]:checked');
+                    if (!gradeInput) {
+                        e.preventDefault();
+                        alert('Пожалуйста, выберите оценку');
                     }
                 });
             }
 
-            const selectedInput = document.querySelector('input[name="grade"]:checked');
-            if (selectedInput) {
-                const selectedValue = parseInt(selectedInput.value);
-
-                for (let i = 1; i <= 5; i++) {
-                    const currentStar = document.querySelector(`label[for="star${i}"]`);
-                    if (i <= selectedValue) {
-                        currentStar.innerHTML = '<i class="fas fa-star text-warning"></i>';
-                    } else {
-                        currentStar.innerHTML = '<i class="far fa-star"></i>';
-                    }
-                }
-            }
+            // Инициализация при загрузке
+            initStars();
         });
     </script>
 
     <style>
         .rating-star {
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
+            color: #6c757d;
         }
 
         .rating-star:hover {
-            transform: scale(1.15);
+            transform: scale(1.1);
         }
 
-        .rating-star[data-selected="true"] {
-            color: #FFC107;
+        .rating-star i {
+            pointer-events: none;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
     </style>
 {% endblock %}

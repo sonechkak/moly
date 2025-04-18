@@ -43,29 +43,36 @@
                             <!-- Статус товара и рейтинг -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="badge bg-success rounded-pill px-3 py-2">В наличии</span>
+                                {% if product.reviews.count > 0 %}
+                                    {% with average_rating=product.reviews|get_average_rating %}
+                                        <div class="d-flex align-items-center">
+                                        <!-- Звёзды рейтинга -->
+                                        <div class="me-2 rating-stars">
+                                            {% for i in "12345" %}
+                                                {% with star_num=forloop.counter %}
+                                                    {% if star_num <= average_rating %}
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    {% elif star_num|add:-0.5 <= average_rating %}
+                                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-warning"></i>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endfor %}
+                                        </div>
 
-                                <div class="d-flex align-items-center">
-                                    {% if product.reviews.count > 0 %}
-                                        <!-- Вычисляем средний рейтинг по всем отзывам -->
-                                        {% with average_rating=product.reviews.all|mapping:"grade"|get_average_rating %}
-                                            <div class="me-2">
-                                                <!-- Отображаем заполненные звёзды -->
-                                                {% for _ in "x"|rjust:average_rating %}
-                                                    <i class="fas fa-star text-warning"></i>
-                                                {% endfor %}
-                                                <!-- Отображаем пустые звёзды -->
-                                                {% for _ in average_rating|get_negative_range %}
-                                                    <i class="fas fa-star text-muted"></i>
-                                                {% endfor %}
-                                            </div>
-                                            <span class="small text-muted">
-                                            {{ average_rating }} ({{ product.reviews.count }} отзывов)
+                                        <!-- Текст с рейтингом -->
+                                        <span class="small text-muted">{{ average_rating|floatformat:"1" }}
+                                            ({{ product.reviews.count }}
+                                            {% if product.reviews.count|divisibleby:"10" and not product.reviews.count|divisibleby:"100" %}
+                                                отзывов
+                                            {% else %}
+                                                {{ product.reviews.count|pluralize:"отзыв,отзыва,отзывов" }}
+                                            {% endif %})
                                         </span>
-                                        {% endwith %}
-                                    {% else %}
-                                        <span class="small text-muted">Нет отзывов</span>
-                                    {% endif %}
-                                </div>
+                                    </div>
+                                    {% endwith %}
+                                {% endif %}
                             </div>
 
                             <h1 class="h2 fw-bold mb-3">{{ product.title }}</h1>
