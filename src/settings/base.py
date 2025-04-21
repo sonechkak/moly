@@ -72,7 +72,6 @@ WSGI_APPLICATION = "conf.wsgi.application"
 
 
 # Database
-
 db_url = urlparse(os.getenv("DATABASE_URL", "postgresql://sonya:sonya@127.0.0.1:5432/moly"))
 
 DATABASES = {
@@ -96,6 +95,44 @@ CACHES = {
         },
     }
 }
+
+# Logging
+LOG_DIR = BASE_DIR.joinpath("log")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "console",
+        },
+    },
+    "formatters": {
+        "console": {
+            "format": "%(levelname)s %(asctime)s %(module)s %(message)s",
+        },
+        "file": {
+            "format": "%(levelname)s %(asctime)s %(module)s %(message)s",
+        },
+    },
+    "file": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "formatter": "file",
+        "filename": str(LOG_DIR.joinpath("app.log")),
+        "backupCount": 10,
+        "maxBytes": 5 * 1024 * 1024,
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "django": {"level": "INFO", "handlers": ["console"]},
+    },
+}
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
