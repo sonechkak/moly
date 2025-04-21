@@ -6,4 +6,4 @@ class FavsConfig(AppConfig):
     name = "apps.favs"
 
     def ready(self):
-        import apps.orders.signals
+        from . import signals

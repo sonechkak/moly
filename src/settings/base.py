@@ -10,7 +10,6 @@ DEBUG = os.getenv("DEBUG")
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 os.path.join(BASE_DIR, "apps/")
 
-
 # Application definition
 INSTALLED_APPS = [
     "jazzmin",
@@ -70,7 +69,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "conf.wsgi.application"
 
-
 # Database
 db_url = urlparse(os.getenv("DATABASE_URL", "postgresql://sonya:sonya@127.0.0.1:5432/moly"))
 
@@ -97,7 +95,8 @@ CACHES = {
 }
 
 # Logging
-LOG_DIR = BASE_DIR.joinpath("log")
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
 
 LOGGING = {
     "version": 1,
@@ -105,31 +104,43 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "console",
+        },
+        # "file": {
+        #     "class": "logging.handlers.RotatingFileHandler",
+        #     "formatter": "file",
+        #     "filename": str(LOG_DIR / "app.log"),
+        #     "backupCount": 10,
+        #     "maxBytes": 5 * 1024 * 1024,
+        # },
+        "user_actions_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(LOG_DIR / "user_actions.log"),
+            "formatter": "user_actions",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 5,
+            "encoding": "utf8",
         },
     },
     "formatters": {
-        "console": {
-            "format": "%(levelname)s %(asctime)s %(module)s %(message)s",
+        # "file": {
+        #     'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        # },
+        "user_actions": {
+            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
         },
-        "file": {
-            "format": "%(levelname)s %(asctime)s %(module)s %(message)s",
-        },
-    },
-    "file": {
-        "class": "logging.handlers.RotatingFileHandler",
-        "formatter": "file",
-        "filename": str(LOG_DIR.joinpath("app.log")),
-        "backupCount": 10,
-        "maxBytes": 5 * 1024 * 1024,
     },
     "loggers": {
         "django.request": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
-            "propagate": True,
+            # "handlers": ["console", "file"],
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
         },
-        "django": {"level": "INFO", "handlers": ["console"]},
+        "user.actions": {
+            "handlers": ["user_actions_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 
@@ -141,13 +152,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 LANGUAGE_CODE = "ru"
 TIME_ZONE = "Europe/Moscow"
 USE_I18N = True
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
