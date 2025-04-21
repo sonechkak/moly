@@ -12,4 +12,11 @@ logger = logging.getLogger(__name__)
 def info_created_user_profile(sender, instance, created, **kwargs):
     """Логирование при создании Order."""
     if created:
-        logger.info(f"Пользователь {sender.profile} оформил заказ {instance.pk}.")
+        user = getattr(instance.customer, "user", None)
+        logger.info(
+            f"Пользователь {user} создал заказ #{instance.pk}",
+            extra={
+                "user_id": user.id,
+                "action": "create_order",
+            },
+        )

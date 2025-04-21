@@ -12,4 +12,14 @@ logger = logging.getLogger(__name__)
 def info_created_subscribe(sender, instance, created, **kwargs):
     """Логирование при создании Subscribe."""
     if created:
-        logger.info(f"Создан подписчик {instance.email} с ID {instance.pk}")
+        try:
+            user = instance.user
+            logger.info(
+                f"Пользователь {user.username} создал подписку #{instance.pk}",
+                extra={
+                    "user_id": user.id,
+                    "action": "create_subscribe",
+                },
+            )
+        except AttributeError:
+            pass

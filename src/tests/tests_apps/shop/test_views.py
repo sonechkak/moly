@@ -47,14 +47,13 @@ def test_product_detail_page(client, product):
 @pytest.mark.django_db
 def test_category_list_page(client, categories, products):
     """Тестирование страницы с продуктами по категориям."""
-    category = categories[0]
-    response = client.get(reverse("shop:category_list", kwargs={"slug": category.slug}))
+    response = client.get(reverse("shop:category_list", kwargs={"slug": categories[0].slug}))
 
     assert response.status_code == 200
     assert "products" in response.context
     assert "title" in response.context
     assert response.context["title"] == f"Товары по категории: {categories[0].title}"
-    assert list(response.context["products"]) == list(Product.objects.filter(category=category))
+    assert list(response.context["products"]) == list(Product.objects.filter(category=categories[0]))
     assert list(response.context["categories"]) == list(Category.objects.filter(parent=None))
 
 

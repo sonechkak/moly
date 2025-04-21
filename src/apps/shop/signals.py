@@ -11,4 +11,14 @@ logger = logging.getLogger(__name__)
 def info_created_new_review(sender, instance, created, **kwargs):
     """Логирование создание отзыва."""
     if created:
-        logger.info(f"Создан отзыв {instance.pk} для товара {instance.product.pk}")
+        try:
+            user = getattr(instance.author, "user", None)
+            logger.info(
+                f"Создан отзыв {user} для товара {instance.product.pk}",
+                extra={
+                    "user_id": user.pk,
+                    "action": "add_review",
+                },
+            )
+        except AttributeError:
+            pass
