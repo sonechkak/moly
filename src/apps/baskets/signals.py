@@ -24,14 +24,13 @@ def info_basket_created(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=BasketProduct)
 def info_basket_product_created(sender, instance, created, **kwargs):
-    """Сигнал для добавления в лог информации о добавлении продукта в корзину."""
+    """Сигнал для добавления в лог информации о добавлении товара в корзину."""
     if created:
         logger.info(
             f"Пользователь {instance.basket.user} добавил товар {instance} в корзину.",
             extra={
                 "user_id": instance.basket.user.pk,
-                "action": "add_to_basket",
-                "user_action": True,
+                "action": "to_basket",
             },
         )
 
@@ -43,7 +42,6 @@ def info_basket_product_deleted(sender, instance, **kwargs):
         f"Пользователь {instance.basket.user} удалил товар {instance} из корзины.",
         extra={
             "user_id": instance.basket.user.pk,
-            "action": "delete_from_basket",
-            "user_action": True,
+            "action": "from_basket",
         },
     )

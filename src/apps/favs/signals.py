@@ -8,8 +8,8 @@ logger = logging.getLogger("user.actions")
 
 
 @receiver(post_save, sender=FavoriteProducts)
-def info_created_fav_product(sender, instance, created, **kwargs):
-    """Сигнал для добавления в лог информации о добавлении продукта в избранное."""
+def info_fav_product_created(sender, instance, created, **kwargs):
+    """Сигнал для добавления в лог информации о добавлении товара в избранное."""
     if created:
         logger.info(
             f"Пользователь {instance.user} добавил в избранное {instance.product}.",
@@ -18,7 +18,7 @@ def info_created_fav_product(sender, instance, created, **kwargs):
 
 
 @receiver(post_delete, sender=FavoriteProducts)
-def info_deleted_fav_product(sender, instance, created, **kwargs):
+def info_fav_product_deleted(sender, instance, created, **kwargs):
     """Сигнал для добавления в лог информации об удалении продукта из избранного."""
     if created:
         logger.info(

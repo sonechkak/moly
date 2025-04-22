@@ -16,7 +16,7 @@ def info_created_order(sender, instance, created, **kwargs):
             f"Пользователь {instance.customer} создал заказ #{instance.pk}.",
             extra={
                 "user_id": instance.customer.pk,
-                "action": "create_order",
+                "action": "checkout",
                 "order_id": instance.pk,
                 "order_total": instance.total_cost,
                 "order_status": instance.payment_status,

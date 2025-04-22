@@ -24,7 +24,7 @@ def info_new_review_created(sender, instance, created, **kwargs):
 def info_review_deleted(sender, instance, **kwargs):
     """Сигнал для добавления в лог информации об удалении отзыва."""
     logger.info(
-        f"Пользователь {instance.author} удалил комментарий {instance} для товара {instance.product}.",
+        f"Пользователь {instance.author} удалил комментарий для товара {instance.product}.",
         extra={
             "user_id": instance.author,
             "action": "remove_review",
