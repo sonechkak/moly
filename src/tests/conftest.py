@@ -1,7 +1,23 @@
+import logging
 import shutil
 import tempfile
 from pathlib import Path
 import pytest
+from django.core.cache import cache
+
+
+@pytest.fixture(autouse=True)
+def disable_logging():
+    """Отключает логирование во время тестов."""
+    logging.disable(logging.INFO)
+    yield
+    logging.disable(logging.NOTSET)
+
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    """Очищает кеш перед каждым тестом."""
+    cache.clear()
 
 
 @pytest.fixture(autouse=True, scope="session")
