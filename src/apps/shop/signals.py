@@ -1,24 +1,32 @@
 import logging
 
 from apps.shop.models import Review
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("user.actions")
 
 
 @receiver(post_save, sender=Review)
-def info_created_new_review(sender, instance, created, **kwargs):
-    """Логирование создание отзыва."""
+def info_new_review_created(sender, instance, created, **kwargs):
+    """Сигнал для добавления в лог информации о создании отзыва."""
     if created:
-        try:
-            user = getattr(instance.author, "user", None)
-            logger.info(
-                f"Создан отзыв {user} для товара {instance.product.pk}",
-                extra={
-                    "user_id": user.pk,
-                    "action": "add_review",
-                },
-            )
-        except AttributeError:
-            pass
+        logger.info(
+            f"Пользователь {instance.author} опубликовал отзыв для товара {instance.product}.",
+            extra={
+                "user_id": instance.author.pk,
+                "action": "add_review",
+            },
+        )
+
+
+@receiver(post_delete, sender=Review)
+def info_review_deleted(sender, instance, **kwargs):
+    """Сигнал для добавления в лог информации об удалении отзыва."""
+    logger.info(
+        f"Пользователь {instance.author} удалил комментарий {instance} для товара {instance.product}.",
+        extra={
+            "user_id": instance.author,
+            "action": "remove_review",
+        },
+    )

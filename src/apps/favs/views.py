@@ -45,3 +45,18 @@ class AddToFavoriteProducts(LoginRequiredMixin, View):
 
         next_page = self.request.META.get("HTTP_REFERER", None)
         return redirect(next_page)
+
+
+class RemoveFromFavoriteProducts(LoginRequiredMixin, View):
+    """Удаление товара из избранного."""
+
+    def get(self, request, *args, **kwargs):
+        """Удаление товара из избранного."""
+        user = self.request.user
+        product = get_object_or_404(Product, slug=kwargs["slug"])
+
+        fav_product = FavoriteProducts.objects.get(user=user, product=product)
+        fav_product.delete()
+
+        next_page = self.request.META.get("HTTP_REFERER", None)
+        return redirect(next_page)

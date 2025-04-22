@@ -1,10 +1,11 @@
+from unittest.mock import patch
+
 import pytest
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, user_logged_in, user_logged_out, user_login_failed
 from django.contrib.messages import get_messages
 from django.urls import reverse
 
 from apps.authentications.forms import RegistrationForm
-from apps.users.models import Profile
 
 
 User = get_user_model()
@@ -126,9 +127,10 @@ def test_mfa_hash_generation(client, valid_registration_data):
 def test_logout_view(client, user):
     """Тест для LogoutView."""
 
-    url = reverse("auth:logout")
-    client.login(username=user.username, password="StrongPassword123!")
-    response = client.get(url)
+    with patch.object(user_logged_in, "send"):
+        with patch.object(user_logged_out, "send"):
+            client.login(username=user.username, password="StrongPassword123!")
+            response = client.get(reverse("auth:logout"))
 
     assert response.status_code == 302
     assert response.url == reverse("auth:login")
@@ -138,11 +140,12 @@ def test_logout_view(client, user):
 def test_login_view_invalid_credentials(client):
     """Тест для LoginView с неверными учетными данными."""
 
-    url = reverse("auth:login")
-    response = client.post(url, {
-        "username": "invalid_user",
-        "password": "invalid_password",
-    })
+    with patch.object(user_login_failed, "send"):
+        url = reverse("auth:login")
+        response = client.post(url, {
+            "username": "invalid_user",
+            "password": "invalid_password",
+        })
 
     assert response.status_code == 200
     assert "form" in response.context

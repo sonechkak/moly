@@ -1,11 +1,17 @@
+import logging
+
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import DetailView, FormView, ListView
+from django.urls import reverse
+from django.views.generic import DeleteView, DetailView, FormView, ListView
 
 from .forms import ReviewForm
 from .models import Category, Product, Review
 from .utils import get_random_products
+
+logger = logging.getLogger("user.actions")
 
 
 class Index(ListView):
@@ -99,7 +105,6 @@ class ProductDetail(DetailView):
 
     def get_object(self, queryset=None):
         product = get_object_or_404(Product, slug=self.kwargs["slug"])
-
         return product
 
     def get_context_data(self, **kwargs):
@@ -121,10 +126,18 @@ class ProductDetail(DetailView):
             }
         )
 
+        logger.info(
+            f"Пользователь {self.request.user} открыл товар {product.title}.",
+            extra={
+                "product": product.title,
+                "user": self.request.user.username,
+            },
+        )
+
         return context
 
 
-class AddReviewView(FormView):
+class AddReviewView(LoginRequiredMixin, FormView):
     """Добавление отзыва."""
 
     form_class = ReviewForm
@@ -140,3 +153,17 @@ class AddReviewView(FormView):
     def form_invalid(self, form):
         messages.error(self.request, "Ошибка добавления отзыва")
         return redirect("shop:product_detail", slug=self.kwargs["slug"])
+
+
+class RemoveReviewView(LoginRequiredMixin, DeleteView):
+    """Удаление отзыва."""
+
+    model = Review
+    login_url = "auth:login"
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Отзыв успешно опубликован.")
+        return super().delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse("shop:product_detail", kwargs={"slug": self.kwargs["slug"]})

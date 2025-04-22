@@ -5,18 +5,20 @@ from django.dispatch import receiver
 
 from .models import Order
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("user.actions")
 
 
 @receiver(post_save, sender=Order)
-def info_created_user_profile(sender, instance, created, **kwargs):
-    """Логирование при создании Order."""
+def info_created_order(sender, instance, created, **kwargs):
+    """Сигнал для добавления в лог информации о создании заказа."""
     if created:
-        user = getattr(instance.customer, "user", None)
         logger.info(
-            f"Пользователь {user} создал заказ #{instance.pk}",
+            f"Пользователь {instance.customer} создал заказ #{instance.pk}.",
             extra={
-                "user_id": user.id,
+                "user_id": instance.customer.pk,
                 "action": "create_order",
+                "order_id": instance.pk,
+                "order_total": instance.total_cost,
+                "order_status": instance.payment_status,
             },
         )

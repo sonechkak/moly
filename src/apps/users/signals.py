@@ -9,7 +9,7 @@ from .models import Profile
 
 User = get_user_model()
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("user.actions")
 
 
 @receiver(post_save, sender=[User, Profile])

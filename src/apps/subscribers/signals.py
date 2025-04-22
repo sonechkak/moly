@@ -5,21 +5,20 @@ from django.dispatch import receiver
 
 from .models import Subscribe
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("user.actions")
 
 
 @receiver(post_save, sender=Subscribe)
 def info_created_subscribe(sender, instance, created, **kwargs):
-    """Логирование при создании Subscribe."""
+    """Сигнал для добавления в лог информации о создании подписки."""
     if created:
-        try:
-            user = instance.user
+        if instance.user:
             logger.info(
-                f"Пользователь {user.username} создал подписку #{instance.pk}",
+                f"Пользователь {instance.user} создал подписку #{instance.pk}.",
                 extra={
-                    "user_id": user.id,
-                    "action": "create_subscribe",
+                    "user_id": instance.user.id,
+                    "action": "subscribe",
                 },
             )
-        except AttributeError:
-            pass
+        else:
+            logger.info(f"E-mail {instance.email} создал подписку #{instance.pk}.", extra={"action": "subscribe"})

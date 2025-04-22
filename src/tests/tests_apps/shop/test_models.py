@@ -146,7 +146,7 @@ def test_review_creation(user, product):
         product=product
     )
 
-    assert str(review) == user.username
+    assert str(review) == review.text
     assert review in product.reviews.all()
     assert review.grade == "5"
     assert review.text == "Отличный товар!"
