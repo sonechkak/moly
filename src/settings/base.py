@@ -7,7 +7,7 @@ from django.conf.global_settings import LOGIN_URL
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 os.path.join(BASE_DIR, "apps/")
 
 # Application definition
@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "apps.subscribers",
     "apps.users",
     "apps.stripe_app",
+    "apps.recommendations",
 ]
 
 MIDDLEWARE = [

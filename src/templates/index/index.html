@@ -7,9 +7,9 @@
     <section class="hero position-relative overflow-hidden">
         <div class="hero-image position-absolute w-100 h-100"
              style="background: url('{% get_media_prefix %}icons/mobile-accessory-png_687709-1226.jpg.avif') no-repeat center;
-                    background-size: cover;
-                    filter: brightness(0.85);
-                    z-index: -1;"></div>
+                     background-size: cover;
+                     filter: brightness(0.85);
+                     z-index: -1;"></div>
         <div class="container py-5">
             <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
                 <div class="col-lg-6">
@@ -48,10 +48,39 @@
             </div>
 
             <div class="text-center mt-5">
-                <a href="{% url 'shop:all_products' %}" class="btn btn-outline-dark rounded-pill px-4">Показать больше</a>
+                <a href="{% url 'shop:all_products' %}" class="btn btn-outline-dark rounded-pill px-4">
+                    Показать больше
+                </a>
             </div>
         </div>
     </section>
+
+    <!-- RECOMMENDATIONS -->
+    {% if recommendations %}
+        <section class="py-5 bg-light">
+            <div class="container">
+                <header class="text-center mb-5">
+                    <span class="badge bg-primary rounded-pill mb-2">Ваши товары</span>
+                    <h2 class="h2 text-uppercase fw-bold mb-2">Рекомендованные товары</h2>
+                    <div class="divider mx-auto my-2"
+                         style="width: 80px; height: 2px; background-color: #dee2e6;"></div>
+                    <p class="text-muted">Только для вас</p>
+                </header>
+
+                <div class="row g-4">
+                    <!-- PRODUCT-->
+                    {% for product in recommendations %}
+                        {% include 'shop/_components/_product_card.html' %}
+                    {% endfor %}
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="{% url 'shop:all_products' %}" class="btn btn-outline-dark rounded-pill px-4">Показать
+                        больше</a>
+                </div>
+            </div>
+        </section>
+    {% endif %}
 
     <!-- SERVICES-->
     <div class="container">

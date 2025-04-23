@@ -68,7 +68,7 @@ class Product(TimeStamp, models.Model):
     title = models.CharField("Наименование товара", max_length=255)
     price = models.PositiveIntegerField("Цена товара")
     previous_price = models.IntegerField("Предыдущая цена", null=True, blank=True, editable=False)
-    watched = models.IntegerField("Количество просмотров")
+    watched = models.PositiveIntegerField("Количество просмотров", default=1)
     quantity = models.IntegerField("Количество товара на складе")
     description = models.TextField("Описание товара")
     info = models.TextField("Информация о товаре")
