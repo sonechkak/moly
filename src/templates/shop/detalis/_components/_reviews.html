@@ -95,7 +95,7 @@
                                                 </a></li>
                                                 <li>
                                                     <a class="dropdown-item text-danger"
-                                                       href="{% url 'shop:remove_review' review.pk product.slug %}"
+                                                       href="{% url 'shop:remove_review' review.pk %}"
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#deleteReviewModal-{{ review.pk }}">
                                                         <i class="fas fa-trash-alt me-2"></i>Удалить
@@ -169,7 +169,7 @@
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                 Отмена
                                             </button>
-                                            <form action="{% url 'shop:remove_review' review.pk product.slug %}" method="post">
+                                            <form action="{% url 'shop:remove_review' review.pk %}" method="post">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-danger">Удалить</button>
                                             </form>

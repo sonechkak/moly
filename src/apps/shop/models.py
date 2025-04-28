@@ -68,7 +68,7 @@ class Product(TimeStamp, models.Model):
     title = models.CharField("Наименование товара", max_length=255)
     price = models.PositiveIntegerField("Цена товара")
     previous_price = models.IntegerField("Предыдущая цена", null=True, blank=True, editable=False)
-    watched = models.IntegerField("Количество просмотров")
+    watched = models.PositiveIntegerField("Количество просмотров", default=1)
     quantity = models.IntegerField("Количество товара на складе")
     description = models.TextField("Описание товара")
     info = models.TextField("Информация о товаре")
@@ -119,6 +119,15 @@ class Product(TimeStamp, models.Model):
     def has_price_changed(self):
         """Возвращает True, если цена изменилась после последнего сохранения."""
         return self.price != self._original_price
+
+    @property
+    def get_rating(self):
+        """Возвращает рейтинг товара."""
+
+        reviews = self.reviews.all()
+        if reviews.exists():
+            return sum(int(review.grade) for review in reviews) / reviews.count()
+        return 0
 
 
 class Gallery(models.Model):

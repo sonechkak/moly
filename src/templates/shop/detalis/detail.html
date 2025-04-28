@@ -46,31 +46,31 @@
                                 {% if product.reviews.count > 0 %}
                                     {% with average_rating=product.reviews|get_average_rating %}
                                         <div class="d-flex align-items-center">
-                                        <!-- Звёзды рейтинга -->
-                                        <div class="me-2 rating-stars">
-                                            {% for i in "12345" %}
-                                                {% with star_num=forloop.counter %}
-                                                    {% if star_num <= average_rating %}
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    {% elif star_num|add:-0.5 <= average_rating %}
-                                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                                    {% else %}
-                                                        <i class="far fa-star text-warning"></i>
-                                                    {% endif %}
-                                                {% endwith %}
-                                            {% endfor %}
-                                        </div>
+                                            <!-- Звёзды рейтинга -->
+                                            <div class="me-2 rating-stars">
+                                                {% for i in "12345" %}
+                                                    {% with star_num=forloop.counter %}
+                                                        {% if star_num <= average_rating %}
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        {% elif star_num|add:-0.5 <= average_rating %}
+                                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star text-warning"></i>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endfor %}
+                                            </div>
 
-                                        <!-- Текст с рейтингом -->
-                                        <span class="small text-muted">{{ average_rating|floatformat:"1" }}
+                                            <!-- Текст с рейтингом -->
+                                            <span class="small text-muted">{{ average_rating|floatformat:"1" }}
                                             ({{ product.reviews.count }}
-                                            {% if product.reviews.count|divisibleby:"10" and not product.reviews.count|divisibleby:"100" %}
-                                                отзывов
-                                            {% else %}
-                                                {{ product.reviews.count|pluralize:"отзыв,отзыва,отзывов" }}
-                                            {% endif %})
+                                                {% if product.reviews.count|divisibleby:"10" and not product.reviews.count|divisibleby:"100" %}
+                                                    отзывов
+                                                {% else %}
+                                                    {{ product.reviews.count|pluralize:"отзыв,отзыва,отзывов" }}
+                                                {% endif %})
                                         </span>
-                                    </div>
+                                        </div>
                                     {% endwith %}
                                 {% endif %}
                             </div>
@@ -262,7 +262,14 @@
                 <!-- Похожие товары -->
                 <div class="mb-5">
                     <h3 class="fw-bold mb-4">Похожие товары</h3>
-                    {% include 'shop/_components/_product_card.html' %}
+                    {% if similar_products %}
+                        <!-- Похожие товары -->
+                        <div class="row">
+                            {% for product in similar_products %}
+                                {% include 'shop/_components/_product_card.html' %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </section>

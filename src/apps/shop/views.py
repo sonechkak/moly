@@ -1,6 +1,8 @@
 import logging
 
+from apps.recommendations.services import RecommendationService
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
@@ -9,8 +11,8 @@ from django.views.generic import DeleteView, DetailView, FormView, ListView
 
 from .forms import ReviewForm
 from .models import Category, Product, Review
-from .utils import get_random_products
 
+User = get_user_model()
 logger = logging.getLogger("user.actions")
 
 
@@ -22,18 +24,23 @@ class Index(ListView):
     template_name = "index/index.html"
 
     def get_queryset(self):
-        """Вывод родительской категории."""
         categories = Category.objects.filter(parent__isnull=False)[:3]
         return categories
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user if self.request.user.is_authenticated else None
 
         products = self.get_top_products()
+
+        # Рекомендации для авторизованных пользователей
+        recommendations = RecommendationService.get_recommendations(user=user)[:6]
+
         context.update(
             {
                 "title": "Главная страница",
                 "products": products,
+                "recommendations": recommendations,
             }
         )
 
@@ -84,12 +91,16 @@ class SubCategories(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user if self.request.user.is_authenticated else None
 
         if "slug" in self.kwargs:
             category = get_object_or_404(Category, slug=self.kwargs["slug"])
             context["title"] = f"Товары по категории: {category.title}"
         else:
             context["title"] = "Все товары"
+
+        recommendations = RecommendationService.get_recommendations(user)[:6]
+        context["recommendations"] = recommendations
 
         categories = Category.objects.filter(parent=None)
         context["categories"] = categories
@@ -110,10 +121,11 @@ class ProductDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = self.object
+        user = self.request.user if self.request.user.is_authenticated else None
 
-        products = Product.objects.filter(category__in=product.category.all())
-        similar_products = get_random_products(product, products)
+        RecommendationService.track_product_view(product, user)
 
+        similar_products = RecommendationService.get_recommendations(user)
         reviews = Review.objects.filter(product=product).select_related("author").order_by("-created_at")
 
         context.update(
@@ -121,17 +133,9 @@ class ProductDetail(DetailView):
                 "title": product.title,
                 "similar_products": similar_products,
                 "reviews": reviews,
-                "review_count": len(reviews),
+                "review_count": reviews.count(),
                 "form": ReviewForm() if self.request.user.is_authenticated else None,
             }
-        )
-
-        logger.info(
-            f"Пользователь {self.request.user} открыл товар {product.title}.",
-            extra={
-                "product": product.title,
-                "user": self.request.user.username,
-            },
         )
 
         return context

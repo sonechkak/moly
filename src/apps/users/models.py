@@ -19,7 +19,7 @@ class User(AbstractUser):
     password = models.CharField(
         "Password",
         max_length=255,
-        validators=[PasswordValidator()],
+        validators=[PasswordValidator],
     )
     first_name = None
     last_name = None
