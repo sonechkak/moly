@@ -59,6 +59,7 @@ class BasketView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         basket = get_object_or_404(Basket, user=user)
+        basket.bind_request(self.request)
         products = BasketProduct.objects.filter(basket=basket)
 
         if products.count() == 0:

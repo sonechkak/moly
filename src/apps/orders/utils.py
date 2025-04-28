@@ -8,9 +8,12 @@ class OrderCreator(LoginRequiredMixin):
     """Класс для создания заказа."""
 
     @classmethod
-    def create_order(cls, user, form_data, basket):
+    def create_order(cls, user, form_data, basket, request=None):
         """Создание заказа."""
         with transaction.atomic():
+            if request:
+                basket.bind_request(request)
+
             basket_products = BasketProduct.objects.filter(basket=basket)
 
             if not basket_products.exists():
@@ -34,7 +37,7 @@ class OrderCreator(LoginRequiredMixin):
                 recipient=form_data["recipient"],
                 contact=form_data["contact"],
                 is_save_address=form_data["is_save_address"],
-                total_cost=basket.get_total_cost,
+                total_cost=basket.get_total_with_discount,
             )
 
             for basket_product in basket_products:

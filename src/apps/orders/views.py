@@ -63,7 +63,11 @@ class Checkout(LoginRequiredMixin, FormView):
         context["basket_products"] = BasketProduct.objects.filter(basket__user=self.request.user).select_related(
             "product"
         )
-        context["basket"] = get_object_or_404(Basket, user=self.request.user)
+
+        basket = get_object_or_404(Basket, user=self.request.user)
+        basket.bind_request(self.request)
+        context["basket"] = basket
+
         return context
 
     def form_valid(self, form):
@@ -75,6 +79,7 @@ class Checkout(LoginRequiredMixin, FormView):
             user=user,
             form_data=form_data,
             basket=basket,
+            request=self.request,
         )
 
         if form.cleaned_data["payment_method"] == "card_online":

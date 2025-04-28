@@ -12,6 +12,7 @@ urlpatterns = [
     path("", include("apps.orders.urls"), name="orders"),
     path("", include("apps.subscribers.urls"), name="subscribers"),
     path("", include("apps.users.urls"), name="users"),
+    path("", include("apps.coupons.urls"), name="coupons"),
 ]
 
 if settings.DEBUG:
