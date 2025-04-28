@@ -120,6 +120,15 @@ class Product(TimeStamp, models.Model):
         """Возвращает True, если цена изменилась после последнего сохранения."""
         return self.price != self._original_price
 
+    @property
+    def get_rating(self):
+        """Возвращает рейтинг товара."""
+
+        reviews = self.reviews.all()
+        if reviews.exists():
+            return sum(int(review.grade) for review in reviews) / reviews.count()
+        return 0
+
 
 class Gallery(models.Model):
     """Класс для изображений товаров."""

@@ -2,6 +2,7 @@ import logging
 
 from apps.recommendations.services import RecommendationService
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
@@ -11,6 +12,7 @@ from django.views.generic import DeleteView, DetailView, FormView, ListView
 from .forms import ReviewForm
 from .models import Category, Product, Review
 
+User = get_user_model()
 logger = logging.getLogger("user.actions")
 
 
@@ -32,9 +34,7 @@ class Index(ListView):
         products = self.get_top_products()
 
         # Рекомендации для авторизованных пользователей
-        recommendations = []
-        if user:
-            recommendations = RecommendationService.get_recommendations(user)[:6]
+        recommendations = RecommendationService.get_recommendations(user=user)[:6]
 
         context.update(
             {
@@ -99,9 +99,8 @@ class SubCategories(ListView):
         else:
             context["title"] = "Все товары"
 
-        if user:
-            recommendations = RecommendationService.get_recommendations(user)[:6]
-            context["recommendations"] = recommendations
+        recommendations = RecommendationService.get_recommendations(user)[:6]
+        context["recommendations"] = recommendations
 
         categories = Category.objects.filter(parent=None)
         context["categories"] = categories
@@ -124,18 +123,9 @@ class ProductDetail(DetailView):
         product = self.object
         user = self.request.user if self.request.user.is_authenticated else None
 
-        if user:
-            RecommendationService.track_product_view(user, product)
-            logger.info(
-                f"Пользователь {self.request.user} открыл товар {product.title}.",
-                extra={
-                    "product": product.title,
-                    "user": self.request.user.username,
-                },
-            )
+        RecommendationService.track_product_view(product, user)
 
-        similar_products = RecommendationService.get_recommendations(user)[:4]
-
+        similar_products = RecommendationService.get_recommendations(user)
         reviews = Review.objects.filter(product=product).select_related("author").order_by("-created_at")
 
         context.update(
