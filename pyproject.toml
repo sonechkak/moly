@@ -21,6 +21,7 @@ pyotp = "^2.9.0"
 qrcode = "^8.1"
 django-bootstrap5 = "^25.1"
 django-redis = "^5.4.0"
+django-cors-headers = "^4.7.0"
 
 
 [tool.poetry.group.dev.dependencies]
