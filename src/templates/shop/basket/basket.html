@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load %}
 {% load django_bootstrap5 %}
 
 {% block content %}
@@ -94,34 +95,73 @@
                                         <span class="badge bg-primary rounded-pill">{{ basket.get_total_quantity }}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
-                                        <span class="fw-semibold text-muted">Подытог</span>
-                                        <span class="fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                        <span class="fw-semibold text-muted ">Подытог</span>
+                                        {% if request.session.coupon_id %}
+                                            <span class="text-decoration-line-through fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                        {% else %}
+                                            <span class="fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                        {% endif %}
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-bottom">
-                                        <span class="fw-semibold text-muted">Доставка</span>
-                                        <span class="text-success fw-semibold">Бесплатно</span>
-                                    </li>
+
+                                    {% if request.session.coupon_id %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                            <span class="fw-semibold text-muted">Скидка</span>
+                                            <span class="text-danger fw-semibold">- {{ basket.get_discount }}₽</span>
+                                        </li>
+                                    {% endif %}
+
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-0">
                                         <span class="h5 fw-bold mb-0">Итого</span>
-                                        <span class="h5 fw-bold mb-0">{{ basket.get_total_cost }} ₽</span>
+                                        <span class="h5 fw-bold mb-0">
+                                            <span class="text-decoration fw-semibold">
+                                                {% if request.session.coupon_id %}
+                                                    {{ basket.get_total_with_discount }} ₽
+                                                {% else %}
+                                                    {{ basket.get_total_cost }} ₽
+                                                {% endif %}
+                                            </span>
+                                        </span>
                                     </li>
                                 </ul>
 
+                                <!-- Форма применения купона -->
                                 <div class="card bg-light border-0 rounded-3 mb-3">
                                     <div class="card-body">
-                                        <form action="#">
-                                            <div class="mb-3">
-                                                <label for="coupon"
+                                        <form action="{% url 'coupons:apply' %}" method="post"
+                                              class="d-flex align-items-center">
+                                            {% csrf_token %}
+                                            <div class="mb-3 w-100">
+                                                <label for="id_coupon"
                                                        class="form-label small fw-semibold">Промокод</label>
                                                 <div class="input-group">
-                                                    <input id="coupon" class="form-control" type="text"
-                                                           placeholder="Введите промокод"/>
+                                                    <input id="id_coupon"
+                                                           name="coupon"
+                                                           class="form-control {% if form.errors.coupon %}is-invalid{% endif %}"
+                                                           type="text"
+                                                           placeholder="Введите промокод"
+                                                           value="{{ form.coupon.value|default_if_none:'' }}"/>
                                                     <button class="btn btn-outline-dark" type="submit">
                                                         <i class="fas fa-tag"></i>
                                                     </button>
                                                 </div>
                                             </div>
                                         </form>
+
+                                        {% if request.session.coupon_code %}
+                                            <div class="alert alert-success mt-3 p-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <p class="mb-1">Применен купон:
+                                                            <strong>{{ request.session.coupon_code }}</strong></p>
+                                                        <p class="mb-0 small">
+                                                            Скидка: {{ request.session.coupon_discount }}%</p>
+                                                    </div>
+                                                    <a href="{% url 'coupons:remove' %}" class="text-danger small">
+                                                        <i class="fas fa-times"></i> Удалить
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
 

@@ -238,7 +238,6 @@
                                     </div>
                                 {% endfor %}
                             </div>
-
                             <ul class="list-group list-group-flush mb-0">
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 bg-transparent">
                                     <span class="text-muted">Подытог</span>
@@ -248,9 +247,19 @@
                                     <span class="text-muted">Доставка</span>
                                     <span class="text-success">Бесплатно</span>
                                 </li>
+                                {% if request.session.coupon_id %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                            <span class="fw-semibold text-muted">Скидка</span>
+                                            <span class="text-danger fw-semibold">- {{ basket.get_discount }}₽</span>
+                                        </li>
+                                    {% endif %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-0">
                                     <span class="h5 fw-bold mb-0">Итого</span>
-                                    <span class="h5 fw-bold mb-0">{{ basket.get_total_cost }} ₽</span>
+                                    {% if request.session.coupon_id %}
+                                        <span class="h5 fw-bold mb-0">{{ basket.get_total_with_discount }} ₽</span>
+                                    {% else %}
+                                        <span class="h5 fw-bold mb-0">{{ basket.get_total_cost }} ₽</span>
+                                    {% endif %}
                                 </li>
                             </ul>
 

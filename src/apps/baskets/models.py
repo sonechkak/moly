@@ -1,6 +1,10 @@
+from decimal import Decimal
+
+from apps.coupons.models import Coupon
 from apps.shop.models import Product
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 from utils.db import TimeStamp
 
 user_model = get_user_model()
@@ -35,6 +39,41 @@ class Basket(TimeStamp, models.Model):
         """Для получения количества товаров в корзине."""
         products = sum([product.quantity for product in self.ordered_n.all()])
         return products
+
+    @property
+    def get_discount(self):
+        """Для получения скидки на корзину."""
+        if not hasattr(self, "_request"):
+            return Decimal("0.00")
+
+        coupon_id = self._request.session.get("coupon_id")
+        if not coupon_id:
+            return Decimal("0.00")
+
+        try:
+            coupon = Coupon.objects.get(id=coupon_id, is_active=True)
+            if coupon.is_valid():
+                result = self.get_total_cost * Decimal(coupon.discount) / 100
+                return result
+        except Coupon.DoesNotExist:
+            self._clear_coupon_session()
+            return Decimal("0.00")
+
+    @property
+    def get_total_with_discount(self):
+        """Рассчитывает итоговую сумму со скидкой"""
+        return self.get_total_cost - self.get_discount
+
+    def bind_request(self, request):
+        """Привязывает request к корзине."""
+        self._request = request
+        return self
+
+    def _clear_coupon_session(self):
+        """Очищает данные купона из сессии"""
+        if hasattr(self, "_request"):
+            for key in ["coupon_id", "coupon_code", "coupon_discount"]:
+                self._request.session.pop(key, None)
 
 
 class BasketProduct(TimeStamp, models.Model):

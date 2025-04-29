@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.stripe_app",
     "apps.recommendations",
+    "apps.coupons",
 ]
 
 MIDDLEWARE = [
