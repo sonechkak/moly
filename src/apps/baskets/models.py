@@ -32,7 +32,7 @@ class Basket(TimeStamp, models.Model):
         prices = [product.get_total_price for product in self.ordered_n.all()]
         quantities = [product.quantity for product in self.ordered_n.all()]
         total_cost = sum([price * quantity for price, quantity in zip(prices, quantities, strict=False)])
-        return total_cost
+        return int(total_cost)
 
     @property
     def get_total_quantity(self):
@@ -44,25 +44,33 @@ class Basket(TimeStamp, models.Model):
     def get_discount(self):
         """Для получения скидки на корзину."""
         if not hasattr(self, "_request"):
-            return Decimal("0.00")
+            return 0
 
         coupon_id = self._request.session.get("coupon_id")
         if not coupon_id:
-            return Decimal("0.00")
+            return 0
 
         try:
             coupon = Coupon.objects.get(id=coupon_id, is_active=True)
             if coupon.is_valid():
                 result = self.get_total_cost * Decimal(coupon.discount) / 100
-                return result
+                return int(result)
         except Coupon.DoesNotExist:
             self._clear_coupon_session()
-            return Decimal("0.00")
+            return 0
 
     @property
     def get_total_with_discount(self):
         """Рассчитывает итоговую сумму со скидкой"""
-        return self.get_total_cost - self.get_discount
+        total_cost = self.get_total_cost
+        discount = self.get_discount
+
+        if discount is None:
+            discount = 0
+
+        res = int(total_cost - discount)
+
+        return res
 
     def bind_request(self, request):
         """Привязывает request к корзине."""
