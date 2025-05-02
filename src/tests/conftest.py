@@ -34,6 +34,7 @@ def load_local_dev_env():
         return True
     return False
 
+
 @pytest.fixture
 def temp_media_root(settings):
     """Фикстура для временной медиа-папки."""
