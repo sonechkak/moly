@@ -215,17 +215,13 @@ def order_product(transactional_db, order, product):
 
 @pytest.fixture
 def avatar():
-    # Create a temporary file
     image_file = tempfile.NamedTemporaryFile(suffix='.jpg')
 
-    # Create a small PIL image and save it to the temporary file
     image = Image.new('RGB', (100, 100), color='red')
     image.save(image_file, format='JPEG')
 
-    # Seek to the beginning of the file
     image_file.seek(0)
 
-    # Create a SimpleUploadedFile from the temporary file
     return SimpleUploadedFile(
         "test_avatar.jpg",
         image_file.read(),

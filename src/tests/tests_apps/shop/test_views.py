@@ -31,17 +31,17 @@ def test_all_products_page(client, products):
     assert response.context["products"].count() == 12
 
 
-# @pytest.mark.django_db
-# def test_product_detail_page(client, product):
-#     """Тестирование страницы с деталями продукта."""
-#     response = client.get(reverse("shop:product_detail", kwargs={"slug": product.slug}))
-#
-#     assert response.status_code == 200
-#     assert "product" in response.context
-#     assert "title" in response.context
-#     assert response.context["title"] == product.title
-#     assert response.context["product"].title == product.title
-#     assert response.context["product"].price == product.price
+@pytest.mark.django_db
+def test_product_detail_page(client, user, product):
+    """Тестирование страницы с деталями продукта."""
+    client.force_login(user)
+    response = client.get(reverse("shop:product_detail", kwargs={"slug": product.slug}))
+
+    assert response.status_code == 200
+    assert "product" in response.context
+    assert "title" in response.context
+    assert response.context["title"] == product.title
+    assert response.context["product"] == product
 
 
 @pytest.mark.django_db

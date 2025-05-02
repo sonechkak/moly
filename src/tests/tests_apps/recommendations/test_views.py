@@ -35,6 +35,7 @@ def test_get_user_products(transactional_db, user, products):
         assert user_products[products[3].id] == 7  # Купленный товар
         assert user_products[products[0].id] == 1  # Просмотренный 1 раз
 
+
 @pytest.mark.django_db
 def test_similarity_calculation(transactional_db, user, products, categories):
     """Тест расчета схожести товаров с разными параметрами"""
@@ -57,6 +58,7 @@ def test_similarity_calculation(transactional_db, user, products, categories):
     score = RecommendationService._calculate_similarity(product1, product2)
 
     assert (0.5 < score <= 1.0)  # Ожидаем высокий score из-за совпадений
+
 
 @pytest.mark.django_db
 def test_recommendations_priority(transactional_db, user, products):
@@ -101,6 +103,7 @@ def test_recommendations_priority(transactional_db, user, products):
         assert rec_ids.index(similar_to_ordered.product_2_id) > rec_ids.index(similar_to_favorite.product_2_id)
         assert rec_ids.index(similar_to_favorite.product_2_id) > rec_ids.index(similar_to_viewed.product_2_id)
 
+
 @pytest.mark.django_db
 def test_track_product_view(transactional_db, user, products):
         """Тест трекинга просмотров товаров."""
@@ -114,6 +117,7 @@ def test_track_product_view(transactional_db, user, products):
         RecommendationService.track_product_view(products[1], user)
         visit.refresh_from_db()
         assert visit.visit_count == 2
+
 
 @pytest.mark.django_db
 def test_default_recommendations(transactional_db, user, products):
@@ -138,6 +142,7 @@ def test_empty_user_products(transactional_db, user):
         recommendations = RecommendationService.get_recommendations(user=user)
         assert recommendations == RecommendationService._get_default_recommendations()
 
+
 @pytest.mark.django_db
 def test_zero_price_in_similarity(transactional_db, products):
         """Тест с нулевой ценой при расчете схожести"""
@@ -146,6 +151,7 @@ def test_zero_price_in_similarity(transactional_db, products):
 
         score = RecommendationService._calculate_similarity(products[0], products[1])
         assert 0 <= score <= 1
+
 
 @pytest.mark.django_db
 def test_identical_products(transactional_db, products):

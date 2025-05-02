@@ -5,7 +5,7 @@ from apps.subscribers.models import Subscribe
 
 
 @pytest.mark.django_db
-def test_create_subscribe_with_email_only():
+def test_create_subscribe_with_email_only(transactional_db):
     """Тест создания подписки только с email."""
     subscribe = Subscribe.objects.create(email="test@mail.ru")
     assert subscribe.email == subscribe.email
@@ -16,7 +16,7 @@ def test_create_subscribe_with_email_only():
 
 
 @pytest.mark.django_db
-def test_create_subscribe_with_user_only(user):
+def test_create_subscribe_with_user_only(transactional_db, user):
     """Тест создания подписки только с пользователем."""
     subscribe = Subscribe.objects.create(user=user)
     assert subscribe.user == user
@@ -27,7 +27,7 @@ def test_create_subscribe_with_user_only(user):
 
 
 @pytest.mark.django_db
-def test_create_subscribe_with_product(user, product):
+def test_create_subscribe_with_product(transactional_db, user, product):
     """Тест создания подписки с продуктом."""
     subscribe = Subscribe.objects.create(user=user, product=product)
     assert subscribe.user == user
@@ -36,7 +36,7 @@ def test_create_subscribe_with_product(user, product):
 
 
 @pytest.mark.django_db
-def test_create_subscribe_with_category(user, category):
+def test_create_subscribe_with_category(transactional_db, user, category):
     """Тест создания подписки с категорией."""
     subscribe = Subscribe.objects.create(user=user, category=category)
     assert subscribe.user == user
@@ -45,7 +45,7 @@ def test_create_subscribe_with_category(user, category):
 
 
 @pytest.mark.django_db
-def test_is_general_set_to_false_with_product_or_category(product, category):
+def test_is_general_set_to_false_with_product_or_category(transactional_db, product, category):
     """Тест, что is_general устанавливается в False при наличии product или category."""
     # С продуктом
     subscribe1 = Subscribe(email="test1@example.com", product=product)
@@ -64,14 +64,14 @@ def test_is_general_set_to_false_with_product_or_category(product, category):
 
 
 @pytest.mark.django_db
-def test_str_representation():
+def test_str_representation(transactional_db):
     """Тест строкового представления."""
     subscribe = Subscribe.objects.create(email="test@example.com")
     assert str(subscribe) == "test@example.com"
 
 
 @pytest.mark.django_db
-def test_str_representation_with_user(user):
+def test_str_representation_with_user(transactional_db, user):
     """Тест строкового представления с пользователем."""
     subscribe = Subscribe.objects.create(user=user)
 
