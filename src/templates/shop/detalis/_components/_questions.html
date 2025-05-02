@@ -1,0 +1,104 @@
+<!-- Вопросы и ответы -->
+<div class="row">
+    <div class="col-lg-8">
+        <h5 class="fw-bold mb-4">Вопросы и ответы</h5>
+
+        <!-- Форма для вопроса -->
+        {% if request.user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold mb-3">Задать вопрос о товаре</h6>
+                    <form method="post" action="{% url 'qa:add_question' product.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="text" rows="3" placeholder="Ваш вопрос" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Отправить вопрос</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info mb-4">
+                <p>Чтобы задать вопрос, пожалуйста <a
+                        href="{% url 'auth:login' %}?next={{ request.path }}#questions-tab" class="text-primary">войдите</a>
+                    или <a href="{% url 'auth:register' %}" class="text-primary">зарегистрируйтесь</a>.</p>
+            </div>
+        {% endif %}
+
+        <!-- Список вопросов и ответов -->
+        <div class="questions-list">
+            {% if product.questions.all %}
+                {% for question in product.questions.all %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-bold">{{ question.user|default:question.user.username }}</span>
+                                <span class="text-muted small">{{ question.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                            <p class="mb-0">{{ question.text }}</p>
+
+                            {% if question.answers.exists %}
+                                <div class="mt-3 pt-3 border-top">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-primary me-2">Ответ магазина</span>
+                                        <span class="text-muted small">{{ question.answers.first.updated_at|date:"d.m.Y H:i" }}</span>
+                                        {% if request.user.is_superuser %}
+                                            <a href="{% url 'qa:edit_answer' product.slug question.answers.first.pk %}"
+                                               class="btn btn-sm btn-outline-secondary ms-2">Редактировать</a>
+                                        {% endif %}
+                                    </div>
+                                    <p class="mb-0">{{ question.answers.first.text }}</p>
+                                </div>
+                            {% else %}
+                                <div class="mt-2">
+                                    <span class="text-muted small">Ожидает ответа...</span>
+                                    {% if request.user.is_superuser %}
+                                        <button class="btn btn-sm btn-primary ms-3"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#answerModal{{ question.id }}">
+                                            Ответить
+                                        </button>
+
+                                        <!-- Модальное окно для ответа -->
+                                        <div class="modal fade" id="answerModal{{ question.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Ответ на вопрос</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form method="post" action="{% url 'qa:add_answer' product.slug question.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <p class="fw-bold">Вопрос:</p>
+                                                                <p>{{ question.text }}</p>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="answerText{{ question.id }}" class="form-label">Ваш ответ:</label>
+                                                                <textarea class="form-control" id="answerText{{ question.id }}"
+                                                                          name="text" rows="4" required></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                                            <button type="submit" class="btn btn-primary">Отправить ответ</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-light">
+                    Пока нет вопросов о товаре. Будьте первым!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

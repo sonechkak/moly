@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+    {% if request.user.is_superuser %}
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="mb-4">Редактирование ответа</h2>
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Вопрос:</h5>
+                            <p>{{ object.question.text }}</p>
+                            <p class="text-muted small">
+                                От: {{ object.question.user|default:object.question.user.username }}
+                                ({{ object.question.created_at|date:"d.m.Y H:i" }})
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        <a href="{{ object.question.product.get_absolute_url }}" class="btn btn-secondary">Отмена</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

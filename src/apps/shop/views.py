@@ -1,5 +1,6 @@
 import logging
 
+from apps.qa.forms import AnswerForm, QuestionForm
 from apps.recommendations.services import RecommendationService
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -135,6 +136,8 @@ class ProductDetail(DetailView):
                 "reviews": reviews,
                 "review_count": reviews.count(),
                 "form": ReviewForm() if self.request.user.is_authenticated else None,
+                "question_form": QuestionForm() if self.request.user.is_authenticated else None,
+                "answers_form": AnswerForm() if self.request.user.is_authenticated else None,
             }
         )
 
