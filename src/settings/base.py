@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "apps.stripe_app",
     "apps.recommendations",
     "apps.coupons",
+    "apps.qa",
 ]
 
 MIDDLEWARE = [
