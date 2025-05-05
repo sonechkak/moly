@@ -6,4 +6,4 @@ class FavsConfig(AppConfig):
     name = "apps.favs"
 
     def ready(self):
-        from . import signals
+        pass

@@ -26,6 +26,9 @@
     {% include '_components/_errors.html' %}
     <!-- Main content -->
     {% block content %}
+        {% if request.user.is_authenticated %}
+            {% include '_components/_modal.html' %}
+        {% endif %}
     {% endblock content %}
     <!-- Footer Area -->
     {% include '_components/_footer.html' %}

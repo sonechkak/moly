@@ -2,6 +2,7 @@ import logging
 import shutil
 import tempfile
 from pathlib import Path
+
 import pytest
 from django.core.cache import cache
 
@@ -22,7 +23,6 @@ def clear_cache():
 
 @pytest.fixture(autouse=True, scope="session")
 def load_local_dev_env():
-    import os
     import sys
     from dotenv import load_dotenv
 

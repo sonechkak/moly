@@ -1,4 +1,5 @@
 import pyotp
+from apps.referral.utils import process
 from apps.users.models import Profile
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
@@ -12,7 +13,7 @@ from .forms import (
     RegistrationForm,
     Verify2FAForm,
 )
-from .utils import generate_qrcode, generate_totp_uri
+from .utils import generate
 
 User = get_user_model()
 
@@ -122,6 +123,12 @@ class RegistrationView(FormView):
 
         user.save()
         Profile.objects.create(user=user)
+
+        # Обработка рефералов
+        referral_token = self.request.session.get("referral_token")
+        if referral_token:
+            process.process_referrals(self.request, referral_token=referral_token, user=user, days=30, discount=10)
+
         messages.success(self.request, "Аккаунт пользователя успешно создан.")
 
         if is_mfa_enabled:
@@ -164,9 +171,8 @@ class QrCodeView(FormView):
             user.mfa_hash = pyotp.random_base32()
             user.save()
 
-        totp_uri = generate_totp_uri(user=user, secret_key=user.mfa_hash)
-
-        img_str = generate_qrcode(totp_uri)
+        totp_uri = generate.generate_totp_uri(user=user, secret_key=user.mfa_hash)
+        img_str = generate.generate_qrcode(totp_uri)
 
         context["qr_code_img"] = f"data:image/png;base64,{img_str}"
         context["hash"] = user.mfa_hash

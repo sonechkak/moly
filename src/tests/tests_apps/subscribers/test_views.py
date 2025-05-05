@@ -4,7 +4,7 @@ from django.urls import reverse
 from apps.subscribers.models import Subscribe
 
 
-@pytest.fixture
+@pytest.mark.django_db
 def test_save_subscribe(client):
     email = "testemail@test.com"
     url = reverse("subscribers:subscribe")

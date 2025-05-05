@@ -1,7 +1,13 @@
+import logging
+
+from apps.coupons.models import Coupon
 from conf.celery import celery_app
+from django.template.loader import render_to_string
 
 from .models import Subscribe
 from .service import SubscribeService
+
+logger = logging.getLogger(__name__)
 
 
 @celery_app.task
@@ -29,3 +35,26 @@ def send_subscriber_email():
     for subscriber in is_general_subs:
         mail = SubscribeService(subscribe=subscriber)
         mail.send_template_mail()
+
+
+@celery_app.task
+def send_referral_coupon_email(subscribe_id, coupon_id):
+    """Отправка купона на email подписчика."""
+
+    try:
+        subscriber = Subscribe.objects.get(id=subscribe_id)
+        coupon = Coupon.objects.get(id=coupon_id)
+
+        subject = "Ваш купон"
+        message = f"Ваш купон: {coupon.code} на скидку {coupon.discount}%"
+        html_message = render_to_string("subscribers/coupon_email.html", {"coupon": coupon})
+        SubscribeService.send_mail(
+            subject=subject,
+            message=message,
+            html_message=html_message,
+            recipient_list=[subscriber.email],
+        )
+        logger.info(f"Реферальный купон отправлен на {subscriber.email}")
+
+    except Coupon.DoesNotExist:
+        logger.error("Ошибка отправки реферального купона.")

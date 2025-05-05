@@ -4,7 +4,6 @@ from apps.coupons.models import Coupon
 from apps.shop.models import Product
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils import timezone
 from utils.db import TimeStamp
 
 user_model = get_user_model()
