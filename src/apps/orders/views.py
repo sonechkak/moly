@@ -136,7 +136,8 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
                 coupon_code = self.request.session.get("coupon_code")
                 if coupon_code:
                     coupon = Coupon.objects.get(code=coupon_code)
-                    coupon.delete()
+                    if coupon.user:
+                        coupon.delete()
             else:
                 messages.warning(request, "Платеж еще не подтвержден. Мы уведомим вас, когда платеж будет получен.")
 
