@@ -31,6 +31,6 @@ class Coupon(models.Model):
         return self.code
 
     def is_valid(self):
-        """Проверка валидности формы."""
+        """Проверка валидности."""
         now = timezone.now().date()
         return self.is_active and self.valid_from <= now <= self.valid_to

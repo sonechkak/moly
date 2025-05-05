@@ -1,5 +1,6 @@
 import stripe
 from apps.baskets.models import Basket, BasketProduct
+from apps.coupons.models import Coupon
 from apps.stripe_app.utils import handle_stripe_payment
 from apps.users.models import Profile
 from django.conf import settings
@@ -131,6 +132,11 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
                 order.payment_status = "completed"
                 order.save()
                 messages.success(request, "Платеж успешно завершен! Ваш заказ обрабатывается.")
+
+                coupon_code = self.request.session.get("coupon_code")
+                if coupon_code:
+                    coupon = Coupon.objects.get(code=coupon_code)
+                    coupon.delete()
             else:
                 messages.warning(request, "Платеж еще не подтвержден. Мы уведомим вас, когда платеж будет получен.")
 
