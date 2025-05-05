@@ -6,7 +6,6 @@ from apps.users.models import (
     ShippingAddress,
 )
 
-
 User = get_user_model()
 
 

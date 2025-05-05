@@ -4,7 +4,6 @@ from django.urls import reverse
 
 from apps.baskets.models import Basket
 
-
 user_model = get_user_model()
 
 

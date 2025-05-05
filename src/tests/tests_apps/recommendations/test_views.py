@@ -1,10 +1,10 @@
 import pytest
 from django.utils import timezone
 
+from apps.favs.models import FavoriteProducts
+from apps.orders.models import Order, OrderProduct
 from apps.recommendations.models import Similarity, UserPageVisit
 from apps.recommendations.services import RecommendationService
-from apps.orders.models import Order, OrderProduct
-from apps.favs.models import FavoriteProducts
 from apps.users.models import Profile
 
 

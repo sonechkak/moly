@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block content %}
+    <div class="header">
+        <h1>Ваш купон на скидку в Moly</h1>
+    </div>
+
+    <p>Здравствуйте!</p>
+    <p>Благодарим вас за подписку на наши новости. В качестве благодарности мы дарим вам купон на скидку.</p>
+
+    <div class="coupon-code">
+        {{ coupon.code }}
+    </div>
+
+    <p>Этот купон дает вам скидку <strong>{{ coupon.discount }}%</strong> на покупки в нашем магазине.</p>
+
+    <p style="text-align: center;">
+        <a href="{{ settings.SITE_URL }}" class="button">Перейти в магазин</a>
+    </p>
+
+    <p>Срок действия купона: <strong>{{ coupon.valid_to|date:"d.m.Y" }}</strong></p>
+
+    <div class="footer">
+        <p>Если вы не подписывались на рассылку, пожалуйста, проигнорируйте это письмо.</p>
+        <p>© {% now "Y" %} Moly. Все права защищены.</p>
+    </div>
+{% endblock %}

@@ -7,4 +7,4 @@ class ShopConfig(AppConfig):
     app_label = "shop"
 
     def ready(self):
-        from . import signals
+        pass

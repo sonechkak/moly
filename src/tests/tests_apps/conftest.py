@@ -24,7 +24,6 @@ from apps.shop.models import (
 )
 from apps.users.models import Profile
 
-
 User = get_user_model()
 
 

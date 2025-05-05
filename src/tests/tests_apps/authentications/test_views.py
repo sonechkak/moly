@@ -7,7 +7,6 @@ from django.urls import reverse
 
 from apps.authentications.forms import RegistrationForm
 
-
 User = get_user_model()
 
 

@@ -18,7 +18,11 @@ celery_app.conf.beat_schedule = {
     "send_mail": {
         "task": "apps.subscribers.tasks.send_subscriber_email",
         "schedule": crontab(minute="*/1"),
-    }
+    },
+    "send_referral_coupon_email": {
+        "task": "apps.subscribers.tasks.send_referral_coupon_email",
+        "schedule": crontab(minute="*/1"),
+    },
 }
 
 celery_app.autodiscover_tasks()

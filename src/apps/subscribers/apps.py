@@ -6,4 +6,4 @@ class SubscribersConfig(AppConfig):
     name = "apps.subscribers"
 
     def ready(self):
-        from . import signals, tasks
+        pass

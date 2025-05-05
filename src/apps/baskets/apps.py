@@ -6,4 +6,4 @@ class BasketConfig(AppConfig):
     name = "apps.baskets"
 
     def ready(self):
-        from . import signals
+        pass

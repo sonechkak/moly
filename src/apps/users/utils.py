@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pyotp
 from django.utils.text import slugify
 
 
