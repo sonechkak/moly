@@ -4,42 +4,59 @@
 
 {% block content %}
     <div class="container py-5">
-        <div class="row">
-            <!-- Боковая панель профиля -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
-                                 class="rounded-circle img-thumbnail"
-                                 width="150"
-                                 height="150"
-                                 alt="Аватар профиля">
-                        </div>
-                        <h4 class="card-title">{{ user.profile }}</h4>
-                        <p class="text-muted mb-1">{{ user.email }}</p>
-                        <p class="text-muted">{{ user.profile.phone|default:"Телефон не указан" }}</p>
+    <div class="row">
+        <!-- Боковая панель профиля -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
+                             class="rounded-circle img-thumbnail"
+                             width="150"
+                             height="150"
+                             alt="Аватар профиля">
+                    </div>
+                    <h4 class="card-title">{{ user.profile }}</h4>
+                    <p class="text-muted mb-1">{{ user.email }}</p>
+                    <p class="text-muted">{{ user.profile.phone|default:"Телефон не указан" }}</p>
 
-                        <!-- Меню профиля -->
-                        <div class="list-group mt-3">
-                            <a href="{% url 'users:profile' user.pk %}"
-                               class="list-group-item list-group-item-action active">
-                                <i class="bi bi-person-fill me-2"></i>Личные данные
-                            </a>
-                            <a href="#addresses" class="list-group-item list-group-item-action">
-                                <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
-                            </a>
-                            <a href="{% url 'orders:my_orders' user.pk %}"
-                               class="list-group-item list-group-item-action">
-                                <i class="bi bi-bag-fill me-2"></i>Мои заказы
-                            </a>
-                        </div>
+                    <!-- Меню профиля -->
+                    <div class="list-group mt-3">
+                        <a href="{% url 'users:profile' user.pk %}"
+                           class="list-group-item list-group-item-action active">
+                            <i class="bi bi-person-fill me-2"></i>Личные данные
+                        </a>
+                        <a href="#addresses" class="list-group-item list-group-item-action">
+                            <i class="bi bi-house-door-fill me-2"></i>Адреса доставки
+                        </a>
+                        <a href="{% url 'orders:my_orders' user.pk %}"
+                           class="list-group-item list-group-item-action">
+                            <i class="bi bi-bag-fill me-2"></i>Мои заказы
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Основное содержимое профиля -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Ваши бонусы и кэшбэк</h5>
+                    <span class="badge bg-primary">Доступно: {{ user.cashback_balance.total|default:"0" }} ₽</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <h6><i class="bi bi-coin me-2"></i>Кэшбэк-баланс</h6>
+                                <p class="mb-1">Накоплено: <strong>{{ user.cashback_balance|default:"0" }}
+                                    ₽</strong></p>
+                                <small class="text-muted">Начисляется за покупки (1-10% от суммы)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Основное содержимое профиля -->
-            <div class="col-md-8">
                 <!-- Форма личных данных -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white">

@@ -1,5 +1,6 @@
 import stripe
 from apps.baskets.models import Basket, BasketProduct
+from apps.cashback.utils.create_cashback import create_cashback
 from apps.coupons.models import Coupon
 from apps.stripe_app.utils import handle_stripe_payment
 from apps.users.models import Profile
@@ -132,6 +133,9 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
                 order.payment_status = "completed"
                 order.save()
                 messages.success(request, "Платеж успешно завершен! Ваш заказ обрабатывается.")
+
+                # Создаем кэшбек для пользователя
+                create_cashback(request, user=request.user, order=order)
 
                 coupon_code = self.request.session.get("coupon_code")
                 if coupon_code:

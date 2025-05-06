@@ -15,6 +15,10 @@ def generate_token():
     return secrets.token_urlsafe(32)  # криптостойкий токен
 
 
+def get_default_expires_at():
+    return timezone.now() + timedelta(days=7)
+
+
 class UserReferral(TimeStamp, models.Model):
     """Класс рефералов пользователей."""
 
@@ -45,9 +49,7 @@ class ReferralLink(models.Model):
     token = models.CharField(default=generate_token, unique=True, verbose_name="Токен")
     is_active = models.BooleanField(default=True, verbose_name="Активна")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    expires_at = models.DateTimeField(
-        default=timezone.now() + timedelta(days=7), verbose_name="Дата окончания действия"
-    )
+    expires_at = models.DateTimeField(default=get_default_expires_at, verbose_name="Дата окончания действия")
     clicks = models.PositiveIntegerField(default=0, verbose_name="Количество переходов")
 
     class Meta:
