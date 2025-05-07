@@ -8,6 +8,7 @@ from django.views.generic import FormView
 
 from .forms import CouponForm
 from .models import Coupon
+from .utils.clear import clear_coupons_session
 
 
 class CouponsView(LoginRequiredMixin, FormView):
@@ -30,20 +31,13 @@ class CouponsView(LoginRequiredMixin, FormView):
 
         except Coupon.DoesNotExist:
             messages.error(self.request, "Купон недействителен или истёк.")
-            self._clear_coupon_session()
+            clear_coupons_session(self.request)
             return self.form_invalid(form)
 
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("baskets:basket", kwargs={"pk": self.request.user.pk})
-
-    def _clear_coupon_session(self):
-        """Очистка купона из сессии"""
-        keys = ["coupon_id", "coupon_code", "coupon_discount"]
-        for key in keys:
-            if key in self.request.session:
-                del self.request.session[key]
 
 
 class RemoveCouponsView(LoginRequiredMixin, View):
@@ -53,8 +47,6 @@ class RemoveCouponsView(LoginRequiredMixin, View):
 
     def get(self, request):
         if "coupon_id" in self.request.session:
-            del request.session["coupon_id"]
-            del request.session["coupon_code"]
-            del request.session["coupon_discount"]
+            clear_coupons_session(self.request)
             messages.success(request, "Купон успешно удален.")
         return redirect(reverse("baskets:basket", kwargs={"pk": request.user.pk}))

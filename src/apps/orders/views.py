@@ -1,7 +1,9 @@
 import stripe
 from apps.baskets.models import Basket, BasketProduct
+from apps.cashback.models import CashbackBalance
 from apps.cashback.utils.create_cashback import create_cashback
 from apps.coupons.models import Coupon
+from apps.coupons.utils.clear import clear_coupons_session
 from apps.stripe_app.utils import handle_stripe_payment
 from apps.users.models import Profile
 from django.conf import settings
@@ -69,7 +71,6 @@ class Checkout(LoginRequiredMixin, FormView):
         basket = get_object_or_404(Basket, user=self.request.user)
         basket.bind_request(self.request)
         context["basket"] = basket
-
         return context
 
     def form_valid(self, form):
@@ -81,6 +82,9 @@ class Checkout(LoginRequiredMixin, FormView):
             user=user,
             form_data=form_data,
             basket=basket,
+            cashback_used=self.request.session.get("use_cashback", False),
+            cashback_amount=self.request.session.get("cashback_amount", 0),
+            coupon_used=self.request.session.get("coupon_id", False),
             request=self.request,
         )
 
@@ -131,8 +135,15 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
             if session.payment_status == "paid":
                 order.is_paid = True
                 order.payment_status = "completed"
-                order.save()
-                messages.success(request, "Платеж успешно завершен! Ваш заказ обрабатывается.")
+                order.save(update_fields=["is_paid"])
+
+                if order.cashback_used:
+                    cashback_balance = CashbackBalance.objects.get(user=request.user)
+                    cashback_balance.total = 0
+                    cashback_balance.save(update_fields=["total"])
+
+                    if "use_cashback" in request.session:
+                        del request.session["use_cashback"]
 
                 # Создаем кэшбек для пользователя
                 create_cashback(request, user=request.user, order=order)
@@ -142,6 +153,13 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
                     coupon = Coupon.objects.get(code=coupon_code)
                     if coupon.user:
                         coupon.delete()
+                    clear_coupons_session(self.request)
+
+                # Очищаем корзину
+                basket_products = BasketProduct.objects.filter(basket__user=request.user)
+                basket_products.delete()
+
+                messages.success(request, "Платеж успешно завершен! Ваш заказ обрабатывается.")
             else:
                 messages.warning(request, "Платеж еще не подтвержден. Мы уведомим вас, когда платеж будет получен.")
 

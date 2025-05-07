@@ -95,14 +95,15 @@
                                         <span class="badge bg-primary rounded-pill">{{ basket.get_total_quantity }}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
-                                        <span class="fw-semibold text-muted ">Подытог</span>
-                                        {% if request.session.coupon_id %}
+                                        <span class="fw-semibold text-muted">Подытог</span>
+                                        {% if request.session.coupon_id or request.session.use_cashback %}
                                             <span class="text-decoration-line-through fw-semibold">{{ basket.get_total_cost }} ₽</span>
                                         {% else %}
                                             <span class="fw-semibold">{{ basket.get_total_cost }} ₽</span>
                                         {% endif %}
                                     </li>
 
+                                    <!-- Промокод -->
                                     {% if request.session.coupon_id %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
                                             <span class="fw-semibold text-muted">Скидка</span>
@@ -110,16 +111,54 @@
                                         </li>
                                     {% endif %}
 
+                                    <!-- Кэшбэк -->
+                                    {% if user.is_authenticated and user.cashback_balance.total > 0 %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                            <form action="{% url 'cashback:apply' %}" method="post" class="w-100">
+                                                {% csrf_token %}
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="useCashback"
+                                                               name="use_cashback"
+                                                               {% if request.session.use_cashback %}checked{% endif %}
+                                                               onchange="this.form.submit()">
+                                                        <label class="form-check-label" for="useCashback">
+                                                            Использовать кэшбэк
+                                                        </label>
+                                                    </div>
+                                                    <span class="text-success fw-semibold">
+                                                        {% if request.session.use_cashback %}
+                                                            -{{ user.cashback_balance.total }} ₽
+                                                        {% else %}
+                                                            Доступно: {{ user.cashback_balance.total }} ₽
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                                 <input type="hidden" name="cashback_amount"
+                                                        value="{{ user.cashback_balance.total }}">
+                                            </form>
+                                        </li>
+                                    {% endif %}
+
+                                    <!-- Итоговая сумма -->
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-0">
                                         <span class="h5 fw-bold mb-0">Итого</span>
                                         <span class="h5 fw-bold mb-0">
-                                            <span class="text-decoration fw-semibold">
-                                                {% if request.session.coupon_id %}
-                                                    {{ basket.get_total_with_discount }} ₽
+                                        <span class="text-decoration fw-semibold">
+                                            {% if request.session.coupon_id %}
+                                                {% if request.session.use_cashback %}
+                                                    {{ basket.get_total_with_discount_and_cashback }} ₽
+                                                {% else %}
+                                                    {{ basket.get_total_with_discount }}
+                                                {% endif %}
+                                            {% else %}
+                                                {% if request.session.use_cashback %}
+                                                    {{ basket.get_total_with_discount_and_cashback }} ₽
                                                 {% else %}
                                                     {{ basket.get_total_cost }} ₽
                                                 {% endif %}
-                                            </span>
+                                            {% endif %}
+                                           </span>
                                         </span>
                                     </li>
                                 </ul>
@@ -140,7 +179,8 @@
                                                            type="text"
                                                            placeholder="Введите промокод"
                                                            value="{{ form.coupon.value|default_if_none:'' }}"/>
-                                                    <button class="btn btn-outline-dark" type="submit">
+                                                    <button class="btn btn-outline-dark"
+                                                            type="submit">
                                                         <i class="fas fa-tag"></i>
                                                     </button>
                                                 </div>
@@ -152,11 +192,13 @@
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <div>
                                                         <p class="mb-1">Применен купон:
-                                                            <strong>{{ request.session.coupon_code }}</strong></p>
+                                                            <strong>{{ request.session.coupon_code }}</strong>
+                                                        </p>
                                                         <p class="mb-0 small">
                                                             Скидка: {{ request.session.coupon_discount }}%</p>
                                                     </div>
-                                                    <a href="{% url 'coupons:remove' %}" class="text-danger small">
+                                                    <a href="{% url 'coupons:remove' %}"
+                                                       class="text-danger small">
                                                         <i class="fas fa-times"></i> Удалить
                                                     </a>
                                                 </div>
@@ -166,7 +208,8 @@
                                 </div>
 
                                 <div class="d-grid">
-                                    <a href="{% url 'orders:checkout' basket.pk %}" class="btn btn-primary btn-lg">
+                                    <a href="{% url 'orders:checkout' basket.pk %}"
+                                       class="btn btn-primary btn-lg">
                                         Оформить заказ
                                     </a>
                                 </div>
@@ -180,8 +223,10 @@
                         <i class="fas fa-shopping-cart fa-4x text-muted"></i>
                     </div>
                     <h3>Ваша корзина пуста</h3>
-                    <p class="text-muted mb-4">Похоже, вы еще не добавили товары в корзину.</p>
-                    <a href="{% url 'shop:all_products' %}" class="btn btn-primary rounded-pill px-4">
+                    <p class="text-muted mb-4">Похоже, вы еще не добавили товары в
+                        корзину.</p>
+                    <a href="{% url 'shop:all_products' %}"
+                       class="btn btn-primary rounded-pill px-4">
                         Перейти к покупкам
                     </a>
                 </div>
