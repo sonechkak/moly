@@ -241,24 +241,42 @@
                             <ul class="list-group list-group-flush mb-0">
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 bg-transparent">
                                     <span class="text-muted">Подытог</span>
-                                    <span class="fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                    {% if request.session.coupon_id or request.session.use_cashback %}
+                                            <span class="text-decoration-line-through fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                        {% else %}
+                                            <span class="fw-semibold">{{ basket.get_total_cost }} ₽</span>
+                                        {% endif %}
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 bg-transparent">
                                     <span class="text-muted">Доставка</span>
                                     <span class="text-success">Бесплатно</span>
                                 </li>
                                 {% if request.session.coupon_id %}
-                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
-                                            <span class="fw-semibold text-muted">Скидка</span>
-                                            <span class="text-danger fw-semibold">- {{ basket.get_discount }}₽</span>
-                                        </li>
-                                    {% endif %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                        <span class="fw-semibold text-muted">Промокод</span>
+                                        <span class="text-danger fw-semibold">- {{ basket.get_discount }}₽</span>
+                                    </li>
+                                {% endif %}
+                                {% if request.session.use_cashback %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent">
+                                        <span class="fw-semibold text-muted">Бонусы</span>
+                                        <span class="text-danger fw-semibold">- {{ user.cashback_balance.total }}₽</span>
+                                    </li>
+                                {% endif %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-0">
                                     <span class="h5 fw-bold mb-0">Итого</span>
                                     {% if request.session.coupon_id %}
-                                        <span class="h5 fw-bold mb-0">{{ basket.get_total_with_discount }} ₽</span>
+                                        {% if request.session.use_cashback %}
+                                            {{ basket.get_total_with_discount_and_cashback }} ₽
+                                        {% else %}
+                                            {{ basket.get_total_with_discount }}
+                                        {% endif %}
                                     {% else %}
-                                        <span class="h5 fw-bold mb-0">{{ basket.get_total_cost }} ₽</span>
+                                        {% if request.session.use_cashback %}
+                                            {{ basket.get_total_with_discount_and_cashback }} ₽
+                                        {% else %}
+                                            {{ basket.get_total_cost }} ₽
+                                        {% endif %}
                                     {% endif %}
                                 </li>
                             </ul>
@@ -282,57 +300,57 @@
     </section>
 {% endblock %}
 <script defer>
-document.addEventListener('DOMContentLoaded', function() {
-    const stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
-    const submitBtn = document.getElementById('submit-btn');
+    document.addEventListener('DOMContentLoaded', function () {
+        const stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+        const submitBtn = document.getElementById('submit-btn');
 
-    submitBtn.addEventListener('click', async function() {
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        submitBtn.addEventListener('click', async function () {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
 
-        if (paymentMethod === 'card_online') {
-            // Для онлайн-оплаты через Stripe
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Обработка...';
+            if (paymentMethod === 'card_online') {
+                // Для онлайн-оплаты через Stripe
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Обработка...';
 
-            try {
-                // 1. Сначала сохраняем заказ
-                const formData = new FormData(document.getElementById('address-form'));
-                const response = await fetch('{% url "orders:create_order" %}', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // 2. Перенаправляем на Stripe Checkout
-                    const result = await stripe.redirectToCheckout({
-                        sessionId: data.session_id
+                try {
+                    // 1. Сначала сохраняем заказ
+                    const formData = new FormData(document.getElementById('address-form'));
+                    const response = await fetch('{% url "orders:create_order" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
                     });
 
-                    if (result.error) {
-                        alert(result.error.message);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // 2. Перенаправляем на Stripe Checkout
+                        const result = await stripe.redirectToCheckout({
+                            sessionId: data.session_id
+                        });
+
+                        if (result.error) {
+                            alert(result.error.message);
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
+                        }
+                    } else {
+                        alert(data.message || 'Ошибка при создании заказа');
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
                     }
-                } else {
-                    alert(data.message || 'Ошибка при создании заказа');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Произошла ошибка при обработке заказа');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Произошла ошибка при обработке заказа');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Оформить заказ';
+            } else {
+                // Для других методов оплаты просто отправляем форму
+                document.getElementById('address-form').submit();
             }
-        } else {
-            // Для других методов оплаты просто отправляем форму
-            document.getElementById('address-form').submit();
-        }
+        });
     });
-});
 </script>

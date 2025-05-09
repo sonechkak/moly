@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from apps.cashback.models import CashbackBalance
 from apps.coupons.models import Coupon
 from apps.shop.models import Product
 from django.contrib.auth import get_user_model
@@ -60,7 +61,7 @@ class Basket(TimeStamp, models.Model):
 
     @property
     def get_total_with_discount(self):
-        """Рассчитывает итоговую сумму со скидкой"""
+        """Рассчитывает итоговую сумму только со скидкой."""
         total_cost = self.get_total_cost
         discount = self.get_discount
 
@@ -70,6 +71,19 @@ class Basket(TimeStamp, models.Model):
         res = int(total_cost - discount)
 
         return res
+
+    @property
+    def get_total_with_discount_and_cashback(self):
+        """Возвращает сумму с применением купона и скидки."""
+
+        total = self.get_total_cost
+        if self._request.session.get("coupon_id"):
+            total = self.get_total_with_discount
+
+        if self._request.session.get("use_cashback") and hasattr(self._request.user, "cashback_balance"):
+            cashback = min(self._request.user.cashback_balance.total, total)
+            return total - cashback
+        return total
 
     def bind_request(self, request):
         """Привязывает request к корзине."""

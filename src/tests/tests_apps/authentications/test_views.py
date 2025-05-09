@@ -13,7 +13,6 @@ User = get_user_model()
 @pytest.mark.django_db
 def test_login_view(client, user):
     """Тест для LoginView."""
-    # Убедитесь, что пароль установлен корректно
 
     user.set_password("StrongPassword123!")
     user.is_active = True
