@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 {% load static %}
+{% load custom_tags %}
 
 {% block content %}
     <div class="container">
@@ -33,25 +34,28 @@
                     <div class="col-lg-9 order-1 order-lg-2 mb-5 mb-lg-0">
                         <div class="row mb-3 align-items-center">
                             <div class="col-lg-6 mb-2 mb-lg-0">
-                                <p class="text-small text-muted mb-0">Показывать 1–12 of 53 товары</p>
+                                <p class="text-small text-muted mb-0">
+                                    Показывать 1–12 of {{ products_count }} товаров
+                                </p>
                             </div>
                             <div class="col-lg-6">
                                 <ul class="list-inline d-flex align-items-center justify-content-lg-end mb-0">
-                                    <li class="list-inline-item text-muted me-3">
-                                        <a class="text-decoration-none p-0" href="#"><i class="fas fa-th-large"></i></a>
-                                    </li>
-                                    <li class="list-inline-item text-muted me-3">
-                                        <a class="text-decoration-none p-0" href="#"><i class="fas fa-th"></i></a>
-                                    </li>
                                     <li class="list-inline-item">
-                                        <select class="form-select form-select-sm"
-                                                name="sorting"
-                                                style="width: 200px;">
-                                            <option value="default">Default sorting</option>
-                                            <option value="popularity">Popularity</option>
-                                            <option value="low-high">Price: Low to High</option>
-                                            <option value="high-low">Price: High to Low</option>
-                                        </select>
+                                        <form method="get" action="" id="filter-form">
+                                            {% get_sorted as data %}
+                                            <select class="form-select form-select-sm sorting-select"
+                                                    name="sort"
+                                                    style="width: 200px;">
+                                                {% for key in data %}
+                                                    {% for sorter in key.sorters %}
+                                                        <option value="{{ sorter.0 }}"
+                                                                {% if request.GET.sort == sorter.0 %}selected{% endif %}>
+                                                            {{ sorter.1 }}
+                                                        </option>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </select>
+                                        </form>
                                     </li>
                                 </ul>
                             </div>
