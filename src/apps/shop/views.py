@@ -122,12 +122,9 @@ class ProductDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = self.object
-        user = self.request.user if self.request.user.is_authenticated else None
 
-        RecommendationService.track_product_view(product, user)
-
-        similar_products = RecommendationService.get_recommendations(user)
-        reviews = Review.objects.filter(product=product).select_related("author").order_by("-created_at")
+        similar_products = RecommendationService._get_similar_products_for_product(product, limit=6)
+        reviews = product.reviews.all().order_by("-created_at")
 
         context.update(
             {

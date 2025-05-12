@@ -73,7 +73,8 @@ class ProductAdmin(admin.ModelAdmin):
 
     def get_image(self, obj):
         """Возвращает изображение товара."""
-        return obj.image.url if obj.get_main_photo else None
+        first_image = obj.images.filter(is_main=True).first()
+        return first_image.image.url if first_image and first_image.image else None
 
     get_image.short_description = "Изображение товара"
 

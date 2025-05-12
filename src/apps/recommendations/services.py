@@ -48,6 +48,34 @@ class RecommendationService:
         return products
 
     @classmethod
+    def _get_similar_products_for_product(cls, product, limit=10):
+        """Получить все товары, похожие на указанный товар."""
+        if not product or not isinstance(product, Product):
+            return []
+
+        # Получаем все записи Similarity, где значится товар
+        similarities = Similarity.objects.filter(
+            Q(product_1_id=product.id) | Q(product_2_id=product.id)
+        ).select_related("product_1", "product_2")[: limit * 2]  # Берем с запасом
+
+        similar_products = []
+
+        for sim in similarities:
+            if sim.product_1_id == product.id:
+                similar_product = sim.product_2
+            else:
+                similar_product = sim.product_1
+
+            # Проверяем, что товар доступен и не дублируется
+            if similar_product.available and similar_product not in similar_products:
+                similar_products.append(similar_product)
+
+            if len(similar_products) >= limit:
+                break
+
+        return similar_products[:limit]
+
+    @classmethod
     def _get_similar_products(cls, user_products, user, limit=10):
         """Получить все товары, похожие на товары пользователя."""
 
@@ -93,7 +121,7 @@ class RecommendationService:
         return sorted_similarities
 
     @classmethod
-    def get_recommendations(cls, limit=10, user=None):
+    def get_recommendations(cls, user, limit=10):
         """Получить рекомендации для пользователя."""
 
         if user is None or not user.is_authenticated:
