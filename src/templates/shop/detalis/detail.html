@@ -132,6 +132,24 @@
                                             <strong class="text-uppercase">Цвет:</strong>
                                             <span class="text-muted">{{ product.color }}</span>
                                         </li>
+                                        {% if product.cpu_type %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <strong class="text-uppercase">Процессор:</strong>
+                                                <span class="text-muted">{{ product.cpu_type }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if product.ram %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <strong class="text-uppercase">Оперативная память:</strong>
+                                                <span class="text-muted">{{ product.ram }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if product.storage %}
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <strong class="text-uppercase">Накопитель:</strong>
+                                                <span class="text-muted">{{ product.storage }}</span>
+                                            </li>
+                                        {% endif %}
                                         <li class="list-group-item d-flex justify-content-between">
                                             <strong class="text-uppercase">Категории:</strong>
                                             <div>

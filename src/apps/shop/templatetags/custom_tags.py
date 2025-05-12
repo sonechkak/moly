@@ -56,16 +56,18 @@ def get_sorted():
                     ("-color", "от Я до А"),
                 ],
             },
-            {
-                "title": "Размер",
-                "sorters": [
-                    ("size", "по возрастанию"),
-                    ("-size", "по убыванию"),
-                ],
-            },
         ]
-
     return sorters
+
+
+@register.simple_tag()
+def get_filters():
+    """Фильтрация по техническим характеристикам."""
+    return {
+        "cpu_type": ["M1", "M2", "M3", "M4", "Intel"],
+        "ram": ["8GB", "16GB", "24GB", "32GB", "64GB"],
+        "storage": ["64GB", "128GB", "256GB", "512GB", "1TB"],
+    }
 
 
 @range_register.filter()

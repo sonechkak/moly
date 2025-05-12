@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from utils.db import TimeStamp
 
+from .enums.product_choices import ProductCPUChoices, ProductRamChoices, ProductStorageChoices
 from .utils import get_brand_upload_path, get_category_upload_path, get_image_upload_path
 
 User = get_user_model()
@@ -78,6 +79,9 @@ class Product(TimeStamp, models.Model):
     color = models.TextField("Цвет/Материал")
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Бренд")
     available = models.BooleanField("Доступны к заказу", default=True)
+    cpu_type = models.CharField("Процессор", choices=ProductCPUChoices.choices, null=True, blank=True)
+    ram = models.CharField("Оперативная память", choices=ProductRamChoices.choices, null=True, blank=True)
+    storage = models.CharField("Накопитель", choices=ProductStorageChoices.choices, null=True, blank=True)
 
     class Meta:
         verbose_name = "Товар"
