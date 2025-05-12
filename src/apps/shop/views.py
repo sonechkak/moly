@@ -83,10 +83,17 @@ class SubCategories(ListView):
         else:
             products = Product.objects.filter(available=True)
 
-        if sort_filed := self.request.GET.get("sort"):
-            products = products.order_by(sort_filed)
-        else:
-            products = Product.objects.filter(id__in=products)
+        if sort_field := self.request.GET.get("sort"):
+            products = products.order_by(sort_field)
+
+        if cpu_types := self.request.GET.getlist("cpu_type"):
+            products = products.filter(cpu_type__in=cpu_types)
+
+        if ram_sizes := self.request.GET.getlist("ram"):
+            products = products.filter(ram__in=ram_sizes)
+
+        if storage_sizes := self.request.GET.getlist("storage"):
+            products = products.filter(storage__in=storage_sizes)
 
         return products
 
