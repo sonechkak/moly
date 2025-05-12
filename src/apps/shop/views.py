@@ -112,6 +112,7 @@ class SubCategories(ListView):
 
         categories = Category.objects.filter(parent=None)
         context["categories"] = categories
+        context["products_count"] = Product.objects.all().count()
         return context
 
 
