@@ -29,3 +29,18 @@ def generate_coupon(user, days, discount):
         discount=discount,
     )
     return coupon
+
+
+def generate_personal_coupon(user, discount, days_valid=30, **kwargs):
+    """Генерация персонализированного купона с расширенными параметрами."""
+    code = generate_coupon_code(length=10, digits=True)
+
+    coupon = Coupon.objects.create(
+        code=code,
+        user=user,
+        valid_from=timezone.now(),
+        valid_to=timezone.now() + timedelta(days=days_valid),
+        discount=discount,
+        discount_type="personal",
+    )
+    return coupon
