@@ -1,7 +1,7 @@
 import logging
 
 from apps.qa.forms import AnswerForm, QuestionForm
-from apps.recommendations.services import RecommendationService
+from apps.recommendations.services import RecommendationService, YouWatchedService
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -37,11 +37,15 @@ class Index(ListView):
         # Рекомендации для авторизованных пользователей
         recommendations = RecommendationService.get_recommendations(user=user)[:6]
 
+        # Вы смотрели
+        viewed_products = YouWatchedService.get_watched_products(user=user)[:6]
+
         context.update(
             {
                 "title": "Главная страница",
                 "products": products,
                 "recommendations": recommendations,
+                "viewed_products": viewed_products,
             }
         )
 
@@ -130,9 +134,13 @@ class ProductDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = self.object
+        user = self.request.user if self.request.user.is_authenticated else None
 
         similar_products = RecommendationService._get_similar_products_for_product(product, limit=6)
         reviews = product.reviews.all().order_by("-created_at")
+
+        # Обновляем просмотры пользователя
+        YouWatchedService.update_watched_page(user=user, product=product)
 
         context.update(
             {

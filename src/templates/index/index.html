@@ -55,6 +55,28 @@
         </div>
     </section>
 
+    <!-- YOU WATCHED -->
+    <!-- YOU WATCHED SECTION -->
+    {% if viewed_products %}
+        <section class="py-5">
+            <div class="container">
+                <header class="text-center mb-5">
+                    <span class="badge bg-secondary rounded-pill mb-2">История</span>
+                    <h2 class="h2 text-uppercase fw-bold mb-2">Вы просмотрели</h2>
+                    <div class="divider mx-auto my-2" style="width: 80px; height: 2px; background-color: #dee2e6;"></div>
+                    <p class="text-muted">Недавно просмотренные товары</p>
+                </header>
+
+                <div class="row g-4">
+                    {% for product in viewed_products %}
+                        {% include 'shop/_components/_product_card.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+
     <!-- RECOMMENDATIONS -->
     {% if recommendations %}
         <section class="py-5 bg-light">

@@ -274,3 +274,31 @@ class RecommendationService:
                     product_2_id=max(product_1_id, product_2_id),
                     defaults={"similarity_score": similarity},
                 )
+
+
+class YouWatchedService:
+    """Класс для системы Вы посмотрели."""
+
+    @classmethod
+    def get_watched_products(cls, user, limit=10):
+        """Получить просмотренные товары пользователя."""
+
+        if not user or not user.is_authenticated:
+            return []
+
+        watched_products = UserPageVisit.objects.filter(user=user).order_by("-last_visited")[:limit]
+
+        if not watched_products:
+            return []
+
+        return [item.product for item in watched_products]
+
+    @classmethod
+    def update_watched_page(cls, user, product):
+        """Обновить страницу просмотра товара."""
+
+        if not user or not user.is_authenticated:
+            return
+
+        with transaction.atomic():
+            UserPageVisit.objects.filter(user=user, product=product).update(last_visited=timezone.now())
