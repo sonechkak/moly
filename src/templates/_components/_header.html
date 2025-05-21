@@ -41,11 +41,11 @@
                                        aria-expanded="false">История</a>
                                     <ul class="dropdown-menu" aria-labelledby="pagesDropdown">
                                         <li><a class="dropdown-item border-0 transition-link"
-                                           href="{% url 'favs:favorites' %}">Отложенные</a></li>
+                                               href="{% url 'favs:favorites' %}">Отложенные</a></li>
                                         <li><a class="dropdown-item border-0 transition-link"
-                                           href="{% url 'baskets:basket' user.basket.pk %}">Корзина</a></li>
+                                               href="{% url 'baskets:basket' user.basket.pk %}">Корзина</a></li>
                                         <li><a class="dropdown-item border-0 transition-link"
-                                           href="{% url 'orders:checkout' user.basket.pk %}">Покупки</a></li>
+                                               href="{% url 'orders:checkout' user.basket.pk %}">Покупки</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -71,6 +71,68 @@
                                 <a class="nav-link" href="{% url 'users:profile' user.pk %}">
                                     <i class="fas fa-user-alt me-1 text-gray"></i>Мой профиль
                                 </a>
+                            </li>
+
+                            <!-- Уведомления -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle position-relative" href="#"
+                                   id="notificationsDropdown"
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-bell"></i>
+                                    <span id="notification-badge"
+                                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                          style="{% if unread_notifications_count == 0 %}display: none;{% endif %}">
+                                        {{ unread_notifications_count }}
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end notification-dropdown"
+                                     aria-labelledby="notificationsDropdown"
+                                     style="width: 320px; max-height: 400px; overflow-y: auto;">
+                                    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                                        <h6 class="m-0">Уведомления</h6>
+                                        {% if unread_notifications_count > 0 %}
+                                            <a href="{% url 'notifications:mark_all_read' %}"
+                                               class="text-decoration-none small">
+                                                Прочитать все
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div id="notification-list">
+                                        {% if notifications %}
+                                            {% for notification in notifications %}
+                                                <div class="notification-item p-3 border-bottom {% if notification.status == 'pending' %}bg-light{% endif %}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="mb-1">{{ notification.title }}</h6>
+                                                        <small class="text-muted">
+                                                            {{ notification.created_at|date:"d.m.Y H:i" }}</small>
+                                                    </div>
+                                                    <p class="mb-1">{{ notification.message }}</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        {% if notification.url %}
+                                                            <a href="{{ notification.url }}"
+                                                               class="btn btn-sm btn-primary">Перейти</a>
+                                                        {% endif %}
+                                                        {% if notification.status == 'pending' %}
+                                                            <a href="{% url 'notifications:mark_read' notification.id %}"
+                                                               class="btn btn-sm btn-outline-secondary ms-auto">
+                                                                Отметить прочитанным
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="text-center p-3 text-muted" id="no-notifications">
+                                                У вас нет новых уведомлений
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="border-top p-2 text-center">
+                                        <a href="{% url 'notifications:all' %}" class="text-decoration-none small">
+                                            Показать все уведомления
+                                        </a>
+                                    </div>
+                                </div>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'auth:logout' %}">

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "apps.qa",
     "apps.referral",
     "apps.cashback",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [

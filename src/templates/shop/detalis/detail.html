@@ -105,6 +105,34 @@
                                             <i class="fas fa-shopping-cart me-2"></i>Добавить в корзину
                                         </button>
                                     </div>
+
+                                    <!-- Уведомление о доступности товара -->
+                                    {% if not product.available or product.quantity <= 0 %}
+                                        <div class="alert alert-warning mt-3">
+                                            <i class="fa fa-exclamation-triangle me-2"></i>
+                                            Данный товар временно недоступен
+                                            {% if user.is_authenticated %}
+                                                {% if is_subscribed %}
+                                                    <a href="{% url 'notifications:product_unsubscribe' product.id %}?next={{ request.path }}"
+                                                       class="btn btn-sm btn-outline-secondary mt-2">
+                                                        <i class="fa fa-bell-slash me-1"></i>
+                                                        Отписаться от уведомлений
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{% url 'notifications:product_subscribe' product.id %}?next={{ request.path }}"
+                                                       class="btn btn-sm btn-outline-primary mt-2">
+                                                        <i class="fa fa-bell me-1"></i>
+                                                        Уведомить меня, когда товар появится в наличии
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <p class="small mt-2">
+                                                    <a href="{% url 'auth:login' %}?next={{ request.path }}">Войдите</a>,
+                                                    чтобы получить уведомление о поступлении товара.
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </form>
 
@@ -314,7 +342,6 @@
                 document.addEventListener('DOMContentLoaded', function () {
                     const quantityInput = document.querySelector('.quantity-selector input');
                     const minusBtn = document.querySelector('.quantity-down');
-                    const plusBtn = document.querySelector('.quantity-up');
 
                     if (minusBtn && plusBtn && quantityInput) {
                         minusBtn.addEventListener('click', function () {

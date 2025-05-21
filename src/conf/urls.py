@@ -16,6 +16,7 @@ urlpatterns = [
     path("", include("apps.qa.urls"), name="qa"),
     path("", include("apps.referral.urls"), name="referral"),
     path("", include("apps.cashback.urls"), name="cashback"),
+    path("", include("apps.notifications.urls"), name="notifications"),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h1 class="h2 fw-bold mb-4">{{ title }}</h1>
+
+        {% if subscriptions %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>Статус</th>
+                        <th>Подписка создана</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for subscription in subscriptions %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'shop:product_detail' subscription.product.id %}">
+                                    {{ subscription.product.name }}
+                                </a>
+                            </td>
+                            <td>{{ subscription.product.price }} ₽</td>
+                            <td>
+                                {% if subscription.product.is_available and subscription.product.stock > 0 %}
+                                    <span class="badge bg-success">Доступен</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Недоступен</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ subscription.created_at|date:"d.m.Y" }}</td>
+                            <td>
+                                <form method="post"
+                                      action="{% url 'notifications:unsubscribe_product' subscription.product.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa fa-times me-1"></i>Отписаться
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle me-2"></i>У вас пока нет подписок на товары.
+                <p class="mt-2">
+                    <a href="{% url 'shop:all_products' %}" class="btn btn-primary btn-sm">
+                        <i class="fa fa-shopping-basket me-1"></i>Перейти к каталогу товаров
+                    </a>
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
