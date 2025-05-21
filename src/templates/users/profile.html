@@ -11,6 +11,8 @@
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <img src="
+
+
                                     {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
                                  class="rounded-circle img-thumbnail"
                                  width="150"
@@ -33,6 +35,10 @@
                             <a href="{% url 'orders:my_orders' user.pk %}"
                                class="list-group-item list-group-item-action">
                                 <i class="bi bi-bag-fill me-2"></i>Мои заказы
+                            </a>
+                            <a href="{% url 'notifications:subscribed_products' %}"
+                               class="list-group-item list-group-item-action">
+                                <i class="fa fa-bell me-2"></i>Мои подписки на товары
                             </a>
                         </div>
                     </div>

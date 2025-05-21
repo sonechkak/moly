@@ -1,5 +1,7 @@
 import logging
 
+from apps.notifications.models import Notification, ProductAvalaibilityNotification
+from apps.notifications.services.get_unread_count import get_unread_count
 from apps.qa.forms import AnswerForm, QuestionForm
 from apps.recommendations.services import RecommendationService, YouWatchedService
 from django.contrib import messages
@@ -46,6 +48,8 @@ class Index(ListView):
                 "products": products,
                 "recommendations": recommendations,
                 "viewed_products": viewed_products,
+                "unread_notifications_count": get_unread_count(user=user),
+                "notifications": Notification.objects.filter(user=user)[:6],
             }
         )
 
@@ -104,6 +108,8 @@ class SubCategories(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user if self.request.user.is_authenticated else None
+        recommendations = RecommendationService.get_recommendations(user)[:6]
+        categories = Category.objects.filter(parent=None)
 
         if "slug" in self.kwargs:
             category = get_object_or_404(Category, slug=self.kwargs["slug"])
@@ -111,12 +117,15 @@ class SubCategories(ListView):
         else:
             context["title"] = "Все товары"
 
-        recommendations = RecommendationService.get_recommendations(user)[:6]
-        context["recommendations"] = recommendations
-
-        categories = Category.objects.filter(parent=None)
-        context["categories"] = categories
-        context["products_count"] = Product.objects.all().count()
+        context.update(
+            {
+                "recommendations": recommendations,
+                "categories": categories,
+                "products_count": Product.objects.all().count(),
+                "unread_notifications_count": get_unread_count(user=user),
+                "notifications": Notification.objects.filter(user=user)[:6],
+            }
+        )
         return context
 
 
@@ -142,6 +151,10 @@ class ProductDetail(DetailView):
         # Обновляем просмотры пользователя
         YouWatchedService.update_watched_page(user=user, product=product)
 
+        is_subscribed = False
+        if user:
+            is_subscribed = ProductAvalaibilityNotification.objects.filter(user=user, product=product).exists()
+
         context.update(
             {
                 "title": product.title,
@@ -151,6 +164,9 @@ class ProductDetail(DetailView):
                 "form": ReviewForm() if self.request.user.is_authenticated else None,
                 "question_form": QuestionForm() if self.request.user.is_authenticated else None,
                 "answers_form": AnswerForm() if self.request.user.is_authenticated else None,
+                "is_subscribed": is_subscribed,
+                "unread_notifications_count": get_unread_count(user=user),
+                "notifications": Notification.objects.filter(user=user)[:6],
             }
         )
 

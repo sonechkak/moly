@@ -1,4 +1,6 @@
 from apps.coupons.models import Coupon
+from apps.notifications.models import Notification
+from apps.notifications.services.get_unread_count import get_unread_count
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -17,8 +19,15 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = f"Профиль пользователя: {self.request.user.username}"
-        context["coupons"] = Coupon.objects.filter(user=self.request.user)
+        user = self.request.user
+        context.update(
+            {
+                "title": f"Профиль пользователя: {self.request.user.username}",
+                "coupons": Coupon.objects.filter(user=self.request.user),
+                "unread_notifications_count": get_unread_count(user=user),
+                "notifications": Notification.objects.filter(user=user)[:6],
+            }
+        )
         return context
 
 
