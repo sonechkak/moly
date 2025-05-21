@@ -15,7 +15,7 @@ class Notification(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
     title = models.CharField("Заголовок", max_length=255)
     message = models.TextField("Сообщение")
-    type = models.CharField("Тип уведомления", max_length=20, choices=NotificationChoices.choices)
+    type = models.CharField("Тип уведомления", max_length=255, choices=NotificationChoices.choices)
     status = models.CharField(
         "Статус отправки", max_length=20, choices=DeliveryStatus.choices, default=DeliveryStatus.PENDING
     )

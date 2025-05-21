@@ -38,7 +38,7 @@
                             <td>{{ subscription.created_at|date:"d.m.Y" }}</td>
                             <td>
                                 <form method="post"
-                                      action="{% url 'notifications:unsubscribe_product' subscription.product.id %}">
+                                      action="{% url 'notifications:product_unsubscribe' subscription.product.id %}">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm btn-outline-danger">
                                         <i class="fa fa-times me-1"></i>Отписаться

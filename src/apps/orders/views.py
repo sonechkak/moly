@@ -4,6 +4,7 @@ from apps.cashback.models import CashbackBalance
 from apps.cashback.utils.create_cashback import create_cashback
 from apps.coupons.models import Coupon
 from apps.coupons.utils.clear import clear_coupons_session
+from apps.loyalty.utils.add_cashback import update_cashback_balance
 from apps.stripe_app.utils import handle_stripe_payment
 from apps.users.models import Profile
 from django.conf import settings
@@ -34,7 +35,7 @@ class UserOrders(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         context["total_orders"] = self.get_queryset().count()
-        context["total_spent"] = sum(order.total_price for order in context["orders"] if order.payment_status == "paid")
+        context["total_spent"] = sum(order.total_cost for order in context["orders"] if order.payment_status == "paid")
         context["status_choices"] = Order.PAYMENT_STATUS_CHOICES
 
         return context
@@ -134,8 +135,10 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
 
             if session.payment_status == "paid":
                 order.is_paid = True
-                order.payment_status = "completed"
-                order.save(update_fields=["is_paid"])
+                order.payment_status = "paid"
+                order.payment_method = "card_online"
+                order.stripe_session_id = session.id
+                order.save(update_fields=["is_paid", "payment_status", "payment_method", "stripe_session_id"])
 
                 if order.cashback_used:
                     cashback_balance = CashbackBalance.objects.get(user=request.user)
@@ -145,8 +148,11 @@ class PaymentSuccess(LoginRequiredMixin, TemplateView):
                     if "use_cashback" in request.session:
                         del request.session["use_cashback"]
 
-                # Создаем кэшбек для пользователя
+                # Создаем кэшбэк для пользователя
                 create_cashback(request, user=request.user, order=order)
+
+                # Обновляем баланс кэшбэка
+                update_cashback_balance(request, user=request.user, order=order)
 
                 coupon_code = self.request.session.get("coupon_code")
                 if coupon_code:

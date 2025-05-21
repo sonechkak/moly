@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from apps.orders.models import Order
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -35,7 +37,13 @@ class CashbackBalance(TimeStamp, models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="cashback_balance", verbose_name="Пользователь"
     )
-    total = models.PositiveIntegerField(default=0)
+    total = models.PositiveIntegerField("Доступно кэшбэка", default=0)
+    total_cashback_earned = models.DecimalField(
+        "Всего заработано кэшбэка", max_digits=10, decimal_places=2, default=Decimal("0.00")
+    )
+    total_cashback_used = models.DecimalField(
+        "Всего использовано кэшбэка", max_digits=10, decimal_places=2, default=Decimal("0.00")
+    )
 
     class Meta:
         verbose_name = "Баланс кэшбэка"
