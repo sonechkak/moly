@@ -1,3 +1,4 @@
+from apps.loyalty.models import UserLoyalty
 from apps.orders.models import Order
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -18,11 +19,19 @@ def order_notification(sender, instance, created, **kwargs):
             notification_type="order",
             url=f"/all_orders/{user.id}/",
         )
-    elif instance.status_changed:
+
+
+@receiver(post_save, sender=UserLoyalty)
+def user_loyalty_notification(sender, instance, created, **kwargs):
+    """Отправка уведомления при обновлении лояльности пользователя."""
+    user = instance.user
+
+    if instance.current_level:
         create_notification(
-            user=instance.user,
-            title="Статус заказа изменен",
-            message=f'Статус вашего заказа #{instance.id} изменен на "{instance.get_status_display()}"',
-            notification_type="order",
-            url=f"/all_orders/{user.id}/",
+            user=user,
+            title="Уровень лояльности изменен!",
+            message=f"Поздравляем! Ваш уровень лояльности изменен на {instance.current_level.name}. "
+            f"Теперь ваш кэшбэк составляет {instance.current_level.cashback_percentage}%.",
+            notification_type="loyalty_level_changed",
+            url="/profile/loyalty/",
         )

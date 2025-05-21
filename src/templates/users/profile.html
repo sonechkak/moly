@@ -46,222 +46,273 @@
             </div>
             <!-- Основное содержимое профиля -->
             <div class="col-md-8">
+                <!-- Карта уровня лояльности -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Ваши бонусы и кэшбэк</h5>
-                        <span class="badge bg-primary">Доступно: {{ user.cashback_balance.total|default:"0" }} ₽</span>
+                        <h5 class="mb-0">Ваш уровень лояльности</h5>
+                        <span class="badge bg-primary">{{ user.loyalty.current_level.name }}</span>
                     </div>
                     <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>{{ user.loyalty.current_level.name }}</span>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="alert alert-success">
-                                    <h6><i class="bi bi-coin me-2"></i>Кэшбэк-баланс</h6>
-                                    <p class="mb-1">Накоплено: <strong>{{ user.cashback_balance|default:"0" }}
-                                        ₽</strong></p>
-                                    <small class="text-muted">Начисляется за покупки (1-10% от суммы)</small>
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-graph-up me-2"></i>Общая сумма покупок</h6>
+                                    <p class="mb-1">Потрачено: <strong>{{ user.loyalty.total_spent }} ₽</strong></p>
+                                    <p class="mb-1">Влияет на ваш уровень лояльности</p>
+                                    <p class="mb-1">Осталось до следующего уровня:
+                                        <strong>{{ user.loyalty.get_remaining_amount }} ₽</strong>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning">
+                                    <h6><i class="bi bi-percent me-2"></i>Кэшбэк</h6>
+                                    <p class="mb-1">Ваш кэшбэк: <strong>
+                                        {% if user.loyalty.current_level %}
+                                            {{ user.loyalty.current_level.cashback_percentage }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </strong></p>
+                                    <p class="mb-1">Всего заработано:
+                                        {% if user.loyalty.cashback %}
+                                            {{ user.loyalty.cashback.total_cashback_earned }} ₽
+                                        {% else %}
+                                            0 ₽
+                                        {% endif %}
+                                    </p>
+                                    <p class="mb-1">Всего потрачено:
+                                        {% if user.loyalty.cashback %}
+                                            {{ user.loyalty.cashback.total_cashback_used }} ₽
+                                        {% else %}
+                                            0 ₽
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
                         </div>
+
+                        {% if user.loyalty.current_level %}
+                            <div class="mt-3">
+                                <h6>Ваши привилегии:</h6>
+                                <ul class="list-group">
+                                    {% for privilege in user.loyalty.current_level.privileges.all %}
+                                        <li class="list-group-item d-flex align-items-center">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            {{ privilege }}
+                                        </li>
+                                        {% empty %}
+                                        <li class="list-group-item">Нет доступных привилегий</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
                     </div>
-
-                    <!-- Форма личных данных -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0">Личные данные</h5>
-                        </div>
-                        <div class="card-body">
-                            <form method="post"
-                                  action="{% url 'users:profile-update' user.profile.pk %}"
-                                  enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="row g-3">
-                                    <!-- Аватар -->
-                                    <div class="col-12">
-                                        <label for="id_avatar" class="form-label">Аватар</label>
-                                        <input class="form-control" type="file" id="id_avatar" name="avatar"
-                                               accept="image/*">
-                                        {% if user.profile.avatar %}
-                                            <div class="mt-2">
-                                                <small>Текущий аватар:</small>
-                                                <img src="{{ user.profile.avatar.url }}" width="50" class="ms-2">
-                                            </div>
-                                        {% endif %}
-                                    </div>
-
-                                    <!-- Основные поля -->
-                                    <div class="col-md-6">
-                                        <label for="id_first_name" class="form-label">Имя</label>
-                                        <input type="text" class="form-control" id="id_first_name" name="first_name"
-                                               value="{{ user.profile.first_name|default:'' }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="id_last_name" class="form-label">Фамилия</label>
-                                        <input type="text" class="form-control" id="id_last_name" name="last_name"
-                                               value="{{ user.profile.last_name|default:'' }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="id_email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="id_email" name="email"
-                                               value="{{ user.email|default:'' }}" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="id_phone" class="form-label">Телефон</label>
-                                        <input type="tel" class="form-control" id="id_phone" name="phone"
-                                               value="{{ user.profile.phone|default:'' }}">
-                                    </div>
-                                    <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary px-4">
-                                            <i class="bi bi-check-circle me-1"></i> Сохранить изменения
-                                        </button>
-                                    </div>
+                </div>
+                <!-- Форма личных данных -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Личные данные</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post"
+                              action="{% url 'users:profile-update' user.profile.pk %}"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <!-- Аватар -->
+                                <div class="col-12">
+                                    <label for="id_avatar" class="form-label">Аватар</label>
+                                    <input class="form-control" type="file" id="id_avatar" name="avatar"
+                                           accept="image/*">
+                                    {% if user.profile.avatar %}
+                                        <div class="mt-2">
+                                            <small>Текущий аватар:</small>
+                                            <img src="{{ user.profile.avatar.url }}" width="50" class="ms-2">
+                                        </div>
+                                    {% endif %}
                                 </div>
-                            </form>
-                        </div>
-                    </div>
 
-                    <!-- Блок с адресами доставки -->
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Адреса доставки</h5>
-                            <a href="{% url 'users:address-create' user.profile.pk %}"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus"></i> Добавить адрес
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            {% if user.profile.address.all %}
-                                <div class="list-group">
-                                    {% for address in user.profile.address.all|dictsortreversed:"is_primary" %}
-                                        <div class="list-group-item {% if address.is_primary %}border-primary{% endif %}">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div class="me-3">
-                                                    <h6 class="mb-1">
-                                                        {% if address.is_primary %}
-                                                            <span class="badge bg-primary me-2">Основной</span>
-                                                        {% endif %}
-                                                        {{ address.title }}
-                                                    </h6>
-                                                    <p class="mb-1">
-                                                        {{ address.city }}, {{ address.street }}, д. {{ address.house }}
-                                                        {% if address.apartment %}, кв.
-                                                            {{ address.apartment }}{% endif %}
-                                                    </p>
-                                                    <small class="text-muted">{{ address.zipcode }}</small>
-                                                </div>
-                                                <div class="btn-group btn-group-sm d-flex" style="gap: 5px;">
-                                                    {% if not address.is_primary %}
-                                                        <form method="post"
-                                                              action="{% url 'users:address-set-primary' pk=user.profile.pk address_pk=address.pk %}"
-                                                              class="d-inline-flex flex-fill">
-                                                            {% csrf_token %}
-                                                            <button type="submit"
-                                                                    class="btn btn-outline-primary flex-fill text-nowrap"
-                                                                    title="Сделать основным">
-                                                                <i class="bi bi-star"></i> Основной
-                                                            </button>
-                                                        </form>
+                                <!-- Основные поля -->
+                                <div class="col-md-6">
+                                    <label for="id_first_name" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="id_first_name" name="first_name"
+                                           value="{{ user.profile.first_name|default:'' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_last_name" class="form-label">Фамилия</label>
+                                    <input type="text" class="form-control" id="id_last_name" name="last_name"
+                                           value="{{ user.profile.last_name|default:'' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="id_email" name="email"
+                                           value="{{ user.email|default:'' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_phone" class="form-label">Телефон</label>
+                                    <input type="tel" class="form-control" id="id_phone" name="phone"
+                                           value="{{ user.profile.phone|default:'' }}">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-check-circle me-1"></i> Сохранить изменения
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Блок с адресами доставки -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Адреса доставки</h5>
+                        <a href="{% url 'users:address-create' user.profile.pk %}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus"></i> Добавить адрес
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if user.profile.address.all %}
+                            <div class="list-group">
+                                {% for address in user.profile.address.all|dictsortreversed:"is_primary" %}
+                                    <div class="list-group-item {% if address.is_primary %}border-primary{% endif %}">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="me-3">
+                                                <h6 class="mb-1">
+                                                    {% if address.is_primary %}
+                                                        <span class="badge bg-primary me-2">Основной</span>
                                                     {% endif %}
-                                                    <a href="{% url 'users:address-update' pk=user.profile.pk address_pk=address.pk %}"
-                                                       class="btn btn-outline-secondary flex-fill text-nowrap">
-                                                        <i class="bi bi-pencil"></i> Изменить
-                                                    </a>
+                                                    {{ address.title }}
+                                                </h6>
+                                                <p class="mb-1">
+                                                    {{ address.city }}, {{ address.street }}, д. {{ address.house }}
+                                                    {% if address.apartment %}, кв.
+                                                        {{ address.apartment }}{% endif %}
+                                                </p>
+                                                <small class="text-muted">{{ address.zipcode }}</small>
+                                            </div>
+                                            <div class="btn-group btn-group-sm d-flex" style="gap: 5px;">
+                                                {% if not address.is_primary %}
                                                     <form method="post"
-                                                          action="{% url 'users:address-delete' pk=user.pk address_pk=address.pk %}"
+                                                          action="{% url 'users:address-set-primary' pk=user.profile.pk address_pk=address.pk %}"
                                                           class="d-inline-flex flex-fill">
                                                         {% csrf_token %}
                                                         <button type="submit"
-                                                                class="btn btn-danger flex-fill text-nowrap">
-                                                            <i class="bi bi-trash"></i> Удалить
+                                                                class="btn btn-outline-primary flex-fill text-nowrap"
+                                                                title="Сделать основным">
+                                                            <i class="bi bi-star"></i> Основной
                                                         </button>
                                                     </form>
-                                                </div>
+                                                {% endif %}
+                                                <a href="{% url 'users:address-update' pk=user.profile.pk address_pk=address.pk %}"
+                                                   class="btn btn-outline-secondary flex-fill text-nowrap">
+                                                    <i class="bi bi-pencil"></i> Изменить
+                                                </a>
+                                                <form method="post"
+                                                      action="{% url 'users:address-delete' pk=user.pk address_pk=address.pk %}"
+                                                      class="d-inline-flex flex-fill">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                            class="btn btn-danger flex-fill text-nowrap">
+                                                        <i class="bi bi-trash"></i> Удалить
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <div class="alert alert-info mb-0">У вас нет сохранённых адресов доставки</div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Блок с рефералками -->
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Приглашенные друзья</h5>
-                            <button class="btn btn-sm btn-outline-secondary float-end"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#referralModal"
-                                    data-user-id="{{ user.pk }}">
-                                <i class="bi bi-share"></i>Получить реферальную ссылку
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center mt-2">
-                                <small class="text-muted">
-                                    <strong>
-                                        Вы уже пригласили {{ request.user.referrals.count }} друзей
-                                    </strong>
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Блок с купонами -->
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Ваши купоны</h5>
-                        </div>
-                        <div class="card-body">
-                            {% for coupon in coupons %}
-                                <div class="alert alert-info mt-3 d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{{ coupon.code }}</strong> - {{ coupon.discount }}%
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary copy-coupon-btn"
-                                            data-coupon-code="{{ coupon.code }}">
-                                        <i class="bi bi-clipboard"></i> Копировать
-                                    </button>
-                                </div>
-                                {% empty %}
-                                <div class="alert alert-info mb-0">У вас нет доступных купонов</div>
-                            {% endfor %}
-                        </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">У вас нет сохранённых адресов доставки</div>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Модальное окно с реферальной ссылкой -->
-        <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="referralModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="referralModalLabel">Ваша реферальная ссылка</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="referralLinkInput" readonly>
-                            <button class="btn btn-outline-secondary" type="button" id="copyReferralBtn">
-                                <i class="bi bi-clipboard"></i>Копировать
-                            </button>
-                        </div>
-                        <div class="alert alert-success mt-3">
-                            Вы получите скидку <strong>10%</strong> за каждого друга, который зарегистрируется по вашей
-                            ссылке!
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="button" class="btn btn-primary" id="shareReferralBtn">
-                            <i class="bi bi-share"></i> Поделиться
+                <!-- Блок с рефералками -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Приглашенные друзья</h5>
+                        <button class="btn btn-sm btn-outline-secondary float-end"
+                                data-bs-toggle="modal"
+                                data-bs-target="#referralModal"
+                                data-user-id="{{ user.pk }}">
+                            <i class="bi bi-share"></i>Получить реферальную ссылку
                         </button>
                     </div>
+                    <div class="card-body">
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                <strong>
+                                    Вы уже пригласили {{ request.user.referrals.count }} друзей
+                                </strong>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок с купонами -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Ваши купоны</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for coupon in coupons %}
+                            <div class="alert alert-info mt-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ coupon.code }}</strong> - {{ coupon.discount }}%
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary copy-coupon-btn"
+                                        data-coupon-code="{{ coupon.code }}">
+                                    <i class="bi bi-clipboard"></i> Копировать
+                                </button>
+                            </div>
+                            {% empty %}
+                            <div class="alert alert-info mb-0">У вас нет доступных купонов</div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Модальное окно с реферальной ссылкой -->
+    <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="referralModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="referralModalLabel">Ваша реферальная ссылка</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="referralLinkInput" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="copyReferralBtn">
+                            <i class="bi bi-clipboard"></i>Копировать
+                        </button>
+                    </div>
+                    <div class="alert alert-success mt-3">
+                        Вы получите скидку <strong>10%</strong> за каждого друга, который зарегистрируется по вашей
+                        ссылке!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="shareReferralBtn">
+                        <i class="bi bi-share"></i> Поделиться
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 {% endblock %}
 

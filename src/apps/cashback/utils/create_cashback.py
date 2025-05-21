@@ -16,4 +16,6 @@ def create_cashback(request, user, order):
 
         balance, created = CashbackBalance.objects.get_or_create(user=user)
         balance.total += cashback.amount
-        balance.save(update_fields=["total"])
+        balance.total_cashback_earned += cashback.amount
+        balance.total_cashback_used += order.cashback_amount if order.cashback_used else 0
+        balance.save(update_fields=["total", "total_cashback_earned", "total_cashback_used"])

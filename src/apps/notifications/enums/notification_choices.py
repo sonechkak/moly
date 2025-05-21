@@ -11,3 +11,4 @@ class NotificationChoices(models.TextChoices):
     PERSONAL = "personal", _("Персональное")
     COMMENT = "comment", _("Комментарий")
     PRODUCT_AVAILABLE = "product_available", _("Товар доступен")
+    LOYALTY_LEVEL_CHANGED = "loyalty_level_changed", _("Изменение уровня лояльности")

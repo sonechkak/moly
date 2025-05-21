@@ -180,6 +180,8 @@ ignore = [
     "PLW0127",
     "TCH001",
     "S101",
+    "RUF001",
+    "RUF002",
     "RUF012",
     "SIM102",
     "F401",
@@ -240,7 +242,6 @@ ignore = [
 fixable = ["ALL"]
 unfixable = ["B009"]
 extend-unsafe-fixes = ["UP038"]
-allowed-confusables = ["о", "с", "е", "А", "В", "Е", "К", "у", "У", "б", "Б"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.isort]
