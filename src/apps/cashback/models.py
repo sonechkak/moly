@@ -1,4 +1,3 @@
-from datetime import timedelta
 from decimal import Decimal
 
 from apps.orders.models import Order
@@ -8,6 +7,7 @@ from django.utils import timezone
 from utils.db import TimeStamp
 
 from .enums.cashback_choices import CashbackChoices
+from .enums.cashback_types import CashbackTypeChoices
 
 User = get_user_model()
 
@@ -16,13 +16,21 @@ class Cashback(TimeStamp, models.Model):
     """Модель кэшбэка."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cashback", verbose_name="Пользователь")
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="cashback", verbose_name="Заказ")
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name="cashback", verbose_name="Заказ", null=True, blank=True
+    )
     amount = models.PositiveIntegerField(default=0, verbose_name="Сумма кэшбэка")
     cashback_status = models.CharField(
-        max_length=20,
+        max_length=255,
         choices=CashbackChoices.choices,
         default=CashbackChoices.PENDING,
         verbose_name="Статус кэшбэка",
+    )
+    type = models.CharField(
+        max_length=255,
+        choices=CashbackTypeChoices.choices,
+        default=CashbackTypeChoices.PURCHASE,
+        verbose_name="Тип кэшбэка",
     )
     expiry_date = models.DateTimeField("Дата истечения срока действия", default=timezone.now() + timedelta(days=30))
     is_expired = models.BooleanField("Истек ли срок", default=False)

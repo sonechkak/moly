@@ -21,6 +21,7 @@ class User(AbstractUser):
         max_length=255,
         validators=[PasswordValidator],
     )
+    birth_date = models.DateField("Дата рождения", null=True, blank=True)
     first_name = None
     last_name = None
     is_active = models.BooleanField(default=True)
