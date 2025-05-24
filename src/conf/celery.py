@@ -23,6 +23,10 @@ celery_app.conf.beat_schedule = {
         "task": "apps.subscribers.tasks.send_referral_coupon_email",
         "schedule": crontab(minute="*/1"),
     },
+    "check_expired_cashback": {
+        "task": "apps.cashback.tasks.check_expiring_cashback",
+        "schedule": crontab(minute="*/1"),
+    },
 }
 
 celery_app.autodiscover_tasks()

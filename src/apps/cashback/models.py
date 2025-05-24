@@ -1,8 +1,10 @@
+from datetime import timedelta
 from decimal import Decimal
 
 from apps.orders.models import Order
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 from utils.db import TimeStamp
 
 from .enums.cashback_choices import CashbackChoices
@@ -22,6 +24,8 @@ class Cashback(TimeStamp, models.Model):
         default=CashbackChoices.PENDING,
         verbose_name="Статус кэшбэка",
     )
+    expiry_date = models.DateTimeField("Дата истечения срока действия", default=timezone.now() + timedelta(days=30))
+    is_expired = models.BooleanField("Истек ли срок", default=False)
 
     class Meta:
         verbose_name = "Кэшбэк"
@@ -44,6 +48,7 @@ class CashbackBalance(TimeStamp, models.Model):
     total_cashback_used = models.DecimalField(
         "Всего использовано кэшбэка", max_digits=10, decimal_places=2, default=Decimal("0.00")
     )
+    last_expiry_check = models.DateTimeField("Последняя проверка истечения", auto_now=True)
 
     class Meta:
         verbose_name = "Баланс кэшбэка"
@@ -51,3 +56,23 @@ class CashbackBalance(TimeStamp, models.Model):
 
     def __str__(self):
         return str(self.total)
+
+    def save(self, *args, **kwargs):
+        """При сохранении проверяем просроченный кэшбэк."""
+        self.check_expired_cashback()
+        super().save(*args, **kwargs)
+
+    def check_expired_cashback(self):
+        """Проверяет и обрабатывает просроченный кэшбэк."""
+
+        expired_cashbacks = Cashback.objects.filter(user=self.user, expiry_date__lte=timezone.now(), is_expired=False)
+
+        total_expired = expired_cashbacks.aggregate(total=models.Sum("amount"))["total"] or 0
+
+        if total_expired > 0:
+            # Помечаем кэшбэки как просроченные
+            expired_cashbacks.update(is_expired=True)
+
+            # Обновляем баланс
+            self.total = max(0, self.total - total_expired)
+            self.save()
