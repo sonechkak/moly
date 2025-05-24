@@ -5,6 +5,7 @@ from apps.cashback.utils.create_cashback import create_cashback
 from celery import shared_task
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
 from .models import CashbackBalance
 
 User = get_user_model()
