@@ -23,6 +23,10 @@ celery_app.conf.beat_schedule = {
         "task": "apps.subscribers.tasks.send_referral_coupon_email",
         "schedule": crontab(minute="*/1"),
     },
+    "check_expired_cashback": {
+        "task": "apps.cashback.tasks.check_expiring_cashback",
+        "schedule": crontab(minute="*/1"),
+    },
     "birthday-bonus": {
         "task": "apps.cashback.tasks.check_birthdays",
         "schedule": crontab(hour=0, minute=0),
