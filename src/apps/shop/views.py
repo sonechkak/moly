@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic import DeleteView, DetailView, FormView, ListView
 
 from .forms import ReviewForm
@@ -161,9 +162,6 @@ class ProductDetail(DetailView):
                 "similar_products": similar_products,
                 "reviews": reviews,
                 "review_count": reviews.count(),
-                "form": ReviewForm() if self.request.user.is_authenticated else None,
-                "question_form": QuestionForm() if self.request.user.is_authenticated else None,
-                "answers_form": AnswerForm() if self.request.user.is_authenticated else None,
                 "is_subscribed": is_subscribed,
                 "unread_notifications_count": get_unread_count(user=user),
                 "notifications": Notification.objects.filter(user=user)[:6],
@@ -203,3 +201,107 @@ class RemoveReviewView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse("shop:product_detail", kwargs={"slug": self.kwargs["slug"]})
+
+
+class ComparisonListView(ListView):
+    """Страница списка товаров для сравнения."""
+
+    model = Product
+    template_name = "shop/compare/compare.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        """Получаем список товаров для сравнения из сессии или GET-параметров."""
+        product_ids = self.request.GET.getlist("compare_products")
+
+        if not product_ids:
+            product_ids = self.request.session.get("compare_products", [])
+        else:
+            product_ids = [int(pid) for pid in product_ids if pid.isdigit()]
+            self.request.session["compare_products"] = product_ids
+
+        if product_ids:
+            products = Product.objects.filter(id__in=product_ids)
+            products_dict = {p.id: p for p in products}
+            return [products_dict[pid] for pid in product_ids if pid in products_dict]
+
+        return Product.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_ids = self.request.session.get("compare_products", [])
+        context["compare_count"] = len(context["products"])
+        context["max_compare_items"] = 4
+        context["compare_product_ids"] = product_ids
+        return context
+
+
+class AddToCompareView(LoginRequiredMixin, View):
+    """Добавление товара в сравнение."""
+
+    def post(self, request, *args, **kwargs):
+        try:
+            product = Product.objects.get(pk=kwargs.get("pk"), available=True)
+        except Product.DoesNotExist:
+            messages.error(request, "Товар не найден или недоступен.")
+            return redirect(request.META.get("HTTP_REFERER", "shop:all_products"))
+
+        product_ids = request.session.get("compare_products", [])
+        max_items = 4
+
+        if len(product_ids) >= max_items and product.id not in product_ids:
+            messages.warning(request, f"Вы можете сравнивать не более {max_items} товаров одновременно.")
+            return redirect(
+                request.META.get("HTTP_REFERER") or reverse("shop:product_detail", kwargs={"slug": product.slug})
+            )
+
+        if product.id not in product_ids:
+            product_ids.append(product.id)
+            request.session["compare_products"] = product_ids
+            messages.success(request, f"{product.title} добавлен в сравнение.")
+        else:
+            messages.info(request, f"{product.title} уже добавлен в сравнение.")
+
+        return redirect(request.META.get("HTTP_REFERER") or "shop:comparison_list")
+
+
+class RemoveFromCompareView(LoginRequiredMixin, View):
+    """Удаление товара из сравнения."""
+
+    def post(self, request, *args, **kwargs):
+        product_id = kwargs.get("pk")
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            messages.error(request, "Товар не найден.")
+            return redirect("shop:compare_list")
+
+        product_ids = request.session.get("compare_products", [])
+
+        if product.id in product_ids:
+            product_ids.remove(product.id)
+            request.session["compare_products"] = product_ids
+            messages.success(request, f"{product.title} удален из сравнения.")
+        else:
+            messages.info(request, f"{product.title} не найден в сравнении.")
+
+        return redirect(request.META.get("HTTP_REFERER", "shop:compare_list"))
+
+
+class CompareProductsView(LoginRequiredMixin, ListView):
+    """Сравнение товаров."""
+
+    model = Product
+    context_object_name = "products"
+    template_name = "shop/compare/compare.html"
+
+    def get_queryset(self):
+        product_ids = self.request.GET.getlist("product_ids")
+        return Product.objects.filter(id__in=product_ids)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Сравнение товаров"
+        context["unread_notifications_count"] = get_unread_count(user=self.request.user)
+        context["notifications"] = Notification.objects.filter(user=self.request.user)[:6]
+        return context

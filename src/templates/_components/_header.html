@@ -53,6 +53,11 @@
                     </ul>
                     {% if request.user.is_authenticated %}
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li>
+                            <a class="nav-link" href="{% url 'shop:compare_list' %}">
+                                <i class="fas fa-search me-1 text-gray"></i>Сравнение
+                            </a>
+                        </li>
                             {% if request.user.basket %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'baskets:basket' request.user.basket.pk %}">
