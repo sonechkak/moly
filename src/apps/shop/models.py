@@ -197,3 +197,17 @@ class SearchQuery(models.Model):
 
     def __str__(self):
         return self.query
+
+
+class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    search_query = models.ForeignKey(SearchQuery, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Поисковый запрос"
+        verbose_name_plural = "Поисковые запросы"
+
+    def __str__(self):
+        return self.search_query.query

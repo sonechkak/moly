@@ -17,7 +17,7 @@ from django.views.generic import DeleteView, DetailView, FormView, ListView
 
 from .documents import ProductDocument
 from .forms import ReviewForm
-from .models import Category, Product, Review, SearchQuery
+from .models import Category, Product, Review, SearchHistory, SearchQuery
 
 User = get_user_model()
 logger = logging.getLogger("user.actions")
@@ -88,8 +88,6 @@ class SearchView(View):
             try:
                 search = ProductDocument.search().query("match", title=query)
                 results = search.execute()
-                if request.user.is_authenticated:
-                    SearchQuery.objects.create(user=request.user, query=query)
 
                 product_ids = [hit.meta.id for hit in results]
                 products = Product.objects.filter(id__in=product_ids, available=True)
@@ -98,6 +96,13 @@ class SearchView(View):
                 products = Product.objects.filter(
                     Q(title__icontains=query) | Q(description__icontains=query), available=True
                 ).distinct()
+
+            if request.user.is_authenticated:
+                search_query, created = SearchQuery.objects.get_or_create(query=query, defaults={"user": request.user})
+
+                search_history, created = SearchHistory.objects.get_or_create(
+                    user=request.user, search_query=search_query, defaults={}
+                )
 
             paginator = Paginator(products, 20)
             page_obj = paginator.get_page(page)
@@ -114,13 +119,47 @@ class SearchView(View):
         return render(request, "shop/search_results.html", context)
 
 
-class SearchHistoryView(ListView):
+class SearchHistoryView(LoginRequiredMixin, ListView):
     model = Product
-    context_object_name = "products"
+    context_object_name = "queries"
+    template_name = "search/history.html"
+    paginate_by = 20
 
     def get_queryset(self):
-        queries = SearchQuery.objects.filter(user=self.request.user)
+        try:
+            queries = (
+                SearchHistory.objects.filter(user=self.request.user)
+                .select_related("search_query")
+                .order_by("-created_at")
+            )
+
+        except SearchQuery.DoesNotExist:
+            queries = []
         return queries
+
+
+class DeleteSearchHistoryView(View):
+    """Удаление записи из истории поиска"""
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({"success": False, "error": "Unauthorized"})
+
+        import json
+
+        try:
+            data = json.loads(request.body)
+            history_id = data.get("history_id")
+
+            if history_id:
+                SearchHistory.objects.filter(id=history_id, user=request.user).delete()
+
+                return JsonResponse({"success": True})
+
+            return JsonResponse({"success": False, "error": "Missing history_id"})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
 
 
 class SearchListView(ListView):

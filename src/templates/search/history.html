@@ -5,10 +5,10 @@
     <ul>
         {% for query in queries %}
             <li>
-                <a href="{% url 'search' %}?q={{ query.query }}">{{ query.query }}</a>
+                <a href="{% url 'shop:search' %}?q={{ query.search_query }}">{{ query.search_query }}</a>
                 <small>{{ query.created_at }}</small>
             </li>
-            {% empty %}
+        {% empty %}
             <li>История поиска пуста</li>
         {% endfor %}
     </ul>

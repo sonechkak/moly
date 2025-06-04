@@ -28,7 +28,7 @@
                             </button>
                         </div>
 
-                        <!-- Dropdown для автодополнения и истории -->
+                        <!-- Dropdown для автодополнения -->
                         <div id="searchAutocomplete"
                              class="autocomplete-dropdown position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow"
                              style="display: none; z-index: 1000; top: 100%;">
@@ -73,9 +73,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'shop:all_products' %}">В магазин</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="detail.html">О магазине</a>
-                        </li>
                         {% if request.user.is_authenticated %}
                             {% if request.user.basket %}
                                 <li class="nav-item dropdown">
@@ -93,8 +90,7 @@
                                                href="{% url 'orders:checkout' user.basket.pk %}">Покупки</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item border-0 transition-link"
-                                               href="#" onclick="showSearchHistory()">
-                                            <i class="fas fa-history me-2"></i>История поиска</a></li>
+                                               href="{% url 'shop:search_history' %}" >История поиска</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
