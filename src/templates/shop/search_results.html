@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Заголовок страницы -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2">
+                        <i class="fas fa-search me-2 text-primary"></i>
+                        Результаты поиска
+                    </h1>
+                    {% if query %}
+                        <p class="text-muted mb-1">
+                            Поиск по запросу: <strong class="text-dark">"{{ query }}"</strong>
+                        </p>
+                        <p class="text-muted">
+                            Найдено товаров: <span class="badge bg-primary">{{ total_count }}</span>
+                        </p>
+                    {% endif %}
+                </div>
+
+                <!-- Кнопка "Назад к покупкам" -->
+                <div>
+                    <a href="{% url 'shop:all_products' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Все товары
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма поиска (дублирует поиск в header для удобства) -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <form action="{% url 'shop:search' %}" method="GET" class="search-form">
+                <div class="input-group input-group-lg">
+                    <input type="text"
+                           name="q"
+                           class="form-control"
+                           placeholder="Поиск товаров Apple..."
+                           value="{{ query }}"
+                           autofocus>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                        Найти
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if query %}
+        <!-- Результаты поиска -->
+        {% if products %}
+            <div class="row">
+                {% for product in products %}
+                    {% include 'shop/_components/_product_card.html' %}
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <!-- Нет результатов -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-search fa-4x text-muted"></i>
+                        </div>
+                        <h3 class="h4 mb-3">Ничего не найдено</h3>
+                        <p class="text-muted mb-4">
+                            К сожалению, по вашему запросу <strong>"{{ query }}"</strong> товары не найдены.
+                        </p>
+
+                        <!-- Предложения -->
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Попробуйте:</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            <li>• Проверить правильность написания</li>
+                                            <li>• Использовать менее конкретные слова</li>
+                                            <li>• Попробовать синонимы</li>
+                                            <li>• Убрать лишние слова</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{% url 'shop:all_products' %}" class="btn btn-primary me-2">
+                                <i class="fas fa-th-large me-1"></i>
+                                Все товары
+                            </a>
+                            <a href="{% url 'shop:index' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-home me-1"></i>
+                                На главную
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Страница поиска без запроса -->
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-search fa-4x text-primary"></i>
+                    </div>
+                    <h3 class="h4 mb-3">Найдите нужный товар</h3>
+                    <p class="text-muted mb-4">
+                        Введите название товара, бренд или ключевые слова в поисковую строку выше.
+                    </p>
+
+                    <!-- Популярные запросы -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Популярные запросы:</h6>
+                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <a href="?q=iPhone" class="btn btn-outline-primary btn-sm">iPhone</a>
+                            <a href="?q=MacBook" class="btn btn-outline-primary btn-sm">MacBook</a>
+                            <a href="?q=iPad" class="btn btn-outline-primary btn-sm">iPad</a>
+                            <a href="?q=AirPods" class="btn btn-outline-primary btn-sm">AirPods</a>
+                            <a href="?q=Apple Watch" class="btn btn-outline-primary btn-sm">Apple Watch</a>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'shop:all_products' %}" class="btn btn-primary">
+                        <i class="fas fa-th-large me-1"></i>
+                        Посмотреть все товары
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

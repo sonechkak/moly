@@ -14,6 +14,7 @@ os.path.join(BASE_DIR, "apps/")
 INSTALLED_APPS = [
     "jazzmin",
     "corsheaders",
+    # "django_opensearch_dsl",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -91,6 +92,17 @@ DATABASES = {
         "PORT": db_url.port or "5432",
     },
 }
+
+# OPENSEARCH_DSL = {
+#     'default': {
+#         'hosts': 'localhost:9200'
+#     },
+#     'secure': {
+#         'hosts': [{"scheme": "https", "host": "192.30.255.112", "port": 9201}],
+#         'http_auth': ("admin", "password"),
+#         'timeout': 120,
+#     },
+# }
 
 CACHES = {
     "default": {
