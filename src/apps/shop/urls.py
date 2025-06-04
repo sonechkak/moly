@@ -8,6 +8,7 @@ from .views import (
     ProductDetail,
     RemoveFromCompareView,
     RemoveReviewView,
+    SearchHistoryView,
     SearchView,
     SubCategories,
 )
@@ -18,6 +19,7 @@ urlpatterns = [
     # Products and categories
     path("", Index.as_view(), name="index"),
     path("search/", SearchView.as_view(), name="search"),
+    path("search/history/", SearchHistoryView.as_view(), name="search_history"),
     path("all_products/", SubCategories.as_view(), name="all_products"),
     path("category_list/<slug:slug>/", SubCategories.as_view(), name="category_list"),
     path("product_detail/<slug:slug>/", ProductDetail.as_view(), name="product_detail"),

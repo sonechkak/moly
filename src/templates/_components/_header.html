@@ -11,9 +11,10 @@
                          alt="logo"/>
                     <span class="fw-bold text-uppercase text-dark">Купи Apple</span>
                 </a>
-                <!-- ПОИСК С АВТОДОПОЛНЕНИЕМ -->
+
+                <!-- ПОИСК С АВТОДОПОЛНЕНИЕМ И ИСТОРИЕЙ -->
                 <div class="search-container flex-grow-1 mx-3 d-none d-lg-block">
-                    <form action="{% url 'shop:search' %}" method="GET" class="position-relative">
+                    <form action="{% url 'shop:search' %}" method="GET" class="position-relative" data-source="header">
                         <div class="input-group">
                             <input type="text"
                                    id="searchInput"
@@ -27,7 +28,7 @@
                             </button>
                         </div>
 
-                        <!-- Dropdown для автодополнения -->
+                        <!-- Dropdown для автодополнения и истории -->
                         <div id="searchAutocomplete"
                              class="autocomplete-dropdown position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow"
                              style="display: none; z-index: 1000; top: 100%;">
@@ -45,7 +46,26 @@
                         aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- Поиск для мобильных -->
+                    <div class="d-lg-none mb-3">
+                        <form action="{% url 'shop:search' %}" method="GET" class="position-relative" data-source="mobile">
+                            <div class="input-group">
+                                <input type="text"
+                                       id="mobileSearchInput"
+                                       name="q"
+                                       class="form-control"
+                                       placeholder="Поиск товаров..."
+                                       autocomplete="off"
+                                       value="{{ request.GET.q }}">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'shop:index' %}">На главную</a>
@@ -71,6 +91,10 @@
                                                href="{% url 'baskets:basket' user.basket.pk %}">Корзина</a></li>
                                         <li><a class="dropdown-item border-0 transition-link"
                                                href="{% url 'orders:checkout' user.basket.pk %}">Покупки</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item border-0 transition-link"
+                                               href="#" onclick="showSearchHistory()">
+                                            <i class="fas fa-history me-2"></i>История поиска</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -190,4 +214,31 @@
         </nav>
     </div>
 </header>
-<!-- Header Area Ends -->
+
+<!-- Модальное окно истории поиска -->
+<div class="modal fade" id="searchHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-history me-2"></i>История поиска
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="text-muted mb-0">Ваши последние поисковые запросы</p>
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearSearchHistory()">
+                        <i class="fas fa-trash me-1"></i>Очистить историю
+                    </button>
+                </div>
+
+                <div id="searchHistoryList">
+                    <a url="{% url 'shop:search_history' %}">
+                        История поиска
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
