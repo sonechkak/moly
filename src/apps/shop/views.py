@@ -17,7 +17,7 @@ from django.views.generic import DeleteView, DetailView, FormView, ListView
 
 from .documents import ProductDocument
 from .forms import ReviewForm
-from .models import Category, Product, Review
+from .models import Category, Product, Review, SearchQuery
 
 User = get_user_model()
 logger = logging.getLogger("user.actions")
@@ -88,6 +88,8 @@ class SearchView(View):
             try:
                 search = ProductDocument.search().query("match", title=query)
                 results = search.execute()
+                if request.user.is_authenticated:
+                    SearchQuery.objects.create(user=request.user, query=query)
 
                 product_ids = [hit.meta.id for hit in results]
                 products = Product.objects.filter(id__in=product_ids, available=True)
@@ -110,6 +112,15 @@ class SearchView(View):
             )
 
         return render(request, "shop/search_results.html", context)
+
+
+class SearchHistoryView(ListView):
+    model = Product
+    context_object_name = "products"
+
+    def get_queryset(self):
+        queries = SearchQuery.objects.filter(user=self.request.user)
+        return queries
 
 
 class SearchListView(ListView):
