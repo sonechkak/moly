@@ -11,6 +11,31 @@
                          alt="logo"/>
                     <span class="fw-bold text-uppercase text-dark">Купи Apple</span>
                 </a>
+                <!-- ПОИСК С АВТОДОПОЛНЕНИЕМ -->
+                <div class="search-container flex-grow-1 mx-3 d-none d-lg-block">
+                    <form action="{% url 'shop:search' %}" method="GET" class="position-relative">
+                        <div class="input-group">
+                            <input type="text"
+                                   id="searchInput"
+                                   name="q"
+                                   class="form-control border-end-0"
+                                   placeholder="Поиск товаров..."
+                                   autocomplete="off"
+                                   value="{{ request.GET.q }}">
+                            <button class="btn btn-outline-secondary border-start-0" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                        <!-- Dropdown для автодополнения -->
+                        <div id="searchAutocomplete"
+                             class="autocomplete-dropdown position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow"
+                             style="display: none; z-index: 1000; top: 100%;">
+                            <div id="autocompleteList"></div>
+                        </div>
+                    </form>
+                </div>
+
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
@@ -53,11 +78,11 @@
                     </ul>
                     {% if request.user.is_authenticated %}
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li>
-                            <a class="nav-link" href="{% url 'shop:compare_list' %}">
-                                <i class="fas fa-search me-1 text-gray"></i>Сравнение
-                            </a>
-                        </li>
+                            <li>
+                                <a class="nav-link" href="{% url 'shop:compare_list' %}">
+                                    <i class="fas fa-search me-1 text-gray"></i>Сравнение
+                                </a>
+                            </li>
                             {% if request.user.basket %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'baskets:basket' request.user.basket.pk %}">

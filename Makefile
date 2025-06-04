@@ -35,6 +35,8 @@ infra:
 	docker compose up -d db
 	docker compose up -d redis
 	docker compose up -d mailpit
+	docker compose up -d opensearch
+	docker compose up -d opensearch-dashboards
 
 dev:
 	export DJANGO_SETTINGS_MODULE=settings.dev

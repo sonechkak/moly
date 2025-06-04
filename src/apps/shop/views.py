@@ -7,12 +7,15 @@ from apps.recommendations.services import RecommendationService, YouWatchedServi
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
-from django.shortcuts import get_object_or_404, redirect
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import DeleteView, DetailView, FormView, ListView
 
+from .documents import ProductDocument
 from .forms import ReviewForm
 from .models import Category, Product, Review
 
@@ -66,6 +69,85 @@ class Index(ListView):
         )
 
         return top_products
+
+
+class SearchView(View):
+    def get(self, request):
+        query = request.GET.get("q", "").strip()
+        page = request.GET.get("page", 1)
+
+        context = {
+            "query": query,
+            "products": [],
+            "total_count": 0,
+            "page_obj": None,
+            "is_paginated": False,
+        }
+
+        if query:
+            try:
+                search = ProductDocument.search().query("match", title=query)
+                results = search.execute()
+
+                product_ids = [hit.meta.id for hit in results]
+                products = Product.objects.filter(id__in=product_ids, available=True)
+
+            except (ImportError, Exception):
+                products = Product.objects.filter(
+                    Q(title__icontains=query) | Q(description__icontains=query), available=True
+                ).distinct()
+
+            paginator = Paginator(products, 20)
+            page_obj = paginator.get_page(page)
+
+            context.update(
+                {
+                    "products": page_obj,
+                    "total_count": paginator.count,
+                    "page_obj": page_obj,
+                    "is_paginated": page_obj.has_other_pages(),
+                }
+            )
+
+        return render(request, "shop/search_results.html", context)
+
+
+class SearchListView(ListView):
+    """Поиск через ListView"""
+
+    model = Product
+    template_name = "shop/search_results.html"
+    context_object_name = "products"
+    paginate_by = 20
+
+    def get_queryset(self):
+        query = self.request.GET.get("q", "").strip()
+
+        if not query:
+            return Product.objects.none()
+
+        try:
+            search = ProductDocument.search().query("match", title=query)
+            results = search.execute()
+
+            product_ids = [hit.meta.id for hit in results]
+            return Product.objects.filter(id__in=product_ids, is_active=True)
+
+        except (ImportError, Exception):
+            return Product.objects.filter(
+                Q(title__icontains=query) | Q(description__icontains=query), is_active=True
+            ).distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get("q", "")
+        context.update(
+            {
+                "query": query,
+                "total_count": self.get_queryset().count(),
+            }
+        )
+        return context
 
 
 class SubCategories(ListView):

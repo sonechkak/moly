@@ -11,6 +11,10 @@ User = get_user_model()
 MIN_SUM_ORDER = 1000
 
 
+def get_today():
+    return timezone.now().date()
+
+
 class Coupon(TimeStamp, models.Model):
     """Модель для промокодов."""
 
@@ -31,11 +35,11 @@ class Coupon(TimeStamp, models.Model):
     )
     valid_from = models.DateField(
         "Дата начала действия",
-        validators=[MinValueValidator(timezone.now().date())],
+        validators=[MinValueValidator(get_today)],
     )
     valid_to = models.DateField(
         "Дата окончания действия",
-        validators=[MinValueValidator(timezone.now().date())],
+        validators=[MinValueValidator(get_today)],
     )
     discount = models.IntegerField("Размер скидки", validators=[MinValueValidator(0), MaxValueValidator(100)])
     is_active = models.BooleanField("Активен ли промокод", default=True)

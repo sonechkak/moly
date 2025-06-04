@@ -13,6 +13,10 @@ from .enums.cashback_types import CashbackTypeChoices
 User = get_user_model()
 
 
+def update_expire_date():
+    return timezone.now() + timedelta(days=30)
+
+
 class Cashback(TimeStamp, models.Model):
     """Модель кэшбэка."""
 
@@ -33,7 +37,7 @@ class Cashback(TimeStamp, models.Model):
         default=CashbackTypeChoices.PURCHASE,
         verbose_name="Тип кэшбэка",
     )
-    expiry_date = models.DateTimeField("Дата истечения срока действия", default=timezone.now() + timedelta(days=30))
+    expiry_date = models.DateTimeField("Дата истечения срока действия", default=update_expire_date)
     is_expired = models.BooleanField("Истек ли срок", default=False)
 
     class Meta:
