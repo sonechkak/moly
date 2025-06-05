@@ -2,7 +2,6 @@ import logging
 
 from apps.notifications.models import Notification, ProductAvalaibilityNotification
 from apps.notifications.services.get_unread_count import get_unread_count
-from apps.qa.forms import AnswerForm, QuestionForm
 from apps.recommendations.services import RecommendationService, YouWatchedService
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -38,7 +37,7 @@ class Index(ListView):
         context = super().get_context_data(**kwargs)
         user = self.request.user if self.request.user.is_authenticated else None
 
-        products = self.get_top_products()
+        products = self.get_top_products().prefetch_related("images")
 
         # Рекомендации для авторизованных пользователей
         recommendations = RecommendationService.get_recommendations(user=user)[:6]

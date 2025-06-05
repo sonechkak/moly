@@ -14,6 +14,7 @@ os.path.join(BASE_DIR, "apps/")
 INSTALLED_APPS = [
     "jazzmin",
     "corsheaders",
+    "debug_toolbar",
     # "django_opensearch_dsl",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware" if DEBUG else None,
 ]
 
 ROOT_URLCONF = "conf.urls"
@@ -165,6 +167,10 @@ LOGGING = {
     },
 }
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

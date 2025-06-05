@@ -33,6 +33,7 @@ mypy = "^1.15.0"
 pytest = "^8.3.5"
 pytest-cov = "^6.1.0"
 django-opensearch-dsl = "^0.7.0"
+django-debug-toolbar = "^5.2.0"
 
 [build-system]
 requires = ["poetry-core"]
