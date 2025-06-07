@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 {% load static %}
+{% load fav_tags %}
 
 {% block content %}
     <!-- HERO SECTION-->
@@ -40,10 +41,14 @@
                 <p class="text-muted">Обновленная коллекция аксессуаров на любой вкус</p>
             </header>
 
+            {% if request.user.is_authenticated %}
+                {% get_favorite_product_ids request.user as favorite_ids %}
+            {% endif %}
+
             <div class="row g-4">
                 <!-- PRODUCT-->
                 {% for product in products %}
-                    {% include 'shop/_components/_product_card.html' %}
+                    {% include 'shop/_components/_product_card.html' with product=product favorite_ids=favorite_ids %}
                 {% endfor %}
             </div>
 

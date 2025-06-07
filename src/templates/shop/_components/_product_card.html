@@ -15,12 +15,11 @@
             <div class="product-overlay">
                 <ul class="mb-0 list-inline">
                     {% if request.user.is_authenticated %}
-                        {% get_favorite_products request.user as fav_products %}
-                        {% if product in fav_products %}
+                        {% if product.is_favorite %}
                             <li class="list-inline-item m-0 p-0">
                                 <a class="btn btn-sm btn-outline-dark"
-                                   href="{% url 'favs:add_favorite' product.slug %}">
-                                    <i class="fas fa-heart dark" style="color: black;"></i>
+                                   href="{% url 'favs:remove_favorite' product.slug %}">
+                                    <i class="fas fa-heart" style="color: red;"></i>
                                 </a>
                             </li>
                         {% else %}
@@ -32,6 +31,8 @@
                             </li>
                         {% endif %}
                     {% endif %}
+
+                    <!-- Добавить в корзину -->
                     <li class="list-inline-item m-0 p-0">
                         <a class="btn btn-sm btn-dark"
                            href="{% url 'baskets:to_basket' product.pk %}">В корзину</a>

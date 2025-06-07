@@ -11,7 +11,8 @@
             <div class="container">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb py-2 mb-0">
-                        <li class="breadcrumb-item"><a href="{% url 'shop:index' %}" class="text-decoration-none">Главная</a>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'shop:index' %}" class="text-decoration-none">Главная</a>
                         </li>
                         {% if product.category.exists %}
                             <li class="breadcrumb-item">
@@ -162,11 +163,10 @@
 
                             <!-- Кнопка избранного -->
                             {% if request.user.is_authenticated %}
-                                {% get_favorite_products request.user as fav_products %}
-                                {% if product in fav_products %}
-                                    <a class="btn btn-outline-secondary d-flex align-items-center mb-4 w-100 justify-content-center"
-                                       href="{% url 'favs:add_favorite' product.slug %}">
-                                        <i class="fas fa-heart text-danger me-2"></i>Убрать из избранного
+                                {% if product.is_favorite %}
+                                    <a class="btn btn-outline-danger d-flex align-items-center mb-4 w-100 justify-content-center"
+                                       href="{% url 'favs:remove_favorite' product.slug %}">
+                                        <i class="fas fa-heart me-2"></i>Удалить из избранного
                                     </a>
                                 {% else %}
                                     <a class="btn btn-outline-secondary d-flex align-items-center mb-4 w-100 justify-content-center"
