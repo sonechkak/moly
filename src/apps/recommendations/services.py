@@ -286,7 +286,9 @@ class YouWatchedService:
         if not user or not user.is_authenticated:
             return []
 
-        watched_products = UserPageVisit.objects.filter(user=user).order_by("-last_visited")[:limit]
+        watched_products = (
+            UserPageVisit.objects.filter(user=user).select_related("product").order_by("-last_visited")[:limit]
+        )
 
         if not watched_products:
             return []

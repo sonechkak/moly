@@ -109,11 +109,7 @@ class Product(TimeStamp, models.Model):
         self._original_price = self.price
 
     def get_main_photo(self):
-        """Возвращает основное фото."""
-        if self.images.filter(is_main=True).exists():
-            return self.images.get(is_main=True).image.url
-        else:
-            return self.images.first().image.url if self.images.exists() else None
+        return self.images.only("image").order_by("-is_main").first() if self.images.exists() else None
 
     def old_price(self):
         """Возвращает цену на 20% больше текущей."""
