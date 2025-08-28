@@ -1,7 +1,12 @@
+backups
+src/media/*
+
 ### Linux ###
 .idea
 db.json
+fixtures
 *~
+opensearch_data/*
 
 postgres_data
 
@@ -287,6 +292,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.test
 .venv
 env/
 venv/

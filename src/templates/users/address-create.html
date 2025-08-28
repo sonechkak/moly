@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Добавление адреса доставки{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Добавить новый адрес доставки</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'users:address-create' user.pk %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            {% bootstrap_form_errors form type='non_fields' %}
+
+                            <div class="row g-3">
+                                <!-- City and State -->
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.city label_class="form-label" %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.state label_class="form-label" %}
+                                </div>
+
+                                <!-- Street and House -->
+                                <div class="col-md-8">
+                                    {% bootstrap_field form.street label_class="form-label" %}
+                                </div>
+                                <div class="col-md-4">
+                                    {% bootstrap_field form.house label_class="form-label" %}
+                                </div>
+
+                                <!-- Apartment and Zipcode -->
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.apartment label_class="form-label" %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.zipcode label_class="form-label" %}
+                                </div>
+
+                                <!-- Recipient and Contact -->
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.recipient label_class="form-label" %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field form.contact label_class="form-label" %}
+                                </div>
+
+                                <!-- Save Address -->
+                                <div class="col-12">
+                                    {% bootstrap_field form.is_save_address %}
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{% url 'users:profile' user.profile.pk %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Назад
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i>Сохранить адрес
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

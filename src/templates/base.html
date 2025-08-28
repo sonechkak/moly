@@ -1,36 +1,39 @@
+{% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <!-- Title -->
     <title>{{ title }}</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="all,follow">
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="robots" content="all,follow"/>
     <!-- Fav and Stylesheets -->
-    {% include '_components/_style.html' %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% block extra_head %}{% endblock %}
     <!-- Custom Stylesheets -->
     {% block style %}
     {% endblock style %}
 </head>
-
 <body>
 <div class="page-holder">
     <!-- Header Area -->
-    {% include '_components/_header.html' %}
+    {% block header %}
+        {% include '_components/_header.html' %}
+    {% endblock %}
     {% include '_components/_errors.html' %}
-
     <!-- Main content -->
     {% block content %}
+        {% if request.user.is_authenticated %}
+            {% include '_components/_modal.html' %}
+        {% endif %}
     {% endblock content %}
-
     <!-- Footer Area -->
     {% include '_components/_footer.html' %}
-
     <!-- scripts -->
     {% include '_components/_js.html' %}
-    {% block scripts %}
-    {% endblock %}
+    {% block scripts %}{% endblock %}
 </div>
 </body>

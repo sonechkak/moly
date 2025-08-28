@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <!-- Шапка -->
+        <div class="text-center my-4">
+            <img src="{% static 'icons/Apple-Logo.png' %}" alt="Moly" class="img-fluid" style="max-height: 60px;">
+        </div>
+
+        <!-- Баннер акции -->
+        <div class="mb-4">
+            <img src="{% static 'img/applq12.jpg' %}"
+                 alt="Новые поступления Apple"
+                 class="img-fluid rounded-3 w-100">
+        </div>
+
+        <!-- Заголовок письма -->
+        <div class="text-center p-3 mb-4 bg-light rounded-3">
+            <h1 class="display-6">{{ title }}</h1>
+            <p class="lead">Только этой недели скидки до 15% на технику Apple!</p>
+        </div>
+
+        <!-- Товары -->
+        <div class="row g-4 mb-4">
+            <!-- Товар 1 -->
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h2 class="h4">iPhone 16 Pro Max</h2>
+                        <img src="{% static 'img/3_iphone.jpg' %}"
+                             alt="iPhone 15 Pro"
+                             class="img-fluid my-3" style="max-height: 200px;">
+                        <p class="text-muted">Титан. Чип A17 Pro. Камера 48 МП.</p>
+                        <p class="mb-3">
+                            <span class="text-decoration-line-through text-muted me-2">129 990 ₽</span>
+                            <span class="fw-bold fs-5 text-danger">110 490 ₽</span>
+                        </p>
+                        <a href="#" class="btn btn-primary">Купить сейчас</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Товар 2 -->
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h2 class="h4">MacBook Air 13" (M2)</h2>
+                        <img src="{% static 'img/air.jpg' %}"
+                             alt="MacBook Air"
+                             class="img-fluid my-3" style="max-height: 200px;">
+                        <p class="text-muted">Чип Apple M2. 13.6-дюймовый дисплей Liquid Retina.</p>
+                        <p class="mb-3">
+                            <span class="text-decoration-line-through text-muted me-2">104 990 ₽</span>
+                            <span class="fw-bold fs-5 text-danger">89 990 ₽</span>
+                        </p>
+                        <a href="#" class="btn btn-primary">Купить сейчас</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок акции -->
+        <div class="text-center p-4 mb-4 bg-light rounded-3">
+            <h2 class="h4">Успейте купить до конца акции!</h2>
+            <p class="mb-3">Акция действует до 30 ноября 2023 года.</p>
+            <a href="#" class="btn btn-outline-primary">Смотреть все товары Apple</a>
+        </div>
+    </div>
+{% endblock %}

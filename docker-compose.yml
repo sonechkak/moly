@@ -1,40 +1,105 @@
 version: '3.8'
 
 services:
-#  web:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8000:8000"
-#    volumes:
-#      - ${PWD}/src:/app
-#    environment:
-#      DB_NAME: moly
-#      DB_USER: sonya
-#      DB_PASSWORD: sonya
-#      DB_HOST: db
-#      DB_PORT: 5432
-#    command: python manage.py runserver 0.0.0.0:8000
-#    depends_on:
-#      - db
-#    networks:
-#      - app-network
+  web:
+    image: sonyakarmeva1/moly:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+    env_file: ".env.docker"
+    depends_on:
+      - db
+      - redis
+      - mailpit
 
   db:
     image: postgres:13-alpine
-    environment:
-      POSTGRES_DB: moly
-      POSTGRES_USER: sonya
-      POSTGRES_PASSWORD: sonya
     ports:
       - "5432:5432"
-    networks:
-      - app-network
     volumes:
       - ${PWD}/postgres_data:/var/lib/postgresql/data
+    env_file: ".env.docker"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonya moly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-networks:
-  app-network:
-    driver: bridge
+  opensearch:
+    image: opensearchproject/opensearch:2.19.2
+    container_name: opensearch
+    environment:
+      - cluster.name=opensearch
+      - node.name=opensearch
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./opensearch_data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
 
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - "5601:5601"
+    expose:
+      - "5601"
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
+
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+#    env_file: ".env.docker"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  celery:
+    build: .
+    command: celery -A conf worker -l info
+    volumes:
+      - ./src:/app/src
+    env_file: ".env.docker"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+
+  celery-beat:
+    build: .
+    command: celery -A conf beat -l info
+#    volumes:
+#      - ./src:/app/src
+    env_file: ".env.docker"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  postgres_data:
+  celery_beat_data:

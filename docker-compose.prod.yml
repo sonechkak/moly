@@ -1,0 +1,64 @@
+
+services:
+
+  db:
+    image: postgres:13-alpine
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - ${PWD}/postgres_data:/var/lib/postgresql/data
+    env_file: ".env"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonya moly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    # ports:
+    #   - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    image: sonyakarmeva1/moly:${VER}
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file: ".env"
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    image: sonyakarmeva1/moly:${VER}
+    command: celery -A conf worker -l info
+    env_file: ".env"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+
+  celery-beat:
+    image: sonyakarmeva1/moly:${VER}
+    command: celery -A conf beat -l info
+    env_file: ".env"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+
+  # mailpit:
+  #   image: axllent/mailpit:${VER}
+  #   ports:
+  #     - "8025:8025"
+  #     - "1025:1025"
+
+# volumes:
+#   postgres_data:
+#   celery_beat_data:

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load custom_tags %}
+
+{% block title %}Детали заказа #{{ order.id }}{% endblock %}
+
+{% block content %}
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="fw-bold text-primary mb-0">Детали заказа</h1>
+                </div>
+                <div class="col-lg-6">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'shop:index' %}" class="text-decoration-none">На главную</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="#" class="text-decoration-none">Заказы</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Заказ #{{ order.id }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <!-- Информация о заказе -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white py-3 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold">Заказ #{{ order.id }}</h5>
+                                <div>
+                                    {% if order.is_paid %}
+                                        <span class="badge bg-success">Оплачено</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Не оплачено</span>
+                                    {% endif %}
+
+                                    {% if order.is_complete %}
+                                        <span class="badge bg-success">Завершено</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">В обработке</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="p-4 bg-light rounded-3">
+                                        <h6 class="fw-bold text-uppercase mb-3">Информация о получателе</h6>
+                                        <address class="mb-0">
+                                            <strong>{{ order.recipient }}</strong><br>
+                                            {{ order.address }}<br>
+                                            <i class="fas fa-phone-alt me-2 text-muted"></i>{{ order.contact }}<br>
+                                        </address>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-4 bg-light rounded-3">
+                                        <h6 class="fw-bold text-uppercase mb-3">Детали заказа</h6>
+                                        <p class="mb-1">
+                                            <span class="text-muted me-2">Дата заказа:</span>
+                                            <strong>{{ order.created_at|date:"d.m.Y H:i" }}</strong>
+                                        </p>
+                                        <p class="mb-1">
+                                            <span class="text-muted me-2">Способ оплаты:</span>
+                                            <strong>Онлайн-оплата</strong>
+                                        </p>
+                                        <p class="mb-0">
+                                            <span class="text-muted me-2">Метод доставки:</span>
+                                            <strong>Стандартная доставка</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Товары заказа -->
+                            <h6 class="fw-bold text-uppercase mb-3">Товары в заказе</h6>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th scope="col" class="border-0 ps-4">Товар</th>
+                                        <th scope="col" class="border-0">Цена</th>
+                                        <th scope="col" class="border-0">Количество</th>
+                                        <th scope="col" class="border-0 text-end pe-4">Сумма</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for product in order.order_products_n.all %}
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    {% if product.product.get_main_photo %}
+                                                        <img src="{{ product.product.get_main_photo }}"
+                                                             alt="{{ product.product.title }}" class="img-fluid rounded"
+                                                             width="50">
+                                                    {% else %}
+                                                        <div class="bg-light rounded"
+                                                             style="width: 50px; height: 50px;"></div>
+                                                    {% endif %}
+                                                    <div class="ms-3">
+                                                        <h6 class="mb-0">{{ product.product.title }}</h6>
+                                                        <small class="text-muted">Арт.: {{ product.product.id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ product.price }} ₽</td>
+                                            <td>{{ product.quantity }} шт.</td>
+                                            <td class="text-end fw-bold pe-4">
+                                                {{ product.get_total_price|floatformat:"0" }} ₽
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Сводка заказа -->
+                    <div class="card border-0 shadow-sm sticky-lg-top" style="top: 2rem">
+                        <div class="card-header bg-white py-3 border-0">
+                            <h5 class="mb-0 fw-bold">Сумма заказа</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                                    <span class="text-muted">Сумма товаров</span>
+                                    <span>{{ order.total_cost }} ₽</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                                    <span class="text-muted">Скидка</span>
+                                    <span>0 ₽</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                                    <span class="text-muted">Доставка</span>
+                                    <span class="text-success">Бесплатно</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-top">
+                                    <span class="fw-bold">Итого</span>
+                                    <span class="fw-bold">{{ order.total_cost }} ₽</span>
+                                </li>
+                            </ul>
+
+                            <div class="mt-4">
+                                {% if not order.is_paid %}
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary">Оплатить заказ</button>
+                                    </div>
+                                {% endif %}
+
+                                {% if not order.is_complete %}
+                                    <div class="mt-3">
+                                        <a href="#" class="btn btn-outline-secondary w-100">Отслеживать заказ</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'orders:my_orders' user.pk %}" class="btn btn-outline-secondary rounded-pill">
+                            <i class="fas fa-arrow-left me-2"></i>Вернуться к списку заказов
+                        </a>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary">
+                                <i class="fas fa-print me-2"></i>Распечатать
+                            </button>
+                            <button type="button" class="btn btn-outline-primary">
+                                <i class="fas fa-download me-2"></i>Сохранить PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

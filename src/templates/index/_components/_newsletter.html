@@ -1,24 +1,50 @@
+{% load django_bootstrap5 %}
 <!-- NEWSLETTER-->
 <section class="py-5">
-    <div class="container p-0">
-        <div class="row">
-            <div class="col-lg-6 mb-3 mb-lg-0">
-                <h5 class="text-uppercase">Подпишитесь и получите -5% скидку!</h5>
-                <p class="text-small text-muted mb-0">Получайте уведомления о новых акциях.</p>
-            </div>
-            <div class="col-lg-6">
-                <form action="{% url 'subscribers:subscribe' %}" method="post" enctype="multipart/form-data">
-                    <div class="input-group flex-column flex-sm-row mb-3">
-                        {% csrf_token %}
-                        <input name="email" class="form-control form-control-lg py-3" type="email"
-                               placeholder="Введите ваш e-mail" aria-describedby="button-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-dark btn-block" id="button-addon2" type="submit">
-                                Подписаться
-                            </button>
+    <div class="container">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="row g-0">
+                    <div class="col-lg-6 bg-primary bg-gradient p-5 text-white d-flex flex-column justify-content-center">
+                        <div class="mb-4">
+                            <i class="bi bi-envelope-paper-heart fs-1"></i>
+                        </div>
+                        <h4 class="text-uppercase fw-bold mb-3">Подпишитесь и получите -5% скидку!</h4>
+                        <p class="mb-0 opacity-75">Получайте уведомления о новых акциях и будьте в курсе наших
+                            специальных предложений.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="p-5">
+                            <form action="{% url 'subscribers:subscribe' %}" method="post"
+                                  enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <h5 class="text-muted fw-semibold mb-3">Присоединяйтесь к нашей рассылке</h5>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-at"></i>
+                                    </span>
+                                    <input name="email"
+                                           class="form-control border-start-0"
+                                           type="email"
+                                           placeholder="Введите ваш e-mail"
+                                           aria-describedby="button-newsletter"/>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary btn-lg" id="button-newsletter" type="submit">
+                                        Подписаться
+                                        <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <small class="text-muted">Мы не рассылаем спам. Вы можете отписаться в любой
+                                        момент.</small>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

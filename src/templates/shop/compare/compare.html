@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Сравнение товаров{% endblock %}
+
+{% block content %}
+    <!-- Header Section -->
+    <div class="container">&nbsp;
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">Сравнение товаров</h1>
+                <p class="lead mb-0">Выберите лучший вариант из нашего ассортимента</p>
+            </div>
+            <div class="col-lg-6 text-end">
+                <i class="fas fa-balance-scale fa-5x opacity-50"></i>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Product Cards -->
+        <div class="row mb-5">
+            {% for product in products %}
+                {% include 'shop/_components/_product_card.html' %}
+                {% empty %}
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Товары для сравнения не найдены
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Comparison Table -->
+        {% if products %}
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-center mb-4 fw-bold">Детальное сравнение</h2>
+                    <div class="table-responsive">
+                        <table class="table comparison-table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Характеристики</th>
+                                {% for product in products %}
+                                    <th scope="col">{{ product.title|truncatewords:3 }}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Цена -->
+                            <tr>
+                                <td class="fw-bold">Цена</td>
+                                {% for product in products %}
+                                    <td>
+                                        {{ product.price|floatformat:0 }} ₽
+                                        {% if product.previous_price and product.previous_price > product.price %}
+                                            <br>
+                                            <small class="text-muted">было {{ product.previous_price|floatformat:0 }}
+                                                ₽</small>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Бренд -->
+                            <tr>
+                                <td class="fw-bold">Бренд</td>
+                                {% for product in products %}
+                                    <td>{{ product.brand.title|default:"—" }}</td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Размер -->
+                            <tr>
+                                <td class="fw-bold">Размер</td>
+                                {% for product in products %}
+                                    <td>{{ product.size }} мм</td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Цвет/Материал -->
+                            <tr>
+                                <td class="fw-bold">Цвет/Материал</td>
+                                {% for product in products %}
+                                    <td>{{ product.color|default:"—" }}</td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Процессор -->
+                            {% if products.0.cpu_type %}
+                                <tr>
+                                    <td class="fw-bold">Процессор</td>
+                                    {% for product in products %}
+                                        <td>{{ product.get_cpu_type_display|default:"—" }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+
+                            <!-- Оперативная память -->
+                            {% if products.0.ram %}
+                                <tr>
+                                    <td class="fw-bold">Оперативная память</td>
+                                    {% for product in products %}
+                                        <td>{{ product.get_ram_display|default:"—" }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+
+                            <!-- Накопитель -->
+                            {% if products.0.storage %}
+                                <tr>
+                                    <td class="fw-bold">Накопитель</td>
+                                    {% for product in products %}
+                                        <td>{{ product.get_storage_display|default:"—" }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+
+                            <!-- Доступность -->
+                            <tr>
+                                <td class="fw-bold">Доступность</td>
+                                {% for product in products %}
+                                    <td>
+                                        {% if product.available and product.quantity > 0 %}
+                                            <i class="fas fa-check feature-check"></i>
+                                            <br>
+                                            <small class="text-success">В наличии ({{ product.quantity }} шт.)</small>
+                                        {% elif not product.available %}
+                                            <i class="fas fa-times feature-cross"></i>
+                                            <br><small class="text-danger">Недоступен</small>
+                                        {% else %}
+                                            <i class="fas fa-times feature-cross"></i>
+                                            <br><small class="text-warning">Нет на складе</small>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Категории -->
+                            <tr>
+                                <td class="fw-bold">Категории</td>
+                                {% for product in products %}
+                                    <td>
+                                        {% for category in product.category.all %}
+                                            {{ category.title }}{% if not forloop.last %}, {% endif %}
+                                            {% empty %}
+                                            —
+                                        {% endfor %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Просмотры -->
+                            <tr>
+                                <td class="fw-bold">Популярность</td>
+                                {% for product in products %}
+                                    <td>
+                                        <i class="fas fa-eye me-1"></i>{{ product.watched }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row mt-5 mb-5">
+            <div class="col-12 text-center">
+                <div class="card border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="card-body py-5">
+                        <h3 class="text-white mb-3">Не можете определиться?</h3>
+                        <p class="text-white-50 mb-4">Наши консультанты помогут выбрать идеальный товар</p>
+                        <button class="btn btn-light btn-lg px-5">
+                            <i class="fas fa-phone me-2"></i>Получить консультацию
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,23 +1,51 @@
-FROM python:3.13-alpine
+#python:3.10.16-alpine3.21
+FROM python:3.13-alpine as poetry
 
-LABEL maintainer="Sonya Karmeeva"
+#Hadolint DL4006
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
-ENV PYTHONUNBUFFERED 1
+#RUN adduser -h /app -D python &&      apk add --no-cache poetry
+RUN adduser -h /app -D python
+
+#USER python
+WORKDIR /
+
+ENV POETRY_HOME="/" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1
+
+ENV \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100
+
+ENV PATH="/app/venv/bin:/app/.local/bin:${PATH}"
+
+COPY ./pyproject.toml ./poetry.lock   /
+
+RUN python -c 'from urllib.request import urlopen; print(urlopen("https://install.python-poetry.org").read().decode())' | python -
+
+RUN poetry install --only main --no-root && \
+     chown -R python:python /.venv
+
+#python:3.10.16-alpine3.21
+FROM python:3.13-alpine as runtime
+
+RUN adduser -h /app -D python && \
+     apk add --no-cache gettext
+USER python
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
 
-RUN apk add --update --no-cache postgresql-client jpeg-dev gcc libc-dev linux-headers postgresql-dev musl-dev zlib zlib-dev && \
-    pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-root --no-interaction --no-ansi
+# Копируем код проекта
 
-COPY src /app
+COPY entrypoint.sh /app/entrypoint.sh
 
-RUN mkdir -p /vol/web/media /vol/web/static && \
-    adduser -D sonya && \
-    chown -R sonya:sonya /vol/ && \
-    chmod -R 755 /vol/web
+# Создаем и настраиваем пользователя
+COPY --chown=python:python --from=poetry /.venv /.venv
+ENV PATH="/.venv/bin:${PATH}"
 
-USER sonya
+COPY --chown=python:python ./pyproject.toml ./poetry.lock /app/
+COPY --chown=python:python ./src /app/src
+CMD ["/app/entrypoint.sh"]

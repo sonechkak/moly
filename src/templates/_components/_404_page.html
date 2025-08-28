@@ -1,27 +1,29 @@
-{% load static %}
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    {% include '_components/_popup.html' %}
     <!-- Page Title Area Starts -->
-    <div class="page-title-area pt-130 pb-120 " style="background-image: url({% static 'img/bg/contact-bg.png' %});">
+    <div class="page-title-area pt-130 pb-120"
+         style="background-image: url({% static 'img/bg/contact-bg.png' %}); background-size: cover; background-position: center;">
         <div class="container">
             <div class="row">
-                <div class="col-xl-12">
-                    <div class="page-titel-detalis">
-                        <div class="page-title position-relative">
-                            <h2>404 Page</h2>
-                        </div>
-                        <div class="page-bc">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{% url 'index' %}"> <i
-                                            class="fas fa-home "></i>Home</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page"><a
-                                            href="_404_page.html">404 Page</a></li>
-                                </ol>
-                            </nav>
-                        </div>
+                <div class="col-xl-12 text-center">
+                    <div class="page-title position-relative">
+                        <h2 class="display-4 fw-bold">Страница не найдена</h2>
+                    </div>
+                    <div class="page-bc">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center bg-transparent">
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'index' %}" class="text-decoration-none">
+                                        <i class="fas fa-home me-2"></i>Главная
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <span>404</span>
+                                </li>
+                            </ol>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -30,12 +32,24 @@
     <!-- Page Title Area Ends -->
 
     <!-- 404 Area Starts -->
-    <div class="page-404-area">
+    <div class="page-404-area py-5">
         <div class="container">
-            <div class="row">
-                <div class="col-xl-12">
-                    <div class="img-404 text-center">
-                        <img src="{% static 'img/bg/404.png' %}" alt="">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="img-404 mb-4">
+                        <img src="{% static 'img/bg/404.png' %}" alt="Страница не найдена" class="img-fluid"/>
+                    </div>
+                    <div class="error-content mb-5">
+                        <h3 class="mb-3">Упс! Страница, которую вы ищете, не существует</h3>
+                        <p class="text-muted">Возможно, страница была удалена, перемещена или у вас опечатка в адресе.</p>
+                    </div>
+                    <div class="error-actions">
+                        <a href="{% url 'index' %}" class="btn btn-primary me-3">
+                            <i class="fas fa-home me-2"></i>Вернуться на главную
+                        </a>
+                        <a href="{% url 'shop:all_products' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-shopping-bag me-2"></i>Перейти в магазин
+                        </a>
                     </div>
                 </div>
             </div>
@@ -43,8 +57,3 @@
     </div>
     <!-- 404 Area Ends -->
 {% endblock %}
-
-
-
-
-

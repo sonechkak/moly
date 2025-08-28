@@ -1,32 +1,82 @@
 {% load custom_tags %}
 
-{% get_sorted as data %}
-
-<!-- Sorting -->
-{% for key in data %}
-    <h6 class="text-uppercase mb-3">{{ key.title }}</h6>
-    <form method="get" action="" id="sort-form-{{ forloop.counter }}">
+<!-- Общая форма для сортировки и фильтрации -->
+<form method="get" action="" id="filter-form">
+    <!-- Сортировка -->
+    {% get_sorted as data %}
+    <h5>Сортировка</h5>
+    {% for key in data %}
+        <h6 class="text-uppercase mb-3">{{ key.title }}</h6>
         {% for sorter in key.sorters %}
-            <div class="custom-control custom-radio mb-2">
-                <input class="custom-control-input" type="radio" name="sort" id="sort-{{ sorter.0 }}" value="{{ sorter.0 }}">
-                <label class="custom-control-label text-small" for="sort-{{ sorter.0 }}">{{ sorter.1 }}</label>
+            <div class="form-check mb-2">
+                <input class="form-check-input"
+                       type="radio"
+                       name="sort"
+                       id="sort-{{ sorter.0 }}"
+                       value="{{ sorter.0 }}"
+                       {% if request.GET.sort == sorter.0 %}checked{% endif %}>
+                <label class="form-check-label text-small" for="sort-{{ sorter.0 }}">{{ sorter.1 }}</label>
             </div>
         {% endfor %}
-    </form>
-{% endfor %}
+    {% endfor %}
+
+    <!-- Фильтрация -->
+    {% get_filters as filters %}
+    <h5 class="mt-4">Фильтры</h5>
+
+    <!-- Процессор -->
+    <h6 class="text-uppercase mb-3">Процессор</h6>
+    {% for cpu in filters.cpu_type %}
+        <div class="form-check mb-2">
+            <input class="form-check-input"
+                   type="checkbox"
+                   name="cpu_type"
+                   id="cpu-{{ cpu }}"
+                   value="{{ cpu }}"
+                   {% if cpu in request.GET.getlist.cpu_type %}checked{% endif %}>
+            <label class="form-check-label text-small" for="cpu-{{ cpu }}">{{ cpu }}</label>
+        </div>
+    {% endfor %}
+
+    <!-- Оперативная память -->
+    <h6 class="text-uppercase mb-3">Оперативная память</h6>
+    {% for ram in filters.ram %}
+        <div class="form-check mb-2">
+            <input class="form-check-input"
+                   type="checkbox"
+                   name="ram"
+                   id="ram-{{ ram }}"
+                   value="{{ ram }}"
+                   {% if ram in request.GET.getlist.ram %}checked{% endif %}>
+            <label class="form-check-label text-small" for="ram-{{ ram }}">{{ ram }}</label>
+        </div>
+    {% endfor %}
+
+    <!-- Накопитель -->
+    <h6 class="text-uppercase mb-3">Накопитель</h6>
+    {% for storage in filters.storage %}
+        <div class="form-check mb-2">
+            <input class="form-check-input"
+                   type="checkbox"
+                   name="storage"
+                   id="storage-{{ storage }}"
+                   value="{{ storage }}"
+                   {% if storage in request.GET.getlist.storage %}checked{% endif %}>
+            <label class="form-check-label text-small" for="storage-{{ storage }}">{{ storage }}</label>
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary mt-3">Применить</button>
+</form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Находим все формы сортировки
-        const sortForms = document.querySelectorAll('form[id^="sort-form-"]');
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('filter-form');
+        const inputs = form.querySelectorAll('input[type="radio"], input[type="checkbox"]');
 
-        // Для каждой формы добавляем обработчик события change
-        sortForms.forEach(form => {
-            const radioButtons = form.querySelectorAll('input[type="radio"]');
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    form.submit(); // Отправляем форму при выборе радиокнопки
-                });
+        inputs.forEach(input => {
+            input.addEventListener('change', function () {
+                form.submit();
             });
         });
     });
